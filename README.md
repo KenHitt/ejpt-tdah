@@ -97,6 +97,16 @@ Después del primer deploy, en Supabase ve a **Authentication > URL Configuratio
 dominio de Vercel (`https://tu-app.vercel.app`) a **Redirect URLs**, o el link mágico de login no
 redirigirá correctamente en producción.
 
+## 4. Usar sin red (móvil)
+
+1. Entra a la app **con WiFi** (Chrome o Safari).
+2. Abre **Teoría** y pulsa **Guardar en este teléfono** (espera a que termine).
+3. **iPhone:** Compartir → Añadir a pantalla de inicio. **Android:** menú → Instalar app / Añadir a inicio.
+4. En el metro/sin datos abre el icono: la teoría (y el resto cacheado) carga desde el teléfono.
+
+El progreso de estudio vive en `localStorage` **de ese navegador**. El PC Kali y el móvil no
+comparten avance a menos que uses login + Supabase **estando online**.
+
 ## Scripts
 
 ```bash

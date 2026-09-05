@@ -6,7 +6,12 @@ export function loadLocalProgress(): ProgressState {
     const raw = window.localStorage.getItem(PROGRESS_STORAGE_KEY);
     if (!raw) return EMPTY_PROGRESS;
     const parsed = JSON.parse(raw);
-    return { ...EMPTY_PROGRESS, ...parsed, checklists: parsed.checklists ?? {} };
+    return {
+      ...EMPTY_PROGRESS,
+      ...parsed,
+      checklists: parsed.checklists ?? {},
+      trainer: parsed.trainer ?? EMPTY_PROGRESS.trainer,
+    };
   } catch {
     return EMPTY_PROGRESS;
   }
@@ -45,6 +50,11 @@ export function mergeProgress(local: ProgressState, cloud: ProgressState | null)
     blockStatus: { ...cloud.blockStatus, ...local.blockStatus },
     failures: { ...cloud.failures, ...local.failures },
     checklists: { ...(cloud.checklists ?? {}), ...(local.checklists ?? {}) },
+    trainer: {
+      attempts: [...(cloud.trainer?.attempts ?? []), ...(local.trainer?.attempts ?? [])].slice(-500),
+      hintLevelByKey: { ...(cloud.trainer?.hintLevelByKey ?? {}), ...(local.trainer?.hintLevelByKey ?? {}) },
+      stuckNotes: [...(cloud.trainer?.stuckNotes ?? []), ...(local.trainer?.stuckNotes ?? [])].slice(-100),
+    },
     attempts: local.attempts.length >= cloud.attempts.length ? local.attempts : cloud.attempts,
     sessions: local.sessions.length >= cloud.sessions.length ? local.sessions : cloud.sessions,
     planStartedAt: local.planStartedAt ?? cloud.planStartedAt,

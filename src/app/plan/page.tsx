@@ -86,6 +86,9 @@ export default function PlanPage() {
                                 >
                                   {block.title}
                                 </Link>
+                                <Link href={`/focus/${block.id}`} className="text-[11px] text-emerald-500 hover:underline">
+                                  Focus
+                                </Link>
                                 <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${TYPE_COLOR[block.type]}`}>
                                   {TYPE_LABEL[block.type]}
                                 </span>

@@ -45,18 +45,31 @@ export const labWeek: StudyWeek = {
           promptEs: "Comando para listar interfaces (vas a buscar vboxnet0).",
           promptEn: "Command to list interfaces (you are looking for vboxnet0).",
           answer: "ip a",
+          subtopicId: "lab-vbox",
+          explanation:
+            "No es nmap ni ping. Primero identificas interfaces del host Kali para ver si existe vboxnet0 y anotar LHOST.",
+          conceptQuestion: "¿Qué interfaz Host-Only buscas y para qué sirve su IP?",
+          conceptAnswer: "vboxnet0",
         },
         {
           id: "d2",
           promptEs: "Host discovery Nmap en la red Host-Only típica.",
           promptEn: "Nmap host discovery on the typical Host-Only range.",
           answer: "nmap -sn 192.168.56.0/24",
+          subtopicId: "nmap-basic",
+          explanation:
+            "-sV pide versiones de servicios. Aquí solo quieres saber qué hosts responden: host discovery, sin escanear puertos.",
+          conceptQuestion: "¿Qué hace -sn?",
+          conceptAnswer: "host discovery",
         },
         {
           id: "d3",
           promptEs: "Ping de 3 paquetes a 192.168.56.101 (IP típica de la VM).",
           promptEn: "Send 3 ICMP echo requests to 192.168.56.101.",
           answer: "ping -c 3 192.168.56.101",
+          subtopicId: "lab-vbox",
+          explanation:
+            "Sin -c el ping no para. Estás comprobando alcance ICMP a UNA IP, no un barrido de red ni un scan de puertos.",
         },
       ],
       glossary: [

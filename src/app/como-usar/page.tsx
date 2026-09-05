@@ -13,7 +13,9 @@ export default function ComoUsarPage() {
     <div className="space-y-8">
       <div>
         <p className="font-mono text-xs text-emerald-400">HOW THIS SITE WORKS · TDAH: un paso a la vez</p>
-        <h1 className="mt-1 text-2xl font-bold text-white">Esta web no es un curso. Es un temporizador + checklist.</h1>
+        <h1 className="mt-1 text-2xl font-bold text-white">
+          Esta web no es un curso. Es un entrenador: Focus → fallar → explicar → repetir.
+        </h1>
         <p className="mt-2 text-sm text-slate-400">
           No leas el Plan entero. No abras 6 pestañas. Hoy haces <strong>un bloque</strong> (45–50 min) y cierras.
         </p>
@@ -21,10 +23,10 @@ export default function ComoUsarPage() {
 
       <ol className="space-y-4">
         <HowStep n={1} en="Open ONE block" es="Abre UN bloque">
-          Pulsa el botón verde del Dashboard (&quot;Empezar bloque&quot;). No entres a Plan a mirar las 12 semanas.
+          Pulsa <strong>EMPEZAR</strong> en Hoy. Entra a Focus Mode (timer, un paso, recall). No abras el Plan.
           {nextBlock && (
-            <Link href={`/plan/${nextBlock.id}`} className="mt-2 inline-block text-emerald-400 underline">
-              Ir ahora al siguiente bloque: {nextBlock.title} →
+            <Link href={`/focus/${nextBlock.id}`} className="mt-2 inline-block text-emerald-400 underline">
+              Focus ahora: {nextBlock.title} →
             </Link>
           )}
         </HowStep>
@@ -38,9 +40,13 @@ export default function ComoUsarPage() {
           <code className="text-emerald-300">msfconsole</code>, etc.
         </HowStep>
         <HowStep n={4} en="Type drills from memory" es="Escribe los drills de memoria">
-          Caja verde = comando en inglés exacto. Si no sale, no copies-pega del paso de arriba: cierra los ojos 10 s y reescribe.
+          Si fallas, la app explica el concepto y te obliga a repetir. No muestra el comando completo. Después pregunta el
+          porqué (flag / herramienta).
         </HowStep>
-        <HowStep n={5} en="Tick the closing checklist + mark block done" es="Checklist + marcar bloque">
+        <HowStep n={5} en="Stuck? evidence first" es="Estoy atascado: evidencia, luego pistas">
+          Rellena IP, puertos, qué probaste. Las pistas van 1→5 (concepto → comando). No es un write-up.
+        </HowStep>
+        <HowStep n={6} en="Tick the closing checklist + mark block done" es="Checklist + marcar bloque">
           Eso se guarda en este navegador. Reiniciar el PC no lo borra. Luego 10 min de descanso. Fin.
         </HowStep>
       </ol>
@@ -57,10 +63,14 @@ export default function ComoUsarPage() {
             <strong className="text-slate-200">Dashboard</strong> — único sitio de &quot;qué hago ahora&quot;.
           </li>
           <li>
-            <strong className="text-slate-200">Cómo usar</strong> — esta página. Vuelve si te pierdes.
+            <strong className="text-slate-200">Teoría</strong> — lectura en el móvil. Con WiFi: Guardar en este teléfono. Luego
+            Añadir a pantalla de inicio.
           </li>
           <li>
-            <strong className="text-slate-200">Lab local</strong> — descargas + red. Kali = host. VirtualBox = víctimas.
+            <strong className="text-slate-200">Lab</strong> — descargas + red. Kali = host. VirtualBox = víctimas.
+          </li>
+          <li>
+            <strong className="text-slate-200">Recall</strong> — Command Memory / Flash Drill. Produces comandos, no cheat sheet.
           </li>
           <li>
             <strong className="text-slate-200">Plan</strong> — lista larga. Úsala solo para marcar o saltar a un bloque concreto.

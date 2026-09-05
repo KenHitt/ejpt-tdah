@@ -13,7 +13,12 @@ export async function loadSupabaseProgress(userId: string): Promise<ProgressStat
     .maybeSingle();
 
   if (error || !data) return null;
-  return { ...EMPTY_PROGRESS, ...(data.data as Partial<ProgressState>), checklists: (data.data as Partial<ProgressState>).checklists ?? {} };
+  return {
+    ...EMPTY_PROGRESS,
+    ...(data.data as Partial<ProgressState>),
+    checklists: (data.data as Partial<ProgressState>).checklists ?? {},
+    trainer: (data.data as Partial<ProgressState>).trainer ?? EMPTY_PROGRESS.trainer,
+  };
 }
 
 /** Guarda (upsert) el snapshot completo de progreso en Supabase. */

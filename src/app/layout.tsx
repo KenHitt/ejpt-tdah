@@ -1,8 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ProgressProvider } from "@/lib/progress/context";
 import { Navbar } from "@/components/Navbar";
+import { AppFooter } from "@/components/AppFooter";
+import { PwaRegister } from "@/components/PwaRegister";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,6 +19,20 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "eJPT en 3 Meses — Plan de estudio",
   description: "Plan de estudio calibrado para aprobar el eJPT en 3 meses, diseñado para TDAH.",
+  applicationName: "eJPT en 3 meses",
+  appleWebApp: {
+    capable: true,
+    title: "eJPT",
+    statusBarStyle: "black-translucent",
+  },
+  formatDetection: { telephone: false },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#059669",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -27,11 +43,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col bg-slate-950 text-slate-100">
         <ProgressProvider>
+          <PwaRegister />
           <Navbar />
           <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">{children}</main>
-          <footer className="border-t border-slate-800 px-4 py-4 text-center text-xs text-slate-500">
-            Objetivo fijo: eJPT en 3 meses, primer intento. Kali = host OS. VirtualBox = victims only.
-          </footer>
+          <AppFooter />
         </ProgressProvider>
       </body>
     </html>

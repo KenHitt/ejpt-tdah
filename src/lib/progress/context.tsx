@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { SimulacroAttempt, StudySessionLog, SubtopicFailure } from "@/lib/types";
+import { StuckNote, TrainerAttempt } from "@/lib/trainer/types";
 import { useSupabaseSession } from "@/lib/supabase/useSession";
 import { EMPTY_PROGRESS, ProgressState } from "./state";
 import { loadLocalProgress, saveLocalProgress, mergeProgress } from "./localBackend";
@@ -30,6 +31,9 @@ interface ProgressContextValue {
   resetAll: () => void;
   toggleChecklistItem: (blockId: string, index: number, checked: boolean) => void;
   importState: (next: ProgressState) => void;
+  recordTrainerAttempt: (attempt: Omit<TrainerAttempt, "id" | "at">) => void;
+  recordHintLevel: (key: string, level: number) => void;
+  recordStuck: (note: Omit<StuckNote, "id" | "at">) => void;
 }
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
@@ -54,13 +58,16 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
         setReady(true);
       }
 
-      if (isConfigured && user) {
-        const cloud = await loadSupabaseProgress(user.id);
-        if (!cancelled) {
+      if (isConfigured && user && typeof navigator !== "undefined" && navigator.onLine) {
+        const cloud = await Promise.race([
+          loadSupabaseProgress(user.id),
+          new Promise<null>((resolve) => setTimeout(() => resolve(null), 4000)),
+        ]);
+        if (!cancelled && cloud) {
           const merged = mergeProgress(local, cloud);
           setState(merged);
           saveLocalProgress(merged);
-          if (user) saveSupabaseProgress(user.id, merged);
+          saveSupabaseProgress(user.id, merged);
         }
       }
       hydratedRef.current = true;
@@ -78,7 +85,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     if (!hydratedRef.current) return;
     saveLocalProgress(state);
 
-    if (isConfigured && user) {
+    if (isConfigured && user && typeof navigator !== "undefined" && navigator.onLine) {
       if (saveTimer.current) clearTimeout(saveTimer.current);
       saveTimer.current = setTimeout(() => {
         saveSupabaseProgress(user.id, state);
@@ -170,7 +177,55 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const importState = useCallback((next: ProgressState) => {
-    setState({ ...EMPTY_PROGRESS, ...next, checklists: next.checklists ?? {} });
+    setState({
+      ...EMPTY_PROGRESS,
+      ...next,
+      checklists: next.checklists ?? {},
+      trainer: next.trainer ?? EMPTY_PROGRESS.trainer,
+    });
+  }, []);
+
+  const recordTrainerAttempt = useCallback((attempt: Omit<TrainerAttempt, "id" | "at">) => {
+    setState((prev) => ({
+      ...prev,
+      trainer: {
+        ...(prev.trainer ?? EMPTY_PROGRESS.trainer),
+        attempts: [
+          ...(prev.trainer?.attempts ?? []),
+          { ...attempt, id: `ta:${Date.now()}`, at: new Date().toISOString() },
+        ].slice(-800),
+      },
+    }));
+  }, []);
+
+  const recordHintLevel = useCallback((key: string, level: number) => {
+    setState((prev) => {
+      const t = prev.trainer ?? EMPTY_PROGRESS.trainer;
+      const prevLevel = t.hintLevelByKey[key] ?? 0;
+      return {
+        ...prev,
+        trainer: {
+          ...t,
+          hintLevelByKey: { ...t.hintLevelByKey, [key]: Math.max(prevLevel, level) },
+        },
+      };
+    });
+  }, []);
+
+  const recordStuck = useCallback((note: Omit<StuckNote, "id" | "at">) => {
+    setState((prev) => {
+      const t = prev.trainer ?? EMPTY_PROGRESS.trainer;
+      return {
+        ...prev,
+        trainer: {
+          ...t,
+          stuckNotes: [
+            ...t.stuckNotes,
+            { ...note, id: `st:${Date.now()}`, at: new Date().toISOString() },
+          ].slice(-80),
+        },
+      };
+    });
   }, []);
 
   const value = useMemo<ProgressContextValue>(
@@ -189,6 +244,9 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       resetAll,
       toggleChecklistItem,
       importState,
+      recordTrainerAttempt,
+      recordHintLevel,
+      recordStuck,
     }),
     [
       state,
@@ -205,6 +263,9 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       resetAll,
       toggleChecklistItem,
       importState,
+      recordTrainerAttempt,
+      recordHintLevel,
+      recordStuck,
     ]
   );
 

@@ -6,8 +6,10 @@ import { useProgress } from "@/lib/progress/context";
 
 const LINKS = [
   { href: "/", label: "Hoy" },
+  { href: "/teoria", label: "Teoría" },
   { href: "/como-usar", label: "Cómo usar" },
   { href: "/laboratorio", label: "Lab" },
+  { href: "/memory", label: "Recall" },
   { href: "/plan", label: "Plan" },
   { href: "/simulacro", label: "Examen" },
   { href: "/progreso", label: "Horas" },
@@ -18,6 +20,20 @@ const LINKS = [
 export function Navbar() {
   const pathname = usePathname();
   const { syncMode } = useProgress();
+  const inFocus = pathname.startsWith("/focus");
+
+  if (inFocus) {
+    return (
+      <header className="border-b border-emerald-900/40 bg-slate-950 px-4 py-2">
+        <div className="mx-auto flex max-w-xl items-center justify-between">
+          <span className="font-mono text-xs text-emerald-500">FOCUS · hide the rest</span>
+          <Link href="/" className="text-xs text-slate-400 hover:text-white">
+            Salir
+          </Link>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-800 bg-slate-950/90 backdrop-blur">
@@ -29,7 +45,7 @@ export function Navbar() {
 
         <nav className="flex flex-wrap items-center gap-1 text-sm">
           {LINKS.map((link) => {
-            const active = pathname === link.href;
+            const active = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
             return (
               <Link
                 key={link.href}

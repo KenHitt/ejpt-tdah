@@ -28,10 +28,17 @@ export interface ResourceLink {
 export interface DrillItem {
   id: string;
   promptEs: string;
-  /** Same drill in English (exam wording) */
   promptEn?: string;
   answer: string;
   hint?: string;
+  /** Explicación conceptual al fallar. NO incluir el comando completo. */
+  explanation?: string;
+  explanationEn?: string;
+  /** Pregunta de recall de concepto tras acertar el comando */
+  conceptQuestion?: string;
+  conceptAnswer?: string;
+  mandatoryRepeat?: boolean;
+  subtopicId?: string;
 }
 
 export interface StudyBlock {

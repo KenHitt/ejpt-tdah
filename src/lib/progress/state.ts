@@ -1,4 +1,5 @@
 import { SimulacroAttempt, StudySessionLog, SubtopicFailure } from "@/lib/types";
+import { EMPTY_TRAINER, TrainerState } from "@/lib/trainer/types";
 
 export type BlockStatus = "pending" | "completed";
 
@@ -17,6 +18,8 @@ export interface ProgressState {
   planStartedAt?: string;
   /** Checklists de cierre por bloque (sobreviven al reinicio) */
   checklists: Record<string, Record<string, boolean>>;
+  /** Capa P0 entrenador (no pisa el progreso de bloques) */
+  trainer: TrainerState;
 }
 
 export const EMPTY_PROGRESS: ProgressState = {
@@ -25,6 +28,7 @@ export const EMPTY_PROGRESS: ProgressState = {
   attempts: [],
   sessions: [],
   checklists: {},
+  trainer: EMPTY_TRAINER,
 };
 
 export const PROGRESS_STORAGE_KEY = "ejpt-progress-v1";

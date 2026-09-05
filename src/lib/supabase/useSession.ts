@@ -11,13 +11,25 @@ export function useSupabaseSession() {
 
   useEffect(() => {
     if (!isSupabaseConfigured) return;
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      const t = setTimeout(() => setLoading(false), 0);
+      return () => clearTimeout(t);
+    }
     const supabase = getSupabaseBrowserClient();
     if (!supabase) return;
 
     (async () => {
-      const result = await supabase.auth.getUser();
-      setUser(result.data.user ?? null);
-      setLoading(false);
+      try {
+        const result = await Promise.race([
+          supabase.auth.getUser(),
+          new Promise<never>((_, reject) => setTimeout(() => reject(new Error("offline")), 3000)),
+        ]);
+        setUser(result.data.user ?? null);
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
     })();
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {

@@ -33,9 +33,12 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <p className="text-sm">
+      <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
         <Link href="/como-usar" className="font-mono text-emerald-400 underline">
-          First time here? Read HOW THIS SITE WORKS (2 min) →
+          First time here? HOW THIS SITE WORKS →
+        </Link>
+        <Link href="/teoria" className="font-mono text-emerald-400 underline">
+          Teoría en el móvil (offline) →
         </Link>
       </p>
 
@@ -64,7 +67,7 @@ export default function DashboardPage() {
           <p className="font-semibold">Todavía no hay lab → no abras Nmap del Mes 1.</p>
           <p className="mt-1 text-amber-200/80">
             Orden: vboxnet0 → import Metasploitable 2 → ping desde Kali host.{" "}
-            <Link href="/plan/m0-w0-b1" className="underline">
+            <Link href="/focus/m0-w0-b1" className="underline">
               Bloque 1 del lab ahora →
             </Link>
           </p>
@@ -72,7 +75,7 @@ export default function DashboardPage() {
       )}
 
       <div className="rounded-lg border-2 border-emerald-600 bg-slate-900 p-5">
-        <p className="text-xs font-semibold uppercase tracking-wide text-emerald-400">Do this now / Siguiente (único botón)</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-emerald-400">AHORA</p>
         {nextBlock ? (
           <>
             <p className="mt-2 text-xl font-bold text-white">{nextBlock.title}</p>
@@ -80,11 +83,12 @@ export default function DashboardPage() {
             <p className="mt-1 text-sm text-slate-300">{nextBlock.objective}</p>
             {nextBlock.objectiveEn && <p className="mt-1 font-mono text-xs text-emerald-300">{nextBlock.objectiveEn}</p>}
             <Link
-              href={`/plan/${nextBlock.id}`}
-              className="mt-4 inline-block rounded-md bg-emerald-600 px-5 py-3 text-base font-semibold text-white hover:bg-emerald-500"
+              href={`/focus/${nextBlock.id}`}
+              className="mt-4 inline-block w-full rounded-md bg-emerald-600 px-5 py-3 text-center text-lg font-semibold text-white hover:bg-emerald-500 sm:w-auto"
             >
-              Start {nextBlock.durationMin} min block →
+              EMPEZAR
             </Link>
+            <p className="mt-2 text-xs text-slate-500">{nextBlock.durationMin} min · Focus Mode (timer + recall + I&apos;m stuck)</p>
           </>
         ) : (
           <p className="mt-2 text-emerald-400">Plan completo. Toca simulacro final y examen INE.</p>

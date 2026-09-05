@@ -39,9 +39,14 @@ export default function BlockDetailPage() {
   return (
     <div className="space-y-6">
       <div>
-        <Link href="/plan" className="text-xs text-slate-500 hover:text-emerald-400">
-          ← Volver al plan
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link href="/plan" className="text-xs text-slate-500 hover:text-emerald-400">
+            ← Volver al plan
+          </Link>
+          <Link href={`/focus/${block.id}`} className="text-xs font-semibold text-emerald-400 hover:underline">
+            EMPEZAR Focus Mode →
+          </Link>
+        </div>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <h1 className="text-2xl font-bold text-white">{block.title}</h1>
           {block.titleEn && <span className="font-mono text-sm text-emerald-400">{block.titleEn}</span>}

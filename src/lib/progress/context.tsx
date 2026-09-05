@@ -12,7 +12,7 @@ import {
 import { SimulacroAttempt, StudySessionLog, SubtopicFailure } from "@/lib/types";
 import { useSupabaseSession } from "@/lib/supabase/useSession";
 import { EMPTY_PROGRESS, ProgressState } from "./state";
-import { loadLocalProgress, saveLocalProgress } from "./localBackend";
+import { loadLocalProgress, saveLocalProgress, mergeProgress } from "./localBackend";
 import { loadSupabaseProgress, saveSupabaseProgress } from "./supabaseBackend";
 
 interface ProgressContextValue {
@@ -28,6 +28,8 @@ interface ProgressContextValue {
   canTakeFullSimulacroToday: () => boolean;
   ensurePlanStarted: () => void;
   resetAll: () => void;
+  toggleChecklistItem: (blockId: string, index: number, checked: boolean) => void;
+  importState: (next: ProgressState) => void;
 }
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
@@ -54,9 +56,11 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
 
       if (isConfigured && user) {
         const cloud = await loadSupabaseProgress(user.id);
-        if (cloud && !cancelled) {
-          setState(cloud);
-          saveLocalProgress(cloud); // cache local
+        if (!cancelled) {
+          const merged = mergeProgress(local, cloud);
+          setState(merged);
+          saveLocalProgress(merged);
+          if (user) saveSupabaseProgress(user.id, merged);
         }
       }
       hydratedRef.current = true;
@@ -155,6 +159,20 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     setState(EMPTY_PROGRESS);
   }, []);
 
+  const toggleChecklistItem = useCallback((blockId: string, index: number, checked: boolean) => {
+    setState((prev) => ({
+      ...prev,
+      checklists: {
+        ...(prev.checklists ?? {}),
+        [blockId]: { ...((prev.checklists ?? {})[blockId] ?? {}), [String(index)]: checked },
+      },
+    }));
+  }, []);
+
+  const importState = useCallback((next: ProgressState) => {
+    setState({ ...EMPTY_PROGRESS, ...next, checklists: next.checklists ?? {} });
+  }, []);
+
   const value = useMemo<ProgressContextValue>(
     () => ({
       state,
@@ -169,6 +187,8 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       canTakeFullSimulacroToday,
       ensurePlanStarted,
       resetAll,
+      toggleChecklistItem,
+      importState,
     }),
     [
       state,
@@ -183,6 +203,8 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       canTakeFullSimulacroToday,
       ensurePlanStarted,
       resetAll,
+      toggleChecklistItem,
+      importState,
     ]
   );
 

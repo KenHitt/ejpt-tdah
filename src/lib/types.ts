@@ -20,44 +20,42 @@ export interface GlossaryEntry {
 export interface ResourceLink {
   label: string;
   url: string;
-  platform: "TryHackMe" | "HackTheBox" | "INE" | "Docs" | "Kali" | "Otro";
+  platform: "TryHackMe" | "HackTheBox" | "INE" | "Docs" | "Kali" | "VulnHub" | "Local" | "Otro";
   /** Si es true, el recurso requiere una suscripción de pago en esa plataforma */
   paid?: boolean;
 }
 
 export interface DrillItem {
   id: string;
-  /** Instrucción del ejercicio de fijación (en español) */
   promptEs: string;
-  /** Respuesta esperada exacta o patrón (comando en inglés, tal cual se usa) */
+  /** Same drill in English (exam wording) */
+  promptEn?: string;
   answer: string;
-  /** Pista opcional si el usuario se traba */
   hint?: string;
 }
 
 export interface StudyBlock {
-  id: string; // ej: m1-w1-b3
-  weekId: string; // ej: m1-w1
-  order: number; // orden dentro de la semana
+  id: string;
+  weekId: string;
+  order: number;
   title: string;
-  /** Objetivo de una sola línea, verificable, mostrado al inicio del bloque */
+  titleEn?: string;
   objective: string;
-  durationMin: number; // 45-50
+  objectiveEn?: string;
+  durationMin: number;
   type: BlockType;
-  /** Explicación conceptual corta en español (el "por qué"). Mantener breve: ~20% teoría. */
   theoryEs?: string;
-  /** Pasos prácticos, comandos y flags en inglés tal cual se usan en el examen */
+  /** Exam-style English (short). Shown next to Spanish so you train reading the real exam. */
+  theoryEn?: string;
+  /** English phrases you will see on the eJPT (commands stay in English anyway). */
+  examPhrases?: string[];
   practiceSteps?: string[];
-  /** IDs de subtemas que este bloque cubre (para tracking de fallos y simulacros) */
   subtopics: string[];
   drills?: DrillItem[];
   glossary?: GlossaryEntry[];
   resources?: ResourceLink[];
-  /** Checklist de cierre: lo que debe quedar dominado al terminar el bloque */
   closingChecklist: string[];
-  /** Recursos extra opcionales para cuando el bloque se termina antes de tiempo */
   extraResources?: ResourceLink[];
-  /** Tabla comparativa opcional (herramientas/conceptos) para fijar visualmente */
   comparisonTable?: {
     caption: string;
     headers: string[];

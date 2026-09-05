@@ -8,6 +8,13 @@ import { Subtopic } from "@/lib/types";
  *  - Detección de "punto crítico de riesgo" (mismo subtema falla 2 veces tras repaso)
  */
 export const SUBTOPICS: Subtopic[] = [
+  {
+    id: "lab-vbox",
+    nameEs: "Laboratorio local VirtualBox (red host-only)",
+    nameEn: "Local VirtualBox lab (host-only network)",
+    category: "networking",
+    introducedAtGlobalWeek: 1,
+  },
   // ---- Semana 1: Recon & Scanning ----
   { id: "nmap-basic", nameEs: "Escaneo básico con Nmap", nameEn: "Basic Nmap scanning", category: "scanning", introducedAtGlobalWeek: 1 },
   { id: "nmap-scripts", nameEs: "Nmap Scripting Engine (NSE)", nameEn: "Nmap NSE scripts", category: "scanning", introducedAtGlobalWeek: 1 },

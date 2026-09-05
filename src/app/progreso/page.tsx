@@ -5,9 +5,10 @@ import { useProgress } from "@/lib/progress/context";
 import { diagnosePace } from "@/lib/regime";
 import { getSubtopic } from "@/content/subtopics";
 import { RegimeDayType } from "@/lib/types";
+import { ProgressState } from "@/lib/progress/state";
 
 export default function ProgresoPage() {
-  const { state, addSession, ensurePlanStarted } = useProgress();
+  const { state, addSession, ensurePlanStarted, importState, syncMode } = useProgress();
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [regimeDayType, setRegimeDayType] = useState<RegimeDayType>("trabajo");
   const [hoursPlanned, setHoursPlanned] = useState(2);
@@ -175,9 +176,11 @@ export default function ProgresoPage() {
               </div>
             );
           })}
-          {failuresList.length === 0 && <p className="text-xs text-slate-500">Ningún sub-tema pendiente de repaso. 🎉</p>}
+          {failuresList.length === 0 && <p className="text-xs text-slate-500">Ningún sub-tema pendiente de repaso.</p>}
         </div>
       </section>
+
+      <BackupPanel state={state} importState={importState} syncMode={syncMode} />
     </div>
   );
 }
@@ -188,5 +191,73 @@ function StatCard({ label, value, highlight }: { label: string; value: string; h
       <p className="text-xs text-slate-400">{label}</p>
       <p className="mt-1 text-xl font-bold text-white">{value}</p>
     </div>
+  );
+}
+
+function BackupPanel({
+  state,
+  importState,
+  syncMode,
+}: {
+  state: ProgressState;
+  importState: (next: ProgressState) => void;
+  syncMode: "local" | "cloud";
+}) {
+  const [msg, setMsg] = useState<string | null>(null);
+
+  const exportJson = () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ejpt-progreso-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setMsg("Archivo descargado. Guárdalo fuera del portátil si quieres doble copia.");
+  };
+
+  const onFile = async (file: File | undefined) => {
+    if (!file) return;
+    try {
+      const parsed = JSON.parse(await file.text()) as ProgressState;
+      if (!parsed || typeof parsed !== "object" || !parsed.blockStatus) {
+        setMsg("El JSON no parece un backup de esta app.");
+        return;
+      }
+      importState(parsed);
+      setMsg("Progreso importado.");
+    } catch {
+      setMsg("No pude leer ese archivo.");
+    }
+  };
+
+  return (
+    <section className="rounded-lg border border-slate-800 bg-slate-900/40 p-5 text-sm text-slate-300">
+      <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-300">Dónde se guarda tu avance</h2>
+      <ul className="mb-4 list-disc space-y-1 pl-5 text-slate-400">
+        <li>
+          <strong className="text-slate-200">Siempre, en este navegador</strong> (localStorage). Reiniciar Kali o el portátil no lo
+          borra. Borrar datos del sitio / modo incógnito sí.
+        </li>
+        <li>
+          <strong className="text-slate-200">Supabase (nube)</strong> es opcional. Ahora mismo:{" "}
+          {syncMode === "cloud" ? "sesion activa, se sube solo." : "no hay sesión — no hace falta para estudiar en un solo PC."}
+        </li>
+        <li>
+          <strong className="text-slate-200">Archivo JSON</strong> (botón de abajo): copia de seguridad que puedes guardar en USB o
+          Drive.
+        </li>
+      </ul>
+      <div className="flex flex-wrap gap-3">
+        <button type="button" onClick={exportJson} className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500">
+          Descargar backup JSON
+        </button>
+        <label className="cursor-pointer rounded-md border border-slate-600 px-4 py-2 text-sm hover:border-emerald-600">
+          Importar backup
+          <input type="file" accept="application/json" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
+        </label>
+      </div>
+      {msg && <p className="mt-2 text-xs text-emerald-400">{msg}</p>}
+    </section>
   );
 }

@@ -5,11 +5,13 @@ import { usePathname } from "next/navigation";
 import { useProgress } from "@/lib/progress/context";
 
 const LINKS = [
-  { href: "/", label: "Dashboard" },
+  { href: "/", label: "Hoy" },
+  { href: "/como-usar", label: "Cómo usar" },
+  { href: "/laboratorio", label: "Lab" },
   { href: "/plan", label: "Plan" },
-  { href: "/simulacro", label: "Simulacros" },
-  { href: "/progreso", label: "Progreso" },
-  { href: "/glosario", label: "Glosario" },
+  { href: "/simulacro", label: "Examen" },
+  { href: "/progreso", label: "Horas" },
+  { href: "/glosario", label: "EN/ES" },
   { href: "/login", label: "Cuenta" },
 ];
 
@@ -25,7 +27,7 @@ export function Navbar() {
           <span className="text-slate-500">:: plan de ataque</span>
         </Link>
 
-        <nav className="flex items-center gap-1 text-sm">
+        <nav className="flex flex-wrap items-center gap-1 text-sm">
           {LINKS.map((link) => {
             const active = pathname === link.href;
             return (
@@ -47,9 +49,9 @@ export function Navbar() {
         <div className="hidden items-center gap-2 text-xs text-slate-500 sm:flex">
           <span
             className={`h-2 w-2 rounded-full ${syncMode === "cloud" ? "bg-emerald-400" : "bg-amber-400"}`}
-            title={syncMode === "cloud" ? "Sincronizado con Supabase" : "Guardado local (Supabase no configurado o sin sesión)"}
+            title={syncMode === "cloud" ? "Sincronizado con Supabase" : "Guardado en este navegador (sobrevive al reinicio)"}
           />
-          {syncMode === "cloud" ? "Supabase" : "Local"}
+          {syncMode === "cloud" ? "Nube" : "Local OK"}
         </div>
       </div>
     </header>

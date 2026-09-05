@@ -42,7 +42,8 @@ export const month1Week2: StudyWeek = {
         { en: "workgroup", es: "grupo de trabajo" },
       ],
       resources: [
-        { label: "TryHackMe — Kenobi (SMB enum end-to-end)", url: "https://tryhackme.com/room/kenobi", platform: "TryHackMe" },
+        { label: "Target local — Metasploitable 2 (puerto 445)", url: "https://sourceforge.net/projects/metasploitable/files/Metasploitable2/", platform: "Local" },
+        { label: "TryHackMe — Kenobi (opcional)", url: "https://tryhackme.com/room/kenobi", platform: "TryHackMe" },
       ],
       closingChecklist: [
         "Escribo enum4linux -a de memoria",
@@ -230,7 +231,8 @@ export const month1Week2: StudyWeek = {
         { en: "known exploit", es: "exploit conocido" },
       ],
       resources: [
-        { label: "HackTheBox Starting Point — Fawn (FTP anónimo)", url: "https://app.hackthebox.com/starting-point", platform: "HackTheBox" },
+        { label: "HackTheBox Starting Point — Fawn (opcional)", url: "https://app.hackthebox.com/starting-point", platform: "HackTheBox" },
+        { label: "Metasploitable 2 — FTP 21 (vsftpd, a menudo anónimo)", url: "https://sourceforge.net/projects/metasploitable/files/Metasploitable2/", platform: "Local" },
       ],
       closingChecklist: [
         "Confirmé si el FTP del lab permitía acceso anónimo",
@@ -243,22 +245,23 @@ export const month1Week2: StudyWeek = {
       weekId: "m1-w2",
       order: 7,
       title: "Skill-check Semana 2 + Lab de integración",
-      objective: "Aprobar el skill-check de Semana 2 (70%+) y completar la sala Kenobi de TryHackMe usando enum4linux + smbclient + Gobuster + Hydra según corresponda.",
+      objective: "Aprobar el skill-check de Semana 2 (70%+) y enumerar SMB+web+FTP en Metasploitable 2 (y Kioptrix si da tiempo).",
       durationMin: 50,
       type: "checkpoint",
-      theoryEs: "Sin teoría nueva. Verificación de que el hueco #2 (confusión de herramientas) está cerrado antes de entrar a Metasploit en la Semana 3.",
+      theoryEs: "Sin teoría nueva. Verificación de que el hueco #2 (confusión de herramientas) está cerrado. Target: tus VMs locales.",
       practiceSteps: [
         "Toma el skill-check de la app (Simulacros > Skill-checks > Semana 2)",
-        "Abre la sala TryHackMe 'Kenobi' y complétala usando SOLO las herramientas de esta semana",
-        "Documenta qué herramienta usaste para cada paso y por qué (refuerza la decisión, no solo el comando)",
+        "Contra Metasploitable 2: enum4linux -a, smbclient -L, gobuster dir al puerto 80, hydra SOLO si encuentras un login (no tires rockyou entero: usa una lista corta de 20 passwords para el drill)",
+        "Documenta qué herramienta usaste para cada paso y por qué",
       ],
       subtopics: ["enum4linux", "smb-manual", "gobuster-dir", "hydra-bruteforce", "tool-selection", "ftp-ssh-enum"],
       resources: [
-        { label: "TryHackMe — Kenobi", url: "https://tryhackme.com/room/kenobi", platform: "TryHackMe" },
+        { label: "Metasploitable 2", url: "https://sourceforge.net/projects/metasploitable/files/Metasploitable2/", platform: "Local" },
+        { label: "Kioptrix Level 1", url: "https://www.vulnhub.com/entry/kioptrix-level-1-1,22/", platform: "VulnHub" },
       ],
       closingChecklist: [
         "Aprobé el skill-check de Semana 2 con 70% o más",
-        "Completé Kenobi documentando la herramienta usada en cada paso",
+        "Enumeré SMB y HTTP en Metasploitable 2 documentando la herramienta de cada paso",
         "Ya no dudo entre Gobuster/Hydra/enum4linux en ningún escenario nuevo",
       ],
     },

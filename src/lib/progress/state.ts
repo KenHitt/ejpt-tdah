@@ -15,6 +15,8 @@ export interface ProgressState {
   lastFailedFullSimulacroAt?: string;
   /** Fecha ISO de inicio del plan de 3 meses (para calcular deadline) */
   planStartedAt?: string;
+  /** Checklists de cierre por bloque (sobreviven al reinicio) */
+  checklists: Record<string, Record<string, boolean>>;
 }
 
 export const EMPTY_PROGRESS: ProgressState = {
@@ -22,6 +24,7 @@ export const EMPTY_PROGRESS: ProgressState = {
   failures: {},
   attempts: [],
   sessions: [],
+  checklists: {},
 };
 
 export const PROGRESS_STORAGE_KEY = "ejpt-progress-v1";

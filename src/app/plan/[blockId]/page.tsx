@@ -44,20 +44,47 @@ export default function BlockDetailPage() {
         </Link>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <h1 className="text-2xl font-bold text-white">{block.title}</h1>
+          {block.titleEn && <span className="font-mono text-sm text-emerald-400">{block.titleEn}</span>}
           <span className="rounded bg-slate-800 px-2 py-0.5 text-xs text-slate-400">{block.durationMin} min</span>
-          {gWeek && <span className="rounded bg-slate-800 px-2 py-0.5 text-xs text-slate-400">Semana global {gWeek}</span>}
+          {gWeek ? <span className="rounded bg-slate-800 px-2 py-0.5 text-xs text-slate-400">Exam week {gWeek}/12</span> : null}
         </div>
+        <p className="mt-2 text-xs text-slate-500">
+          TDAH: este bloque termina en {block.durationMin} min. No abras Plan ni otro tema. Terminal de Kali (SO del PC) + esta
+          pestaña.
+        </p>
       </div>
 
       <div className="rounded-lg border border-emerald-700/50 bg-emerald-500/5 p-4">
-        <p className="text-xs font-semibold uppercase tracking-wide text-emerald-400">Objetivo de este bloque</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-emerald-400">Goal / Objetivo (1 línea)</p>
         <p className="mt-1 text-base text-white">{block.objective}</p>
+        {block.objectiveEn && <p className="mt-2 font-mono text-sm text-emerald-300">{block.objectiveEn}</p>}
       </div>
 
-      {block.theoryEs && (
-        <div>
-          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-sky-400">Teoría mínima (el &ldquo;por qué&rdquo;)</h2>
-          <p className="text-sm leading-relaxed text-slate-300">{block.theoryEs}</p>
+      {block.examPhrases && block.examPhrases.length > 0 && (
+        <div className="rounded-lg border border-slate-700 bg-slate-950 p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-amber-400">Exam English — frases que verás en eJPT</p>
+          <ul className="mt-2 space-y-1 font-mono text-sm text-emerald-300">
+            {block.examPhrases.map((p) => (
+              <li key={p}>· {p}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {(block.theoryEs || block.theoryEn) && (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {block.theoryEs && (
+            <div>
+              <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-sky-400">Por qué (español, corto)</h2>
+              <p className="text-sm leading-relaxed text-slate-300">{block.theoryEs}</p>
+            </div>
+          )}
+          {block.theoryEn && (
+            <div>
+              <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-emerald-400">Why (English — exam reading)</h2>
+              <p className="text-sm leading-relaxed text-emerald-200/90">{block.theoryEn}</p>
+            </div>
+          )}
         </div>
       )}
 
@@ -70,7 +97,9 @@ export default function BlockDetailPage() {
 
       {block.practiceSteps && block.practiceSteps.length > 0 && (
         <div>
-          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-emerald-400">Pasos prácticos (paso a paso)</h2>
+          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-emerald-400">
+            Do this now / Haz esto ahora (comandos en inglés)
+          </h2>
           <ol className="space-y-1.5">
             {block.practiceSteps.map((step, i) => (
               <li key={i} className="rounded-md bg-slate-900/50 px-3 py-2 text-sm text-slate-200">

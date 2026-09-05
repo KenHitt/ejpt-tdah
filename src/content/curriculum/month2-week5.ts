@@ -19,7 +19,7 @@ export const month2Week5: StudyWeek = {
       theoryEs:
         "SQLi ocurre cuando la app mete input del usuario directo en una query SQL sin sanitizar. Detección rápida: agregar ' o \" y ver si rompe la página (error SQL). UNION-based: una vez sabes el número de columnas, usas UNION SELECT para inyectar tus propios datos en la respuesta.",
       practiceSteps: [
-        "Prueba de detección: agrega ' al final de un parámetro (ej. ?id=1')",
+        "Prueba de detección en DVWA (SQL Injection): http://127.0.0.1:4280 — security low. Agrega ' al parámetro id.",
         "Encuentra el número de columnas: ?id=1' ORDER BY 1-- - (incrementa hasta error)",
         "Confirma columnas visibles: ?id=-1' UNION SELECT 1,2,3-- -",
         "Extrae versión de la BD: ?id=-1' UNION SELECT 1,@@version,3-- -",
@@ -36,8 +36,9 @@ export const month2Week5: StudyWeek = {
         { en: "information_schema", es: "esquema de información (metadatos de la BD)" },
       ],
       resources: [
-        { label: "TryHackMe — SQL Injection", url: "https://tryhackme.com/room/sqlinjectionlm", platform: "TryHackMe" },
+        { label: "DVWA local — SQL Injection (security low)", url: "http://127.0.0.1:4280", platform: "Local" },
         { label: "PortSwigger Web Security Academy — SQL Injection", url: "https://portswigger.net/web-security/sql-injection", platform: "Docs" },
+        { label: "TryHackMe — SQL Injection (opcional)", url: "https://tryhackme.com/room/sqlinjectionlm", platform: "TryHackMe" },
       ],
       closingChecklist: [
         "Detecté un punto de inyección con ' manualmente",

@@ -6,6 +6,8 @@ const PLATFORM_COLOR: Record<ResourceLink["platform"], string> = {
   INE: "bg-blue-500/10 text-blue-400",
   Docs: "bg-slate-500/10 text-slate-300",
   Kali: "bg-sky-500/10 text-sky-400",
+  VulnHub: "bg-orange-500/10 text-orange-300",
+  Local: "bg-lime-500/10 text-lime-400",
   Otro: "bg-slate-500/10 text-slate-300",
 };
 

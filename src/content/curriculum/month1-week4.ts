@@ -112,7 +112,8 @@ export const month1Week4: StudyWeek = {
       ],
       subtopics: ["exploit-linux"],
       resources: [
-        { label: "HackTheBox — Lame (Samba, ideal para este bloque)", url: "https://app.hackthebox.com/machines/Lame", platform: "HackTheBox" },
+        { label: "Kioptrix Level 1 (end-to-end Linux local)", url: "https://www.vulnhub.com/entry/kioptrix-level-1-1,22/", platform: "VulnHub" },
+        { label: "Metasploitable 2 — Samba / DistCC / vsftpd", url: "https://docs.rapid7.com/metasploit/metasploitable-2-exploitability-guide/", platform: "Local" },
       ],
       closingChecklist: [
         "Comprometí una máquina Linux de principio a fin sin ver walkthrough",
@@ -123,25 +124,25 @@ export const month1Week4: StudyWeek = {
       id: "m1-w4-b4",
       weekId: "m1-w4",
       order: 4,
-      title: "Explotación de servicios Windows (end-to-end)",
-      objective: "Comprometer una máquina Windows completa usando Metasploit (ms17_010 u otro exploit SMB) y confirmar acceso con meterpreter.",
+      title: "Explotación Samba/UnrealIRCD (mismo flujo que un box Windows)",
+      objective: "Comprometer Metasploitable 2 por un segundo vector (Samba usermap o UnrealIRCD) y confirmar shell con whoami.",
       durationMin: 50,
       type: "practice",
-      theoryEs: "Sin teoría nueva. Aplicación pura contra un target Windows, reforzando el flujo de Metasploit de la Semana 3.",
+      theoryEs:
+        "Sin Windows pirata. Practicas el mismo flujo Metasploit (search/use/set/exploit) contra Samba (unix/samba/usermap_script) o UnrealIRCD. Si más adelante construyes Metasploitable 3, ahí sí pruebas EternalBlue.",
       practiceSteps: [
-        "Nmap completo del target Windows (busca puerto 445 y su versión SMB)",
-        "Verifica si es vulnerable a EternalBlue: nmap --script smb-vuln-ms17-010 -p445 <IP>",
-        "Si aplica: msfconsole -> search eternalblue -> use -> show options -> set -> exploit",
-        "Confirma con sysinfo y getuid dentro de meterpreter",
-        "Documenta el flujo completo",
+        "Nmap -sV -p445,6667 <IP MS2>",
+        "search usermap_script (o search unreal_ircd) en msfconsole",
+        "show options → set RHOSTS → exploit. Confirma whoami",
+        "Documenta el flujo. No hace falta hashdump SAM (es Linux)",
       ],
-      subtopics: ["exploit-windows"],
+      subtopics: ["exploit-windows", "exploit-linux"],
       resources: [
-        { label: "TryHackMe — Blue", url: "https://tryhackme.com/room/blue", platform: "TryHackMe" },
+        { label: "Rapid7 — Metasploitable 2 exploitability guide", url: "https://docs.rapid7.com/metasploit/metasploitable-2-exploitability-guide/", platform: "Docs" },
       ],
       closingChecklist: [
-        "Comprometí una máquina Windows de principio a fin sin ver walkthrough",
-        "Confirmé acceso con sysinfo/getuid dentro de meterpreter",
+        "Comprometí MS2 por un segundo servicio distinto a vsftpd",
+        "Confirmé acceso con whoami / sysinfo",
       ],
     },
     {
@@ -193,7 +194,7 @@ export const month1Week4: StudyWeek = {
       closingChecklist: [
         "Aprobé el skill-check final de Mes 1 con 70% o más",
         "Cerré ambos huecos declarados: Metasploit y confusión Gobuster/Hydra/enum4linux",
-        "Comprometí al menos 1 máquina Linux y 1 Windows de principio a fin sin walkthrough",
+        "Comprometí al menos 2 vectores en Metasploitable 2 (o Kioptrix) de principio a fin sin walkthrough",
         "Registré mis horas reales de estudio de este mes en la sección Progreso",
       ],
     },

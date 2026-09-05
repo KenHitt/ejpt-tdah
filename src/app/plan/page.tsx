@@ -54,7 +54,12 @@ export default function PlanPage() {
                   <div key={week.id} className="rounded-lg border border-slate-800 bg-slate-900/30 p-4">
                     <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
                       <h3 className="font-semibold text-emerald-400">
-                        {week.title} <span className="text-slate-500">(semana global {gWeek})</span>
+                        {week.title}{" "}
+                        {gWeek > 0 ? (
+                          <span className="text-slate-500">(semana global {gWeek})</span>
+                        ) : (
+                          <span className="text-slate-500">(laboratorio, no cuenta en el calendario de examen)</span>
+                        )}
                       </h3>
                     </div>
                     <p className="mb-3 text-sm text-slate-400">{week.goal}</p>

@@ -30,7 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <Navbar />
           <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">{children}</main>
           <footer className="border-t border-slate-800 px-4 py-4 text-center text-xs text-slate-500">
-            Objetivo fijo: aprobar el eJPT en 3 meses, al primer intento. Sin excepciones.
+            Objetivo fijo: eJPT en 3 meses, primer intento. Kali = host OS. VirtualBox = victims only.
           </footer>
         </ProgressProvider>
       </body>

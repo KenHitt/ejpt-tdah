@@ -14,6 +14,7 @@ export default function DashboardPage() {
   const nextBlock = useMemo(() => getAllBlocks().find((b) => state.blockStatus[b.id] !== "completed"), [state.blockStatus]);
   const currentGlobalWeek = computeCurrentGlobalWeek(state.blockStatus);
   const diagnosis = diagnosePace(state.sessions, state.planStartedAt);
+  const labDone = ["m0-w0-b1", "m0-w0-b2"].every((id) => state.blockStatus[id] === "completed");
 
   const [daysLeft, setDaysLeft] = useState(PLAN_TOTAL_DAYS);
   useEffect(() => {
@@ -31,98 +32,109 @@ export default function DashboardPage() {
   const criticalRisks = Object.values(state.failures).filter((f) => f.status === "critical-risk");
 
   return (
-    <div className="space-y-8">
-      <div className="rounded-xl border border-emerald-800/50 bg-gradient-to-br from-emerald-500/10 to-transparent p-6">
-        <h1 className="text-2xl font-bold text-white">Objetivo: eJPT aprobado en 3 meses, al primer intento</h1>
-        <p className="mt-1 text-sm text-slate-300">Compromiso fijo, no meta flexible. Semana global actual: {currentGlobalWeek}/12.</p>
+    <div className="space-y-6">
+      <p className="text-sm">
+        <Link href="/como-usar" className="font-mono text-emerald-400 underline">
+          First time here? Read HOW THIS SITE WORKS (2 min) →
+        </Link>
+      </p>
 
-        {!state.planStartedAt ? (
+      <div className="rounded-xl border border-emerald-800/50 bg-gradient-to-br from-emerald-500/10 to-transparent p-5">
+        <p className="font-mono text-xs text-emerald-400">TODAY · one block · then stop</p>
+        <h1 className="mt-1 text-2xl font-bold text-white">Haz UNA cosa (45–50 min). Cierra la web.</h1>
+        <p className="mt-2 text-sm text-slate-400">
+          Kali = SO de este PC. VirtualBox = solo las víctimas. El examen eJPT está en inglés: cada bloque muestra ES + EN.
+        </p>
+        {state.planStartedAt ? (
+          <p className="mt-2 font-mono text-emerald-400">
+            {daysLeft}/90 days left · exam-week {currentGlobalWeek}/12 · {completedCount}/{TOTAL_BLOCKS} blocks
+          </p>
+        ) : (
           <button
             onClick={ensurePlanStarted}
-            className="mt-4 rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500"
+            className="mt-3 rounded-md bg-slate-800 px-3 py-1.5 text-sm text-slate-200 hover:bg-slate-700"
           >
-            Marcar HOY como el día 1 de mi plan de 3 meses
+            Start 90-day clock / arrancar reloj 90 días
           </button>
-        ) : (
-          <p className="mt-3 font-mono text-lg text-emerald-400">
-            {daysLeft} días restantes de 90 · empezaste el {new Date(state.planStartedAt).toLocaleDateString("es-ES")}
+        )}
+      </div>
+
+      {!labDone && (
+        <div className="rounded-lg border border-amber-700/50 bg-amber-500/5 p-4 text-sm text-amber-100">
+          <p className="font-semibold">Todavía no hay lab → no abras Nmap del Mes 1.</p>
+          <p className="mt-1 text-amber-200/80">
+            Orden: vboxnet0 → import Metasploitable 2 → ping desde Kali host.{" "}
+            <Link href="/plan/m0-w0-b1" className="underline">
+              Bloque 1 del lab ahora →
+            </Link>
           </p>
+        </div>
+      )}
+
+      <div className="rounded-lg border-2 border-emerald-600 bg-slate-900 p-5">
+        <p className="text-xs font-semibold uppercase tracking-wide text-emerald-400">Do this now / Siguiente (único botón)</p>
+        {nextBlock ? (
+          <>
+            <p className="mt-2 text-xl font-bold text-white">{nextBlock.title}</p>
+            {nextBlock.titleEn && <p className="font-mono text-sm text-emerald-400">{nextBlock.titleEn}</p>}
+            <p className="mt-1 text-sm text-slate-300">{nextBlock.objective}</p>
+            {nextBlock.objectiveEn && <p className="mt-1 font-mono text-xs text-emerald-300">{nextBlock.objectiveEn}</p>}
+            <Link
+              href={`/plan/${nextBlock.id}`}
+              className="mt-4 inline-block rounded-md bg-emerald-600 px-5 py-3 text-base font-semibold text-white hover:bg-emerald-500"
+            >
+              Start {nextBlock.durationMin} min block →
+            </Link>
+          </>
+        ) : (
+          <p className="mt-2 text-emerald-400">Plan completo. Toca simulacro final y examen INE.</p>
         )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <MiniStat label="Bloques completados" value={`${completedCount} / ${TOTAL_BLOCKS}`} />
-        <MiniStat label="Déficit horas (vs. plan)" value={`${diagnosis.deficitHours} h`} danger={!diagnosis.onTrack} />
-        <MiniStat label="Puntos críticos de riesgo" value={String(criticalRisks.length)} danger={criticalRisks.length > 0} />
+        <MiniStat label="Blocks done" value={`${completedCount}/${TOTAL_BLOCKS}`} />
+        <MiniStat label="Hours deficit" value={`${diagnosis.deficitHours} h`} danger={!diagnosis.onTrack} />
+        <MiniStat label="Critical topics" value={String(criticalRisks.length)} danger={criticalRisks.length > 0} />
       </div>
 
       {!diagnosis.onTrack && state.planStartedAt && (
-        <div className="rounded-lg border border-red-700 bg-red-500/10 p-4 text-sm text-red-200">
-          Diagnóstico honesto: vas {diagnosis.deficitHours}h por debajo de lo esperado.{" "}
-          <Link href="/progreso" className="font-semibold underline">
-            Ver el detalle y ajustar →
+        <p className="text-sm text-red-300">
+          Déficit {diagnosis.deficitHours}h.{" "}
+          <Link href="/progreso" className="underline">
+            Números en Horas →
           </Link>
-        </div>
+        </p>
       )}
 
       {criticalRisks.length > 0 && (
-        <div className="rounded-lg border-2 border-red-600 bg-red-500/10 p-4 text-sm text-red-200">
-          Tienes {criticalRisks.length} sub-tema(s) marcados como punto crítico de riesgo (fallaron 2 veces tras el repaso).{" "}
-          <Link href="/progreso" className="font-semibold underline">
-            Revisar ahora →
+        <p className="text-sm text-red-300">
+          Subtema crítico (falló 2 veces). No avances.{" "}
+          <Link href="/progreso" className="underline">
+            Ver cuál →
           </Link>
-        </div>
+        </p>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-5">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Siguiente bloque</h2>
-          {nextBlock ? (
-            <>
-              <p className="mt-2 text-lg font-semibold text-white">{nextBlock.title}</p>
-              <p className="mt-1 text-sm text-slate-400">{nextBlock.objective}</p>
-              <Link
-                href={`/plan/${nextBlock.id}`}
-                className="mt-3 inline-block rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500"
-              >
-                Empezar bloque ({nextBlock.durationMin} min) →
-              </Link>
-            </>
-          ) : (
-            <p className="mt-2 text-emerald-400">¡Completaste todos los bloques del plan! Toca repasar y presentar el examen.</p>
-          )}
-        </div>
-
-        <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-5">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Tus huecos declarados</h2>
-          <ul className="mt-2 space-y-1.5 text-sm">
-            {KNOWN_GAPS.map((g) => {
-              const failure = state.failures[g.id];
-              const done =
-                getAllBlocks()
-                  .filter((b) => b.subtopics.includes(g.id))
-                  .every((b) => state.blockStatus[b.id] === "completed") && failure?.status !== "critical-risk";
-              return (
-                <li key={g.id} className="flex items-center justify-between gap-2">
-                  <span className="text-slate-300">{g.nameEs}</span>
-                  <span className={done ? "text-emerald-400" : "text-amber-400"}>{done ? "✔ cerrado" : "pendiente"}</span>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      </div>
-
-      <div className="flex flex-wrap gap-3">
-        <Link href="/plan" className="rounded-md border border-slate-700 px-4 py-2 text-sm text-slate-200 hover:border-emerald-600">
-          Ver plan completo
-        </Link>
-        <Link href="/simulacro" className="rounded-md border border-slate-700 px-4 py-2 text-sm text-slate-200 hover:border-emerald-600">
-          Ir a simulacros
-        </Link>
-        <Link href="/glosario" className="rounded-md border border-slate-700 px-4 py-2 text-sm text-slate-200 hover:border-emerald-600">
-          Glosario bilingüe
-        </Link>
+      <div className="rounded-lg border border-slate-800 p-4">
+        <p className="text-xs font-semibold uppercase text-slate-400">Your gaps / tus huecos</p>
+        <ul className="mt-2 space-y-1 text-sm">
+          {KNOWN_GAPS.map((g) => {
+            const failure = state.failures[g.id];
+            const done =
+              getAllBlocks()
+                .filter((b) => b.subtopics.includes(g.id))
+                .every((b) => state.blockStatus[b.id] === "completed") && failure?.status !== "critical-risk";
+            return (
+              <li key={g.id} className="flex justify-between gap-2">
+                <span>
+                  <span className="text-slate-200">{g.nameEs}</span>
+                  <span className="ml-2 font-mono text-xs text-emerald-500">{g.nameEn}</span>
+                </span>
+                <span className={done ? "text-emerald-400" : "text-amber-400"}>{done ? "done" : "open"}</span>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </div>
   );

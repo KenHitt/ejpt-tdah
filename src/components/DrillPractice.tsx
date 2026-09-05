@@ -22,6 +22,7 @@ function DrillRow({ drill, index }: { drill: DrillItem; index: number }) {
         <span className="mr-1 font-mono text-emerald-400">#{index + 1}</span>
         {drill.promptEs}
       </p>
+      {drill.promptEn && <p className="mb-2 font-mono text-xs text-emerald-400">{drill.promptEn}</p>}
       <div className="flex flex-col gap-2 sm:flex-row">
         <input
           value={value}
@@ -29,14 +30,14 @@ function DrillRow({ drill, index }: { drill: DrillItem; index: number }) {
             setValue(e.target.value);
             setChecked(null);
           }}
-          placeholder="Escribe el comando aquí, de memoria..."
+          placeholder="type the exact command..."
           className="flex-1 rounded-md border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-sm text-emerald-300 placeholder:text-slate-600 focus:border-emerald-500 focus:outline-none"
         />
         <button
           onClick={verify}
           className="rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-500"
         >
-          Verificar
+          Verificar / Check
         </button>
       </div>
       {checked !== null && (

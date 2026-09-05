@@ -10,6 +10,29 @@ import { QuizQuestion } from "@/lib/types";
  * del usuario y elige aleatoriamente, para simular que el examen real no avisa qué va a preguntar.
  */
 export const QUIZ_BANK: QuizQuestion[] = [
+  {
+    id: "q-lab-1", subtopicId: "lab-vbox", type: "single", globalWeek: 1,
+    promptEn: "For a local pentest lab in VirtualBox, which network mode lets Kali attack a victim VM without exposing the victim to the Internet?",
+    promptEs: "En un lab local de VirtualBox, ¿qué modo de red deja que Kali ataque a la víctima sin exponerla a Internet?",
+    options: ["NAT only", "Host-Only (or Internal Network)", "Bridged on public Wi-Fi", "Not attached"],
+    correctAnswer: "1",
+    explanationEs: "Host-Only (o Internal) aísla el lab. NAT es para que Kali descargue paquetes, no para que las víctimas sean alcanzables.",
+  },
+  {
+    id: "q-lab-2", subtopicId: "lab-vbox", type: "single", globalWeek: 1,
+    promptEn: "Default credentials for Metasploitable 2 console login:",
+    promptEs: "Credenciales por defecto de la consola de Metasploitable 2:",
+    options: ["root/toor", "msfadmin/msfadmin", "admin/admin", "kali/kali"],
+    correctAnswer: "1",
+    explanationEs: "Usuario y password: msfadmin / msfadmin.",
+  },
+  {
+    id: "q-lab-3", subtopicId: "lab-vbox", type: "command", globalWeek: 1,
+    promptEn: "Write the Nmap host-discovery command for the typical VirtualBox Host-Only range 192.168.56.0/24.",
+    promptEs: "Escribe el host discovery Nmap para el rango típico Host-Only 192.168.56.0/24.",
+    correctAnswer: "nmap -sn 192.168.56.0/24",
+    explanationEs: "-sn descubre hosts vivos en esa red de laboratorio.",
+  },
   // ---------------- Semana 1: Nmap / Recon ----------------
   {
     id: "q-nmap-1", subtopicId: "nmap-basic", type: "single", globalWeek: 1,

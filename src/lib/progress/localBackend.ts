@@ -6,7 +6,7 @@ export function loadLocalProgress(): ProgressState {
     const raw = window.localStorage.getItem(PROGRESS_STORAGE_KEY);
     if (!raw) return EMPTY_PROGRESS;
     const parsed = JSON.parse(raw);
-    return { ...EMPTY_PROGRESS, ...parsed };
+    return { ...EMPTY_PROGRESS, ...parsed, checklists: parsed.checklists ?? {} };
   } catch {
     return EMPTY_PROGRESS;
   }
@@ -19,4 +19,35 @@ export function saveLocalProgress(state: ProgressState) {
   } catch {
     // Almacenamiento local lleno o no disponible: no bloquear la app por esto.
   }
+}
+
+function volume(s: ProgressState): number {
+  return (
+    Object.keys(s.blockStatus).length +
+    s.attempts.length +
+    s.sessions.length +
+    Object.keys(s.failures).length +
+    Object.keys(s.checklists ?? {}).length
+  );
+}
+
+/** Si la nube está vacía y el local tiene datos, no borres el avance del portátil. */
+export function mergeProgress(local: ProgressState, cloud: ProgressState | null): ProgressState {
+  if (!cloud) return local;
+  const lv = volume(local);
+  const cv = volume(cloud);
+  if (cv === 0 && lv > 0) return { ...EMPTY_PROGRESS, ...local };
+  if (lv === 0 && cv > 0) return { ...EMPTY_PROGRESS, ...cloud };
+  return {
+    ...EMPTY_PROGRESS,
+    ...cloud,
+    ...local,
+    blockStatus: { ...cloud.blockStatus, ...local.blockStatus },
+    failures: { ...cloud.failures, ...local.failures },
+    checklists: { ...(cloud.checklists ?? {}), ...(local.checklists ?? {}) },
+    attempts: local.attempts.length >= cloud.attempts.length ? local.attempts : cloud.attempts,
+    sessions: local.sessions.length >= cloud.sessions.length ? local.sessions : cloud.sessions,
+    planStartedAt: local.planStartedAt ?? cloud.planStartedAt,
+    lastFailedFullSimulacroAt: local.lastFailedFullSimulacroAt ?? cloud.lastFailedFullSimulacroAt,
+  };
 }

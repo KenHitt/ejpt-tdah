@@ -2,7 +2,7 @@ import Link from "next/link";
 import { GradedAttempt } from "@/lib/simulacro";
 import { QuizQuestion } from "@/lib/types";
 import { getSubtopic } from "@/content/subtopics";
-import { PASS_THRESHOLD_PERCENT } from "@/lib/simulacro";
+import { bandLabelEs, scoreBand } from "@/lib/trainer/bands";
 
 interface QuizResultProps {
   graded: GradedAttempt;
@@ -23,8 +23,15 @@ export function QuizResult({ graded, questions, isFullSimulacro, cooldownBlocked
       >
         <p className="text-3xl font-bold">{graded.score}%</p>
         <p className={`mt-1 text-sm font-semibold ${graded.passed ? "text-emerald-400" : "text-red-400"}`}>
-          {graded.passed ? "APROBADO" : "NO APROBADO"} — umbral: {PASS_THRESHOLD_PERCENT}%
+          {graded.passed ? bandLabelEs(graded.score) : "Por debajo de Learning Pass"}
         </p>
+        <p className="mt-2 text-xs text-slate-400">
+          70% = Learning Pass (puedes continuar; las lagunas se registran). 85% = Mastered (interno). 90% = Critical
+          Skill. No es el criterio oficial de INE.
+        </p>
+        {scoreBand(graded.score) === "learning-pass" && (
+          <p className="mt-2 text-xs text-amber-300">Learning Pass ≠ dominio. Revisa los subtemas fallados abajo.</p>
+        )}
         {!graded.passed && isFullSimulacro && (
           <p className="mt-2 text-xs text-amber-300">
             Regla fija: no tomes otro simulacro completo hoy. Haz el repaso dirigido de abajo y vuelve en tu próxima sesión de estudio.

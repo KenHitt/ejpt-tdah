@@ -1,9 +1,12 @@
 import { QuizQuestion } from "@/lib/types";
 import { questionsAvailableAtWeek, questionsForSubtopic, QUIZ_BANK } from "@/content/quizbank";
+import { LEARNING_PASS_PERCENT } from "@/lib/trainer/bands";
 
 export const FULL_SIMULACRO_QUESTION_COUNT = 15;
 export const FULL_SIMULACRO_DURATION_SEC = 20 * 60; // 20 minutos
-export const PASS_THRESHOLD_PERCENT = 70;
+export { LEARNING_PASS_PERCENT, MASTERED_PERCENT, CRITICAL_SKILL_PERCENT } from "@/lib/trainer/bands";
+/** Alias: Learning Pass interno, no dominio ni criterio INE. */
+export const PASS_THRESHOLD_PERCENT = LEARNING_PASS_PERCENT;
 
 function shuffle<T>(arr: T[]): T[] {
   const copy = [...arr];
@@ -80,7 +83,7 @@ export function gradeAttempt(questions: QuizQuestion[], answers: Record<string, 
 
   const correctCount = results.filter((r) => r.correct).length;
   const score = questions.length > 0 ? Math.round((correctCount / questions.length) * 100) : 0;
-  const passed = score >= PASS_THRESHOLD_PERCENT;
+  const passed = score >= LEARNING_PASS_PERCENT;
   const failedSubtopics = Array.from(new Set(results.filter((r) => !r.correct).map((r) => r.subtopicId)));
 
   return { score, passed, results, failedSubtopics };

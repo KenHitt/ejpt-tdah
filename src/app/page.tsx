@@ -7,6 +7,9 @@ import { KNOWN_GAPS } from "@/content/subtopics";
 import { useProgress } from "@/lib/progress/context";
 import { diagnosePace, PLAN_TOTAL_DAYS } from "@/lib/regime";
 import { listWeaknesses, pickNextPractice } from "@/lib/trainer/adaptive";
+import { competencyMessage, skillPercents } from "@/lib/trainer/competency";
+import { evaluateReadiness } from "@/lib/trainer/readiness";
+import { domainScores } from "@/lib/trainer/competency";
 
 export default function DashboardPage() {
   const { state, ensurePlanStarted } = useProgress();
@@ -14,6 +17,9 @@ export default function DashboardPage() {
   const completedCount = Object.values(state.blockStatus).filter((s) => s === "completed").length;
   const next = useMemo(() => pickNextPractice(state), [state]);
   const weaknesses = useMemo(() => listWeaknesses(state), [state]);
+  const skills = useMemo(() => skillPercents(state), [state]);
+  const readiness = useMemo(() => evaluateReadiness(state), [state]);
+  const domains = useMemo(() => domainScores(state), [state]);
   const currentGlobalWeek = computeCurrentGlobalWeek(state.blockStatus);
   const diagnosis = diagnosePace(state.sessions, state.planStartedAt);
   const labDone = ["m0-w0-b1", "m0-w0-b2"].every((id) => state.blockStatus[id] === "completed");
@@ -117,6 +123,57 @@ export default function DashboardPage() {
         </Link>
         <p className="mt-2 text-xs text-slate-500">{next.durationHint}</p>
       </div>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <MiniStat label="Command Memory" value={skills.recall === null ? "—" : `${skills.recall}%`} />
+        <MiniStat
+          label="Reasoning"
+          value={skills.reasoning === null ? "—" : `${skills.reasoning}%`}
+          danger={skills.reasoning !== null && skills.reasoning < 80}
+        />
+        <MiniStat
+          label="Full Machines"
+          value={`${skills.machinesDone}/${skills.machinesTotal}`}
+          danger={skills.machinesDone < 3}
+        />
+      </div>
+      <p className="text-sm text-slate-400">{competencyMessage(state)}</p>
+
+      <div className="rounded-lg border border-slate-800 p-4 text-sm">
+        <p className="text-xs font-semibold uppercase text-slate-400">Readiness (interno, no INE)</p>
+        <p className="mt-1 text-xs text-slate-500">{readiness.disclaimer}</p>
+        <p className={`mt-2 font-semibold ${readiness.ready ? "text-emerald-400" : "text-amber-300"}`}>
+          {readiness.ready ? "READINESS: READY (criterio interno)" : "READINESS: NO READY"}
+        </p>
+        <ul className="mt-2 space-y-1 font-mono text-xs">
+          {readiness.rows.slice(0, 12).map((r) => (
+            <li key={r.id} className={r.ok ? "text-emerald-400" : "text-red-300"}>
+              {r.ok ? "✓" : "✗"} {r.labelEs}: {r.detail}
+            </li>
+          ))}
+        </ul>
+        {!readiness.ready && readiness.blockers[0] && (
+          <p className="mt-2 text-amber-200">Bloqueo: {readiness.blockers[0].labelEs}</p>
+        )}
+      </div>
+
+      {domains.filter((d) => d.score !== null).length > 0 && (
+        <div className="rounded-lg border border-slate-800 p-4">
+          <p className="text-xs font-semibold uppercase text-slate-400">Your gaps (dominios)</p>
+          <ul className="mt-2 space-y-1 font-mono text-sm">
+            {domains
+              .filter((d) => d.score !== null)
+              .map((d) => (
+                <li key={d.id} className="flex justify-between gap-2">
+                  <span className="text-slate-200">{d.labelEs}</span>
+                  <span className={d.critical ? "text-red-400" : d.weak ? "text-amber-400" : "text-emerald-400"}>
+                    {d.score}%{d.critical ? " ← critical" : d.weak ? " ← weak" : ""}
+                  </span>
+                </li>
+              ))}
+          </ul>
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-3">
         <MiniStat label="Blocks done" value={`${completedCount}/${TOTAL_BLOCKS}`} />

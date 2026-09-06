@@ -10,7 +10,13 @@ export function loadLocalProgress(): ProgressState {
       ...EMPTY_PROGRESS,
       ...parsed,
       checklists: parsed.checklists ?? {},
-      trainer: parsed.trainer ?? EMPTY_PROGRESS.trainer,
+      trainer: parsed.trainer
+        ? {
+            ...EMPTY_PROGRESS.trainer,
+            ...parsed.trainer,
+            reasoningRuns: parsed.trainer.reasoningRuns ?? [],
+          }
+        : EMPTY_PROGRESS.trainer,
     };
   } catch {
     return EMPTY_PROGRESS;
@@ -54,6 +60,7 @@ export function mergeProgress(local: ProgressState, cloud: ProgressState | null)
       attempts: [...(cloud.trainer?.attempts ?? []), ...(local.trainer?.attempts ?? [])].slice(-500),
       hintLevelByKey: { ...(cloud.trainer?.hintLevelByKey ?? {}), ...(local.trainer?.hintLevelByKey ?? {}) },
       stuckNotes: [...(cloud.trainer?.stuckNotes ?? []), ...(local.trainer?.stuckNotes ?? [])].slice(-100),
+      reasoningRuns: [...(cloud.trainer?.reasoningRuns ?? []), ...(local.trainer?.reasoningRuns ?? [])].slice(-40),
     },
     attempts: local.attempts.length >= cloud.attempts.length ? local.attempts : cloud.attempts,
     sessions: local.sessions.length >= cloud.sessions.length ? local.sessions : cloud.sessions,

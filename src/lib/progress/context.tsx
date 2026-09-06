@@ -10,7 +10,7 @@ import {
   useState,
 } from "react";
 import { SimulacroAttempt, StudySessionLog, SubtopicFailure } from "@/lib/types";
-import { StuckNote, TrainerAttempt } from "@/lib/trainer/types";
+import { ReasoningRun, StuckNote, TrainerAttempt } from "@/lib/trainer/types";
 import { useSupabaseSession } from "@/lib/supabase/useSession";
 import { EMPTY_PROGRESS, ProgressState } from "./state";
 import { loadLocalProgress, saveLocalProgress, mergeProgress } from "./localBackend";
@@ -32,6 +32,7 @@ interface ProgressContextValue {
   toggleChecklistItem: (blockId: string, index: number, checked: boolean) => void;
   importState: (next: ProgressState) => void;
   recordTrainerAttempt: (attempt: Omit<TrainerAttempt, "id" | "at">) => void;
+  recordReasoningRun: (run: Omit<ReasoningRun, "id" | "at">) => void;
   recordHintLevel: (key: string, level: number) => void;
   recordStuck: (note: Omit<StuckNote, "id" | "at">) => void;
 }
@@ -212,6 +213,19 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const recordReasoningRun = useCallback((run: Omit<ReasoningRun, "id" | "at">) => {
+    setState((prev) => {
+      const t = prev.trainer ?? EMPTY_PROGRESS.trainer;
+      return {
+        ...prev,
+        trainer: {
+          ...t,
+          reasoningRuns: [...(t.reasoningRuns ?? []), { ...run, id: `rr:${Date.now()}`, at: new Date().toISOString() }].slice(-40),
+        },
+      };
+    });
+  }, []);
+
   const recordStuck = useCallback((note: Omit<StuckNote, "id" | "at">) => {
     setState((prev) => {
       const t = prev.trainer ?? EMPTY_PROGRESS.trainer;
@@ -247,6 +261,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       recordTrainerAttempt,
       recordHintLevel,
       recordStuck,
+      recordReasoningRun,
     }),
     [
       state,
@@ -266,6 +281,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       recordTrainerAttempt,
       recordHintLevel,
       recordStuck,
+      recordReasoningRun,
     ]
   );
 

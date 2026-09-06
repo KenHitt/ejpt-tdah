@@ -92,6 +92,49 @@ export function listWeaknesses(state: ProgressState): WeakItem[] {
       severity: "review",
     });
   }
+  const attempts = state.trainer?.attempts ?? [];
+  const kindFails = { memory: 0, reasoning: 0, technical: 0 };
+  for (const a of attempts) {
+    if (!a.correct && a.failKind) kindFails[a.failKind] += 1;
+  }
+  if (kindFails.reasoning >= 3) {
+    items.push({
+      id: "kind:reasoning",
+      labelEs: "Practical reasoning",
+      whyEs: `${kindFails.reasoning} fallos de decisión (comando válido ≠ siguiente paso).`,
+      href: "/simulacro/reasoning",
+      severity: "open",
+    });
+  }
+  if (kindFails.memory >= 3) {
+    items.push({
+      id: "kind:memory",
+      labelEs: "Command memory",
+      whyEs: `${kindFails.memory} fallos de sintaxis.`,
+      href: "/memory",
+      severity: "review",
+    });
+  }
+  if (kindFails.technical >= 2) {
+    items.push({
+      id: "kind:technical",
+      labelEs: "Fail técnico (lab/config)",
+      whyEs: `${kindFails.technical} fallos de configuración/red, no de memorizar el flag.`,
+      href: "/focus/m0-w0-b1",
+      severity: "open",
+    });
+  }
+  const hints = Object.values(state.trainer?.hintLevelByKey ?? {}).reduce((n, v) => n + v, 0);
+  if (hints >= 8) {
+    items.push({
+      id: "hints",
+      labelEs: "Demasiadas pistas",
+      whyEs: `Nivel de pistas acumulado ${hints}. El examen no las da.`,
+      href: "/simulacro/reasoning",
+      severity: "review",
+    });
+  }
+
   const order = { critical: 0, open: 1, review: 2 };
   return items.sort((a, b) => order[a.severity] - order[b.severity]).slice(0, 8);
 }
@@ -193,7 +236,7 @@ export function pickNextPractice(state: ProgressState, now = Date.now()): NextPr
     kind: "exam",
     href: "/simulacro",
     titleEs: "Simulacro / skill-check",
-    reasonEs: "Plan de bloques completo. No es ‘aprobarás sí o sí’: mide el 70% con reloj.",
+    reasonEs: "Plan de bloques completo. Simulacro = Learning Pass 70% (no dominio). Reasoning Mode para metodología.",
     ctaEs: "SIMULACRO",
     durationHint: "20 min · 15 preguntas",
   };

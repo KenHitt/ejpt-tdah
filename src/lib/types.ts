@@ -44,12 +44,67 @@ export interface DrillItem {
   howToEs?: string;
 }
 
+export type FailKind = "memory" | "reasoning" | "technical";
+export type SkillKind = "recall" | "reasoning" | "machine";
+
+export type GuidedKind = "concept" | "action" | "result" | "question" | "decision" | "checkpoint" | "trouble";
+
+export interface ChoiceOption {
+  id: string;
+  textEs: string;
+  ok?: boolean;
+  whyWrongEs?: string;
+  whyRightEs?: string;
+}
+
+export interface PromptCheck {
+  id: string;
+  promptEs: string;
+  promptEn?: string;
+  keywords?: string[];
+  /** Cualquier grupo completo vale (OR de ANDs). */
+  keywordAny?: string[][];
+  /** Validación especial: ipv4 | ipv4-lab | cidr | iface */
+  shape?: "ipv4" | "ipv4-lab" | "cidr" | "iface";
+  choices?: ChoiceOption[];
+  justifyPromptEs?: string;
+  justifyKeywords?: string[];
+  explanationEs: string;
+  failKind: FailKind;
+  subtopicId: string;
+  domain?: string;
+  critical?: boolean;
+}
+
+export interface GuidedStep {
+  id: string;
+  kind: GuidedKind;
+  titleEs: string;
+  bodyEs: string;
+  /** Cierra cada concepto. */
+  ejptForEs?: string;
+  diagram?: string;
+  lookForEs?: string;
+  commandShow?: string;
+  troubleId?: string;
+  check?: PromptCheck;
+}
+
+export interface DecisionScenario {
+  id: string;
+  titleEs: string;
+  setupEs: string;
+  output?: string;
+  checks: PromptCheck[];
+}
+
 export interface WorkshopSection {
   id: string;
   titleEs: string;
   titleEn?: string;
   bodyEs: string;
   diagram?: string;
+  ejptForEs?: string;
   /** Contenido útil pero no es tu setup ni el camino mínimo eJPT. */
   optional?: boolean;
 }
@@ -94,6 +149,10 @@ export interface StudyBlock {
   /** Taller pedagógico (qué / por qué / cuándo). Focus Mode no lo vuelca entero. */
   workshop?: WorkshopSection[];
   troubleshooting?: TroubleItem[];
+  /** Laboratorio guiado: una misión por pantalla (Focus). */
+  guidedLab?: GuidedStep[];
+  /** Interpretación / siguiente movimiento / attack path. */
+  decisionDrills?: DecisionScenario[];
 }
 
 export interface StudyWeek {

@@ -39,6 +39,9 @@ export function WorkshopView({ sections }: { sections: WorkshopSection[] }) {
                     {p}
                   </p>
                 ))}
+                {s.ejptForEs && (
+                  <p className="rounded-md border border-sky-800/40 bg-sky-500/5 p-2 text-sky-100">{s.ejptForEs}</p>
+                )}
                 {s.diagram && (
                   <pre className="overflow-x-auto rounded-md border border-emerald-900/40 bg-slate-950 p-3 font-mono text-[11px] leading-snug text-emerald-200">
                     {s.diagram}

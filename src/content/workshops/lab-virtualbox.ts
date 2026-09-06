@@ -38,6 +38,8 @@ export const LAB_WORKSHOP: WorkshopSection[] = [
     bodyEs:
       "Un laboratorio de pentesting es una red pequeña que TÚ controlas, para atacar máquinas que están hechas para ser atacadas. No es tu WiFi de casa. No es un servidor de un tercero. Hacemos esto porque el eJPT (y cualquier trabajo de Red Team) exige practicar reconocimiento, enumeración y explotación con consecuencias reales de red — sin cometer un delito.\n\nVirtualización: un programa (el hipervisor) finge un ordenador dentro de otro. La máquina virtual (guest) cree que tiene CPU, disco y NIC propias. El host es el SO que ya está en el disco.\n\nVirtualBox es el hipervisor que usas para las VÍCTIMAS. Kali Linux es tu sistema atacante: ya está instalado como SO principal. Metasploitable 2 es un Ubuntu viejo diseñado para romperse (FTP, Samba, etc.).\n\nAtacante = donde TÚ tecleas nmap y msfconsole (Kali host). Víctima = guest que recibe el tráfico (MS2, Kioptrix). Red virtual = un switch ficticio que VirtualBox crea en el host (vboxnet0). Aislamiento = esa red no enruta hacia Internet ni hacia tu LAN doméstica si usas Host-Only bien configurado.",
     diagram: LAB_HOST_DIAGRAM,
+    ejptForEs:
+      "¿Para qué lo necesitas en eJPT? El examen te da un rango autorizado. El hábito es el mismo: un lab que TÚ controlas, no tu WiFi.",
   },
   {
     id: "why",
@@ -45,6 +47,8 @@ export const LAB_WORKSHOP: WorkshopSection[] = [
     titleEn: "Why it matters",
     bodyEs:
       "Si no entiendes LHOST vs RHOSTS, Metasploit 'funciona en el video' y falla en tu lab: la reverse shell intenta volver a la IP equivocada. Si pones la víctima en Bridged, una máquina deliberadamente vulnerable queda en la misma LAN que tu router, móvil e impresora. Host-Only existe para que el ataque sea local, repetible y legal.\n\nEn el examen eJPT te dan un rango y un objetivo. El hábito es el mismo: ¿cuál es MI IP en esa red (LHOST)? ¿cuál es LA SUYA (RHOSTS)? ¿puedo hacer ping antes de escanear?",
+    ejptForEs:
+      "¿Para qué lo necesitas en eJPT? LHOST vs RHOSTS aparece en Metasploit y en reverse shells. Si no sabes tu IP de lab, el módulo 'funciona en el video' y falla aquí.",
   },
   {
     id: "prereq",
@@ -67,6 +71,8 @@ Host-Only:
            └── vboxnet0 (red virtual)
                  ├── Kali host (LHOST)
                  └── Victim guest (RHOSTS)`,
+    ejptForEs:
+      "¿Para qué lo necesitas en eJPT? NAT oculta al objetivo; Bridged expone una VM vulnerable en casa; Host-Only replica un rango de lab aislado.",
   },
   {
     id: "vboxnet",
@@ -81,6 +87,8 @@ Host-Only:
     titleEn: "Reading ip addr and ip route",
     bodyEs:
       "Comando: ip addr   (o ip a). Busca el bloque vboxnet0.\n\nInterfaz: el nombre (vboxnet0). Estado: UP = el enlace virtual está activo; DOWN = Host-Only no creado o deshabilitado. inet 192.168.56.1/24 = tu IP y la máscara CIDR. Si no hay inet, la interfaz existe pero no tiene IPv4: revisa el Network Manager de VirtualBox (IPv4 Address / Mask).\n\nComando: ip route. Una línea tipo 192.168.56.0/24 dev vboxnet0 significa: esa red se alcanza por vboxnet0, no por el WiFi. default via … dev wlan0 es Internet del host. Las víctimas NO deben usar esa default para 'salir'.\n\nWHAT: mapa de IPs y rutas del host.\nWHY: sin esto no sabes LHOST ni si estás en la misma subnet que la VM.\nWHEN: cada vez que el lab 'no hace ping'.\nOUTPUT: interfaz, UP/DOWN, IP/CIDR, ruta de 192.168.56.0/24.\nNEXT: ping a la víctima cuando exista; si no existe, bloque 2.",
+    ejptForEs:
+      "¿Para qué lo necesitas en eJPT? LHOST sale de `ip addr` en vboxnet, no de un tutorial. `ip route` te dice el CIDR real para nmap -sn.",
   },
   {
     id: "install",

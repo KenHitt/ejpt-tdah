@@ -50,7 +50,15 @@ export function RecallCard({
         : mode === "flag"
           ? flagMatch(value, expected)
           : answersMatch(value, expected);
-    recordTrainerAttempt({ exerciseId, correct: ok, hintsUsed: 0 });
+    recordTrainerAttempt({
+      exerciseId,
+      correct: ok,
+      hintsUsed: 0,
+      failKind: ok ? undefined : "memory",
+      skillKind: "recall",
+      retries: fails,
+      domain: subtopicId,
+    });
     if (ok) {
       setPhase("passed");
       onPassed?.();

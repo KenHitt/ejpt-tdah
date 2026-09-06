@@ -6,6 +6,7 @@ import {
   NMAP_TROUBLESHOOTING,
   NMAP_TYPES_WORKSHOP,
 } from "@/content/workshops/nmap-fundamentals";
+import { WEEK1_DECISION_DRILLS } from "@/content/decision-drills";
 
 /**
  * MES 1 / SEMANA 1 — Recon activo y Nmap a fondo
@@ -43,6 +44,7 @@ export const month1Week1: StudyWeek = {
         "Abre scan_full.nmap (less). Anota 3 líneas PORT/STATE/SERVICE. Recall sin apuntes.",
       ],
       workshop: NMAP_DISCOVERY_WORKSHOP,
+      decisionDrills: WEEK1_DECISION_DRILLS,
       troubleshooting: NMAP_TROUBLESHOOTING.filter((t) =>
         ["wrong-range", "default-1000", "from-guest"].includes(t.id)
       ),

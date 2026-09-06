@@ -17,15 +17,26 @@ export default function SimulacroHubPage() {
       <div>
         <h1 className="text-2xl font-bold text-white">Simulacros y Skill-checks</h1>
         <p className="mt-1 text-sm text-slate-400">
-          Skill-checks cortos al cierre de cada semana. Simulacros completos (15 preguntas, 20 min, 70%) desde Mes 2 en adelante,
-          cronometrados y acumulativos.
+          Skill-checks y simulacros: 70% es Learning Pass (seguir con lagunas), no dominio. Mastered interno = 85%.
+          Exam Reasoning = metodología sin comandos.
         </p>
       </div>
+
+      <section className="rounded-lg border border-purple-800/50 bg-purple-500/5 p-5">
+        <h2 className="text-lg font-semibold text-white">Exam Reasoning Mode</h2>
+        <p className="mt-1 text-sm text-slate-400">
+          No comandos, no pistas, no te dicen la herramienta. Explicas metodología. Criterio interno, no INE.
+        </p>
+        <Link href="/simulacro/reasoning" className="mt-3 inline-block rounded-md bg-purple-700 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-600">
+          Abrir Reasoning Mode →
+        </Link>
+      </section>
 
       <section className="rounded-lg border border-red-800/50 bg-red-500/5 p-5">
         <h2 className="text-lg font-semibold text-white">Simulacro Completo #{nextFullNumber}</h2>
         <p className="mt-1 text-sm text-slate-400">
-          15 preguntas aleatorias de TODO lo cubierto hasta tu semana global actual ({currentGlobalWeek}). 20 minutos. Umbral 70%.
+          15 preguntas aleatorias de TODO lo cubierto hasta tu semana global actual ({currentGlobalWeek}). 20 minutos. 70% =
+          Learning Pass (no dominio).
         </p>
         {!canFull && (
           <p className="mt-2 text-sm text-amber-300">

@@ -54,7 +54,7 @@ export default function SkillCheckPage() {
         <h1 className="mt-2 text-2xl font-bold text-white">
           Skill-check — Semana {globalWeekIndex(week.id)}: {week.title.replace(/^Semana \d+ — /, "")}
         </h1>
-        <p className="mt-1 text-sm text-slate-400">Umbral de aprobación: 70%. Sin tiempo límite (no es un simulacro completo).</p>
+        <p className="mt-1 text-sm text-slate-400">70% = Learning Pass. 85% = Mastered interno. Sin tiempo límite.</p>
       </div>
 
       {!graded && questions.length > 0 && (

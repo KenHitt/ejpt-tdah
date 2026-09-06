@@ -1,5 +1,7 @@
 import { StudyWeek } from "@/lib/types";
 import { LAB_TROUBLESHOOTING, LAB_WORKSHOP } from "@/content/workshops/lab-virtualbox";
+import { LAB_CHECKPOINT_GUIDED, LAB_HOSTONLY_GUIDED, LAB_TROUBLE_GUIDED } from "@/content/guided/lab-hostonly";
+import { LAB_MS2_GUIDED } from "@/content/guided/lab-ms2";
 import { LINUX_FS_WORKSHOP, LINUX_SHELL_WORKSHOP, LINUX_TROUBLESHOOTING } from "@/content/workshops/linux-fundamentals";
 import { NET_IP_WORKSHOP, NET_PORTS_WORKSHOP, NET_TROUBLESHOOTING } from "@/content/workshops/networking-fundamentals";
 
@@ -45,6 +47,7 @@ export const labWeek: StudyWeek = {
         "STOP. No importes la víctima todavía si vboxnet0 no está UP. El guest es el bloque 2.",
       ],
       workshop: LAB_WORKSHOP,
+      guidedLab: [...LAB_HOSTONLY_GUIDED, ...LAB_TROUBLE_GUIDED, ...LAB_CHECKPOINT_GUIDED],
       troubleshooting: LAB_TROUBLESHOOTING,
       subtopics: ["lab-vbox"],
       drills: [
@@ -174,14 +177,14 @@ export const labWeek: StudyWeek = {
         "Metasploitable 2 is an intentionally vulnerable Linux VM. Console login msfadmin/msfadmin. Nic 1 = Host-Only only. You will use it for scanning, SMB enum, and the vsftpd 2.3.4 exploit.",
       examPhrases: ["service version detection (-sV)", "open ports 21/tcp 445/tcp", "intentionally vulnerable"],
       practiceSteps: [
-        "Download: https://sourceforge.net/projects/metasploitable/files/Metasploitable2/ — unzip the .vmdk",
-        "VirtualBox → New → Type: Linux, Version: Ubuntu (64-bit) → Use an existing virtual hard disk file → Metasploitable.vmdk",
-        "Settings → Network → Adapter 1: Enable, Attached to: Host-Only Adapter, Name: vboxnet0. Adapter 2: disabled.",
-        "Settings → System: 1 CPU, 512 MB RAM. Start the VM. Login: msfadmin / msfadmin",
-        "Inside the GUEST: ifconfig  (or ip a). Expect something like 192.168.56.101. If empty: sudo ifconfig eth0 192.168.56.101 netmask 255.255.255.0 up",
-        "Back on KALI HOST terminal: ping -c 3 192.168.56.101   then   nmap -sV -p21,22,80,445 192.168.56.101 -oA ~/ms2_baseline",
-        "Pass: you see vsftpd on 21 and microsoft-ds or netbios-ssn/samba on 445. Write TARGET_MS2=... in ~/ejpt-lab.txt",
+        "Descarga oficial Metasploitable 2 e importa el .vmdk (Linux/Ubuntu, 512 MB).",
+        "Adapter 1 = Host-Only (mismo nombre que vboxnet en Kali). Adapter 2 off. Sin NAT/Bridged.",
+        "Arranca. Login msfadmin/msfadmin. En el GUEST: ifconfig o ip a — anota LA inet que salga (RHOST).",
+        "En Kali host: ping -c 3 <IP_VICTIMA que viste>. Si falla, no asumas apagada: adaptador, misma /24, ruta.",
+        "nmap -sn <SUBRED de ip route, no un /24 de un blog>. Identifica el guest vs tu Kali.",
+        "nmap -sV <IP_VICTIMA>. Interpreta PORT/STATE/SERVICE. Escribe TARGET_MS2= en ~/ejpt-lab.txt.",
       ],
+      guidedLab: LAB_MS2_GUIDED,
       subtopics: ["lab-vbox", "nmap-basic"],
       troubleshooting: LAB_TROUBLESHOOTING.filter((t) =>
         ["no-ping", "split-nets", "wrong-adapter", "vm-wont-start", "kali-no-ip"].includes(t.id)
@@ -195,20 +198,23 @@ export const labWeek: StudyWeek = {
         },
         {
           id: "d2",
-          promptEs: "nmap versiones en 21,22,80,445 contra 192.168.56.101",
-          promptEn: "Version scan ports 21,22,80,445 on 192.168.56.101",
-          answer: "nmap -sV -p21,22,80,445 192.168.56.101",
+          promptEs: "nmap versiones contra la IP de TU víctima (escribe el patrón; sustituye la IP).",
+          promptEn: "Version scan against YOUR target IP (pattern).",
+          answer: "nmap -sV",
+          answerKeywords: ["nmap", "-sv"],
           subtopicId: "nmap-basic",
-          explanation: "-sn no da versiones. Aquí ya tienes un host: preguntas qué servicio hay en esos puertos.",
+          explanation: "-sn no da versiones. Ya tienes un host: preguntas qué servicio hay. La IP es la que descubriste, no un ejemplo.",
+          howToEs: "Debe aparecer nmap y -sV. La IP la pones tú.",
         },
         {
           id: "d3",
-          promptEs: "Ping de 3 paquetes a 192.168.56.101 (IP típica de MS2).",
-          promptEn: "Send 3 ICMP echo requests to 192.168.56.101.",
-          answer: "ping -c 3 192.168.56.101",
+          promptEs: "Ping de 3 paquetes a la víctima (patrón; usa TU IP).",
+          promptEn: "3 ICMP echoes to your guest.",
+          answer: "ping -c 3",
+          answerKeywords: ["ping", "-c"],
           subtopicId: "lab-vbox",
-          explanation: "Sin -c el ping no para. Compruebas UNA IP de lab, no 8.8.8.8 ni un scan de puertos.",
-          howToEs: "ping -c 3 y la IP del guest.",
+          explanation: "Sin -c el ping no para. IP de TU guest, no 8.8.8.8.",
+          howToEs: "ping -c y un número de paquetes. La IP es la tuya.",
         },
       ],
       glossary: [

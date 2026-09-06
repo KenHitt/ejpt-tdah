@@ -60,7 +60,8 @@ export default function FullSimulacroPage() {
         </Link>
         <h1 className="mt-2 text-2xl font-bold text-white">Simulacro Completo #{fullAttempts.length + 1}</h1>
         <p className="mt-1 text-sm text-slate-400">
-          {questions.length} preguntas · 20 minutos cronometrados · umbral 70% · temario acumulado hasta semana global {currentGlobalWeek}.
+          {questions.length} preguntas · 20 minutos · 70% = Learning Pass (lagunas se registran; no es dominio ni nota INE) ·
+          semana global {currentGlobalWeek}.
         </p>
       </div>
 

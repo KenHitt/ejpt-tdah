@@ -17,9 +17,15 @@ export default function LaboratorioPage() {
         <p className="font-mono text-xs text-emerald-400">WORKSHOP · Kali = host OS · VirtualBox = victims only</p>
         <h1 className="mt-1 text-2xl font-bold text-white">Construcción del laboratorio de pentesting</h1>
         <p className="mt-2 text-sm text-slate-400">
-          Solo máquinas propias / VMs educativas. Kali es el SO de este PC. No clones Kali dentro de VirtualBox. El taller
-          explica el porqué; los bloques de 50 min demuestran que funciona.
+          Solo máquinas propias / VMs educativas. Kali es el SO de este PC. Focus = laboratorio guiado (una pantalla). Esta
+          página es referencia; no sustituye el checkpoint.
         </p>
+        <Link
+          href="/focus/m0-w0-b1"
+          className="mt-3 inline-block rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500"
+        >
+          Laboratorio guiado ahora (Focus) →
+        </Link>
       </div>
 
       <div className="rounded-lg border border-emerald-800/50 bg-emerald-500/5 p-4 text-sm">

@@ -5,6 +5,7 @@ import {
   WEEK4_FLOW_WORKSHOP,
   WEEK4_TROUBLESHOOTING,
 } from "@/content/workshops/week4-assessment";
+import { WEEK4_DECISION_DRILLS } from "@/content/decision-drills";
 
 /**
  * MES 1 / SEMANA 4 — searchsploit como índice + reverse/bind + unir el flujo.
@@ -197,6 +198,7 @@ export const month1Week4: StudyWeek = {
         "No abras un .c de searchsploit. No EternalBlue contra Windows ajeno.",
       ],
       workshop: WEEK4_FLOW_WORKSHOP,
+      decisionDrills: WEEK4_DECISION_DRILLS,
       troubleshooting: WEEK4_TROUBLESHOOTING.filter((t) => ["ss-run", "rev-lhost"].includes(t.id)),
       subtopics: ["exploit-linux"],
       resources: [

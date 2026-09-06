@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useProgress } from "@/lib/progress/context";
 import { diagnosePace } from "@/lib/regime";
 import { getSubtopic } from "@/content/subtopics";
@@ -170,9 +171,12 @@ export default function ProgresoPage() {
                 }`}
               >
                 <span className="text-slate-200">{sub?.nameEs ?? f.subtopicId}</span>
-                <span className={f.status === "critical-risk" ? "font-semibold text-red-400" : "text-amber-300"}>
+                <Link
+                  href={`/remediation/${f.subtopicId}`}
+                  className={f.status === "critical-risk" ? "font-semibold text-red-400 underline" : "text-amber-300 underline"}
+                >
                   {f.status === "critical-risk" ? "⚠ crítico" : "en repaso"} · {f.failCount} fallo(s)
-                </span>
+                </Link>
               </div>
             );
           })}

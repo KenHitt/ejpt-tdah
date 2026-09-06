@@ -6,6 +6,8 @@ import { StudyBlock } from "@/lib/types";
 import { OfflinePackButton } from "@/components/OfflinePackButton";
 import { GlossaryTable } from "@/components/GlossaryTable";
 import { ComparisonTable } from "@/components/ComparisonTable";
+import { WorkshopView } from "@/components/WorkshopView";
+import { TroubleshootingList } from "@/components/TroubleshootingList";
 
 export default function TeoriaPage() {
   const [q, setQ] = useState("");
@@ -106,6 +108,10 @@ function TheoryBody({ block }: { block: StudyBlock }) {
             <li key={p}>· {p}</li>
           ))}
         </ul>
+      )}
+      {block.workshop && block.workshop.length > 0 && <WorkshopView sections={block.workshop} />}
+      {block.troubleshooting && block.troubleshooting.length > 0 && (
+        <TroubleshootingList items={block.troubleshooting} />
       )}
       {block.comparisonTable && <ComparisonTable table={block.comparisonTable} />}
       {block.glossary && block.glossary.length > 0 && <GlossaryTable entries={block.glossary} />}

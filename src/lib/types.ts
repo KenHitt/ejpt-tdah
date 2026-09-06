@@ -39,6 +39,29 @@ export interface DrillItem {
   conceptAnswer?: string;
   mandatoryRepeat?: boolean;
   subtopicId?: string;
+  /** Si existe, se evalúa por palabras clave (conceptos), no por comando exacto. */
+  answerKeywords?: string[];
+  howToEs?: string;
+}
+
+export interface WorkshopSection {
+  id: string;
+  titleEs: string;
+  titleEn?: string;
+  bodyEs: string;
+  diagram?: string;
+  /** Contenido útil pero no es tu setup ni el camino mínimo eJPT. */
+  optional?: boolean;
+}
+
+export interface TroubleItem {
+  id: string;
+  symptom: string;
+  cause: string;
+  diagnose: string;
+  command?: string;
+  fix: string;
+  verify: string;
 }
 
 export interface StudyBlock {
@@ -68,6 +91,9 @@ export interface StudyBlock {
     headers: string[];
     rows: string[][];
   };
+  /** Taller pedagógico (qué / por qué / cuándo). Focus Mode no lo vuelca entero. */
+  workshop?: WorkshopSection[];
+  troubleshooting?: TroubleItem[];
 }
 
 export interface StudyWeek {
@@ -101,6 +127,7 @@ export interface Subtopic {
     | "exploitation"
     | "post-exploitation"
     | "networking"
+    | "linux"
     | "reporting"
     | "exam-mechanics";
   /** Índice de semana global (1-12) desde la cual este subtema entra al pool de simulacros */

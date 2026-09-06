@@ -1,5 +1,10 @@
 export function normalizeAnswer(s: string): string {
-  return s.trim().toLowerCase().replace(/\s+/g, " ");
+  return s
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ");
 }
 
 export function answersMatch(given: string, expected: string): boolean {

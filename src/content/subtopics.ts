@@ -15,6 +15,20 @@ export const SUBTOPICS: Subtopic[] = [
     category: "networking",
     introducedAtGlobalWeek: 1,
   },
+  {
+    id: "linux-basic",
+    nameEs: "Linux mínimo para pentesting (fs, permisos, pipes, SSH)",
+    nameEn: "Minimum Linux for pentesting (fs, perms, pipes, SSH)",
+    category: "linux",
+    introducedAtGlobalWeek: 1,
+  },
+  {
+    id: "net-basic",
+    nameEs: "Redes mínimas (IPv4, CIDR, TCP/UDP, puertos)",
+    nameEn: "Minimum networking (IPv4, CIDR, TCP/UDP, ports)",
+    category: "networking",
+    introducedAtGlobalWeek: 1,
+  },
   // ---- Semana 1: Recon & Scanning ----
   { id: "nmap-basic", nameEs: "Escaneo básico con Nmap", nameEn: "Basic Nmap scanning", category: "scanning", introducedAtGlobalWeek: 1 },
   { id: "nmap-scripts", nameEs: "Nmap Scripting Engine (NSE)", nameEn: "Nmap NSE scripts", category: "scanning", introducedAtGlobalWeek: 1 },

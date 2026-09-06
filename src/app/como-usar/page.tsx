@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { type ReactNode } from "react";
-import { getAllBlocks } from "@/content/curriculum";
+import { pickNextPractice } from "@/lib/trainer/adaptive";
 import { useProgress } from "@/lib/progress/context";
 
 export default function ComoUsarPage() {
   const { state } = useProgress();
-  const nextBlock = getAllBlocks().find((b) => state.blockStatus[b.id] !== "completed");
+  const next = pickNextPractice(state);
 
   return (
     <div className="space-y-8">
@@ -23,12 +23,10 @@ export default function ComoUsarPage() {
 
       <ol className="space-y-4">
         <HowStep n={1} en="Open ONE block" es="Abre UN bloque">
-          Pulsa <strong>EMPEZAR</strong> en Hoy. Entra a Focus Mode (timer, un paso, recall). No abras el Plan.
-          {nextBlock && (
-            <Link href={`/focus/${nextBlock.id}`} className="mt-2 inline-block text-emerald-400 underline">
-              Focus ahora: {nextBlock.title} →
-            </Link>
-          )}
+          Pulsa <strong>EMPEZAR</strong> en Hoy (elige el hueco si hay fallo crítico, no siempre el siguiente del plan).
+          <Link href={next.href} className="mt-2 inline-block text-emerald-400 underline">
+            Ahora: {next.titleEs} →
+          </Link>
         </HowStep>
         <HowStep n={2} en="Read the objective (ES + EN)" es="Lee el objetivo (español e inglés)">
           Arriba del bloque hay el objetivo en español y debajo en inglés (como el examen). Si no puedes marcarlo como hecho al

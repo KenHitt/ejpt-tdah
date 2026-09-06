@@ -1,9 +1,16 @@
 import { StudyWeek } from "@/lib/types";
+import {
+  NMAP_DISCOVERY_WORKSHOP,
+  NMAP_INTEGRATION_WORKSHOP,
+  NMAP_NSE_WORKSHOP,
+  NMAP_TROUBLESHOOTING,
+  NMAP_TYPES_WORKSHOP,
+} from "@/content/workshops/nmap-fundamentals";
 
 /**
  * MES 1 / SEMANA 1 — Recon activo y Nmap a fondo
  * Semana global: 1
- * No se repite teoría de redes/subnetting/ARP (ya dominada). Se va directo a la aplicación.
+ * Prerreq Semana 0: lab + Linux (b6–7) + redes (b8–9). Talleres Nmap: WHAT/WHY/WHEN/OUTPUT/NEXT por flag.
  */
 export const month1Week1: StudyWeek = {
   id: "m1-w1",
@@ -33,13 +40,56 @@ export const month1Week1: StudyWeek = {
         "Escanea TODOS los puertos TCP del host objetivo: nmap -p- <IP>",
         "Repite el escaneo agregando detección de versión: nmap -p- -sV <IP>",
         "Guarda el resultado en los 3 formatos a la vez: nmap -p- -sV <IP> -oA scan_full",
+        "Abre scan_full.nmap (less). Anota 3 líneas PORT/STATE/SERVICE. Recall sin apuntes.",
       ],
-      subtopics: ["nmap-basic"],
+      workshop: NMAP_DISCOVERY_WORKSHOP,
+      troubleshooting: NMAP_TROUBLESHOOTING.filter((t) =>
+        ["wrong-range", "default-1000", "from-guest"].includes(t.id)
+      ),
+      subtopics: ["nmap-basic", "nmap-versioning"],
       drills: [
-        { id: "d1", promptEs: "Hosts vivos en 192.168.56.0/24, sin puertos.", promptEn: "Discover live hosts on 192.168.56.0/24, do not scan ports.", answer: "nmap -sn 192.168.56.0/24" },
-        { id: "d2", promptEs: "Todos los TCP + versión en 192.168.56.101.", promptEn: "Scan all TCP ports with version detection on 192.168.56.101.", answer: "nmap -p- -sV 192.168.56.101" },
-        { id: "d3", promptEs: "Puertos 22,80,443 y -oA resultado.", promptEn: "Scan 22,80,443 and save all 3 formats as resultado.", answer: "nmap -p22,80,443 192.168.56.101 -oA resultado" },
+        {
+          id: "d1",
+          promptEs: "Hosts vivos en 192.168.56.0/24, sin puertos.",
+          promptEn: "Discover live hosts on 192.168.56.0/24, do not scan ports.",
+          answer: "nmap -sn 192.168.56.0/24",
+          subtopicId: "nmap-basic",
+          explanation: "-sV y -p- tocan puertos. Primero: ¿quién está vivo? Flag de host discovery.",
+          howToEs: "nmap -sn y el /24. No pongas -sV.",
+          conceptQuestion: "¿-sn lista puertos abiertos?",
+          conceptAnswer: "no",
+        },
+        {
+          id: "d2",
+          promptEs: "Todos los TCP + versión en 192.168.56.101.",
+          promptEn: "Scan all TCP ports with version detection on 192.168.56.101.",
+          answer: "nmap -p- -sV 192.168.56.101",
+          subtopicId: "nmap-basic",
+          explanation: "Default = top 1000, no 65535. Versión es -sV, no -sn.",
+          howToEs: "-p- y -sV contra esa IP.",
+          conceptQuestion: "Sin -p-, ¿cuántos puertos prueba Nmap por defecto (orden de magnitud)?",
+          conceptAnswer: "1000",
+        },
+        {
+          id: "d3",
+          promptEs: "Puertos 22,80,443 y -oA resultado.",
+          promptEn: "Scan 22,80,443 and save all 3 formats as resultado.",
+          answer: "nmap -p22,80,443 192.168.56.101 -oA resultado",
+          subtopicId: "nmap-basic",
+          explanation: "-oN es solo texto. -oA escribe .nmap + .xml + .gnmap con el mismo prefijo.",
+          howToEs: "-p22,80,443, la IP, -oA resultado.",
+        },
       ],
+      comparisonTable: {
+        caption: "Flag → pregunta que responde",
+        headers: ["Flag", "Pregunta", "Siguiente"],
+        rows: [
+          ["-sn", "¿Quién está vivo?", "Una IP, no más discovery"],
+          ["-p-", "¿Qué TCP hay (todos)?", "-sV / NSE"],
+          ["-sV", "¿Qué versión?", "enum de ESE servicio"],
+          ["-oA", "¿Dónde quedó la evidencia?", "less archivo.nmap"],
+        ],
+      },
       glossary: [
         { en: "host discovery", es: "descubrimiento de hosts" },
         { en: "open port", es: "puerto abierto" },
@@ -54,6 +104,7 @@ export const month1Week1: StudyWeek = {
         "Puedo escribir de memoria un host discovery scan (-sn) sin ver apuntes",
         "Puedo escribir de memoria un full port scan con versión (-p- -sV)",
         "Sé exportar resultados con -oA sin buscarlo en Google",
+        "Leo PORT/STATE/SERVICE/VERSION y elijo el siguiente movimiento (no exploto a ciegas)",
       ],
     },
     {
@@ -76,13 +127,52 @@ export const month1Week1: StudyWeek = {
         "Ejecuta un connect scan sin sudo: nmap -sT -p 1-1000 <IP>",
         "Ejecuta un escaneo UDP de los 20 puertos más comunes: sudo nmap -sU --top-ports 20 <IP>",
         "Compara tiempos: repite el mismo escaneo con -T4 y con -T2 y anota la diferencia",
+        "Di en voz alta: cuándo -sS vs -sT vs -sU. Luego recall.",
       ],
-      subtopics: ["nmap-basic", "nmap-versioning"],
+      workshop: NMAP_TYPES_WORKSHOP,
+      troubleshooting: NMAP_TROUBLESHOOTING.filter((t) => ["need-root", "udp-slow"].includes(t.id)),
+      subtopics: ["nmap-basic"],
       drills: [
-        { id: "d1", promptEs: "SYN + T4 + todos los puertos a 192.168.56.101", promptEn: "SYN scan, -T4, all ports, 192.168.56.101", answer: "sudo nmap -sS -T4 -p- 192.168.56.101" },
-        { id: "d2", promptEs: "50 UDP más comunes a 192.168.56.101", promptEn: "Top 50 UDP ports on 192.168.56.101", answer: "sudo nmap -sU --top-ports 50 192.168.56.101" },
-        { id: "d3", promptEs: "Connect scan puertos 1-500 (sin sudo)", promptEn: "TCP connect scan ports 1-500 (no sudo)", answer: "nmap -sT -p 1-500 192.168.56.101" },
+        {
+          id: "d1",
+          promptEs: "SYN + T4 + todos los puertos a 192.168.56.101",
+          promptEn: "SYN scan, -T4, all ports, 192.168.56.101",
+          answer: "sudo nmap -sS -T4 -p- 192.168.56.101",
+          subtopicId: "nmap-basic",
+          explanation: "SYN half-open = -sS y suele necesitar root. -T4 es timing, no un tipo de paquete.",
+          howToEs: "sudo, -sS, -T4, -p-, la IP.",
+          conceptQuestion: "¿-sS completa el handshake TCP?",
+          conceptAnswer: "no",
+        },
+        {
+          id: "d2",
+          promptEs: "50 UDP más comunes a 192.168.56.101",
+          promptEn: "Top 50 UDP ports on 192.168.56.101",
+          answer: "sudo nmap -sU --top-ports 50 192.168.56.101",
+          subtopicId: "nmap-basic",
+          explanation: "UDP es -sU, lento. No uses -p- UDP en un drill de 50 puertos.",
+          howToEs: "sudo nmap -sU --top-ports 50 y la IP.",
+        },
+        {
+          id: "d3",
+          promptEs: "Connect scan puertos 1-500 (sin sudo)",
+          promptEn: "TCP connect scan ports 1-500 (no sudo)",
+          answer: "nmap -sT -p 1-500 192.168.56.101",
+          subtopicId: "nmap-basic",
+          explanation: "connect() = -sT, sin raw sockets. sudo no va en este drill.",
+          howToEs: "nmap -sT -p 1-500 y la IP. Sin sudo.",
+        },
       ],
+      comparisonTable: {
+        caption: "-sS vs -sT vs -sU",
+        headers: ["Flag", "Qué pregunta", "Root?"],
+        rows: [
+          ["-sS", "TCP half-open (SYN)", "sí (raw)"],
+          ["-sT", "TCP connect completo", "no"],
+          ["-sU", "UDP (lento)", "sí típico"],
+          ["-T4", "reloj, no tipo de scan", "n/a"],
+        ],
+      },
       glossary: [
         { en: "SYN scan", es: "escaneo SYN (half-open)" },
         { en: "connect scan", es: "escaneo de conexión completa" },
@@ -120,13 +210,52 @@ export const month1Week1: StudyWeek = {
         "nmap --script smb-os-discovery -p445 $SOURCE",
         "nmap --script http-title,http-headers -p80 $SOURCE",
         "ls /usr/share/nmap/scripts/ | grep ftp | head",
+        "Escribe UN hallazgo NSE en ~/ejpt-lab.txt. Recall.",
       ],
+      workshop: NMAP_NSE_WORKSHOP,
+      troubleshooting: NMAP_TROUBLESHOOTING.filter((t) => ["from-guest"].includes(t.id)),
       subtopics: ["nmap-scripts"],
       drills: [
-        { id: "d1", promptEs: "Default scripts + versión a 192.168.56.101", promptEn: "Default NSE scripts + version detection on 192.168.56.101", answer: "nmap -sC -sV 192.168.56.101" },
-        { id: "d2", promptEs: "NSE vuln contra 192.168.56.101", promptEn: "Run the vuln NSE category against 192.168.56.101", answer: "sudo nmap --script vuln 192.168.56.101" },
-        { id: "d3", promptEs: "http-title en el puerto 80", promptEn: "Get the HTTP title on port 80", answer: "nmap --script http-title -p80 192.168.56.101" },
+        {
+          id: "d1",
+          promptEs: "Default scripts + versión a 192.168.56.101",
+          promptEn: "Default NSE scripts + version detection on 192.168.56.101",
+          answer: "nmap -sC -sV 192.168.56.101",
+          subtopicId: "nmap-scripts",
+          explanation: "-sC = default, no la categoría vuln. -sV es versión. Van juntos en el primer pase.",
+          howToEs: "-sC -sV y la IP.",
+          conceptQuestion: "¿-sC es lo mismo que --script vuln?",
+          conceptAnswer: "no",
+        },
+        {
+          id: "d2",
+          promptEs: "NSE vuln contra 192.168.56.101",
+          promptEn: "Run the vuln NSE category against 192.168.56.101",
+          answer: "sudo nmap --script vuln 192.168.56.101",
+          subtopicId: "nmap-scripts",
+          explanation: "Categoría vuln es --script vuln, no -sC. Más ruidoso; verifica el hallazgo.",
+          howToEs: "--script vuln y la IP. sudo es aceptable.",
+        },
+        {
+          id: "d3",
+          promptEs: "http-title en el puerto 80",
+          promptEn: "Get the HTTP title on port 80",
+          answer: "nmap --script http-title -p80 192.168.56.101",
+          subtopicId: "nmap-scripts",
+          explanation: "Un script nombrado + el puerto. No Gobuster aquí: solo el título HTTP.",
+          howToEs: "--script http-title -p80 y la IP.",
+        },
       ],
+      comparisonTable: {
+        caption: "NSE: default vs nombrado vs vuln",
+        headers: ["Cómo", "Pregunta", "Siguiente"],
+        rows: [
+          ["-sC", "scripts default + info general", "leer output"],
+          ["--script ftp-anon -p21", "¿anonymous FTP?", "enum FTP Semana 2"],
+          ["--script smb-os-discovery -p445", "¿OS/workgroup SMB?", "enum4linux"],
+          ["--script vuln", "¿CVEs ruidosos?", "verificar, no explotar ciego"],
+        ],
+      },
       glossary: [
         { en: "NSE (Nmap Scripting Engine)", es: "motor de scripts de Nmap" },
         { en: "default scripts", es: "scripts por defecto" },
@@ -217,6 +346,10 @@ export const month1Week1: StudyWeek = {
         "Documenta en un archivo: IP, puertos, versiones, hallazgos NSE",
         "Compara tu lista con Rapid7 exploitability guide (recurso extra) SOLO al final, para auditarte",
       ],
+      workshop: NMAP_INTEGRATION_WORKSHOP,
+      troubleshooting: NMAP_TROUBLESHOOTING.filter((t) =>
+        ["wrong-range", "default-1000", "from-guest"].includes(t.id)
+      ),
       subtopics: ["nmap-basic", "nmap-scripts", "nmap-versioning"],
       resources: [
         { label: "Metasploitable 2 — guía de servicios (auditoría al final)", url: "https://docs.rapid7.com/metasploit/metasploitable-2-exploitability-guide/", platform: "Docs" },

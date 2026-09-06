@@ -36,6 +36,9 @@ export function DrillPractice({
               d.explanation ??
               "Ese comando no encaja con el objetivo. Distingue: ¿buscas hosts vivos, versiones, rutas HTTP o credenciales? Vuelve a escribirlo."
             }
+            howToEs={d.howToEs}
+            mode={d.answerKeywords?.length ? "keywords" : "exact"}
+            keywords={d.answerKeywords}
             subtopicId={d.subtopicId}
             mandatoryRepeat={d.mandatoryRepeat !== false}
             onPassed={() => {

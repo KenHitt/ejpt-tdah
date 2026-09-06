@@ -51,7 +51,7 @@ export default function FocusPage() {
           EMPEZAR
         </button>
         <Link href={`/plan/${block.id}`} className="block text-xs text-slate-500 underline">
-          Ver teoría completa (sale de Focus)
+          Ver taller completo (sale de Focus)
         </Link>
       </div>
     );

@@ -6,15 +6,19 @@ import { getAllBlocks, TOTAL_BLOCKS, computeCurrentGlobalWeek } from "@/content/
 import { KNOWN_GAPS } from "@/content/subtopics";
 import { useProgress } from "@/lib/progress/context";
 import { diagnosePace, PLAN_TOTAL_DAYS } from "@/lib/regime";
+import { listWeaknesses, pickNextPractice } from "@/lib/trainer/adaptive";
 
 export default function DashboardPage() {
   const { state, ensurePlanStarted } = useProgress();
 
   const completedCount = Object.values(state.blockStatus).filter((s) => s === "completed").length;
-  const nextBlock = useMemo(() => getAllBlocks().find((b) => state.blockStatus[b.id] !== "completed"), [state.blockStatus]);
+  const next = useMemo(() => pickNextPractice(state), [state]);
+  const weaknesses = useMemo(() => listWeaknesses(state), [state]);
   const currentGlobalWeek = computeCurrentGlobalWeek(state.blockStatus);
   const diagnosis = diagnosePace(state.sessions, state.planStartedAt);
   const labDone = ["m0-w0-b1", "m0-w0-b2"].every((id) => state.blockStatus[id] === "completed");
+  const linuxDone = ["m0-w0-b6", "m0-w0-b7"].every((id) => state.blockStatus[id] === "completed");
+  const netDone = ["m0-w0-b8", "m0-w0-b9"].every((id) => state.blockStatus[id] === "completed");
 
   const [daysLeft, setDaysLeft] = useState(PLAN_TOTAL_DAYS);
   useEffect(() => {
@@ -74,25 +78,44 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div className="rounded-lg border-2 border-emerald-600 bg-slate-900 p-5">
-        <p className="text-xs font-semibold uppercase tracking-wide text-emerald-400">AHORA</p>
-        {nextBlock ? (
-          <>
-            <p className="mt-2 text-xl font-bold text-white">{nextBlock.title}</p>
-            {nextBlock.titleEn && <p className="font-mono text-sm text-emerald-400">{nextBlock.titleEn}</p>}
-            <p className="mt-1 text-sm text-slate-300">{nextBlock.objective}</p>
-            {nextBlock.objectiveEn && <p className="mt-1 font-mono text-xs text-emerald-300">{nextBlock.objectiveEn}</p>}
-            <Link
-              href={`/focus/${nextBlock.id}`}
-              className="mt-4 inline-block w-full rounded-md bg-emerald-600 px-5 py-3 text-center text-lg font-semibold text-white hover:bg-emerald-500 sm:w-auto"
-            >
-              EMPEZAR
+      {labDone && !linuxDone && (
+        <div className="rounded-lg border border-amber-700/50 bg-amber-500/5 p-4 text-sm text-amber-100">
+          <p className="font-semibold">Hay ping, pero aún no Linux mínimo → no abras Nmap del Mes 1.</p>
+          <p className="mt-1 text-amber-200/80">
+            pwd, permisos, SSH al guest.{" "}
+            <Link href="/focus/m0-w0-b6" className="underline">
+              Linux 1 ahora →
             </Link>
-            <p className="mt-2 text-xs text-slate-500">{nextBlock.durationMin} min · Focus Mode (timer + recall + I&apos;m stuck)</p>
-          </>
-        ) : (
-          <p className="mt-2 text-emerald-400">Plan completo. Toca simulacro final y examen INE.</p>
-        )}
+          </p>
+        </div>
+      )}
+
+      {labDone && linuxDone && !netDone && (
+        <div className="rounded-lg border border-amber-700/50 bg-amber-500/5 p-4 text-sm text-amber-100">
+          <p className="font-semibold">Linux OK, falta redes mínimas → no abras Nmap del Mes 1.</p>
+          <p className="mt-1 text-amber-200/80">
+            IPv4, /24, puertos 22/80/445.{" "}
+            <Link href="/focus/m0-w0-b8" className="underline">
+              Redes 1 ahora →
+            </Link>
+          </p>
+        </div>
+      )}
+
+      <div className="rounded-lg border-2 border-emerald-600 bg-slate-900 p-5">
+        <p className="text-xs font-semibold uppercase tracking-wide text-emerald-400">
+          AHORA · {next.kind === "block" ? "plan" : next.kind === "gate" ? "prerreq" : next.kind === "remediate" ? "hueco" : next.kind === "review" ? "srs" : "examen"}
+        </p>
+        <p className="mt-2 text-xl font-bold text-white">{next.titleEs}</p>
+        {next.titleEn && <p className="font-mono text-sm text-emerald-400">{next.titleEn}</p>}
+        <p className="mt-1 text-sm text-slate-300">{next.reasonEs}</p>
+        <Link
+          href={next.href}
+          className="mt-4 inline-block w-full rounded-md bg-emerald-600 px-5 py-3 text-center text-lg font-semibold text-white hover:bg-emerald-500 sm:w-auto"
+        >
+          {next.ctaEs}
+        </Link>
+        <p className="mt-2 text-xs text-slate-500">{next.durationHint}</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
@@ -113,10 +136,35 @@ export default function DashboardPage() {
       {criticalRisks.length > 0 && (
         <p className="text-sm text-red-300">
           Subtema crítico (falló 2 veces). No avances.{" "}
-          <Link href="/progreso" className="underline">
-            Ver cuál →
+          <Link href={criticalRisks[0] ? `/remediation/${criticalRisks[0].subtopicId}` : "/progreso"} className="underline">
+            Remediar ahora →
           </Link>
         </p>
+      )}
+
+      {weaknesses.length > 0 && (
+        <div className="rounded-lg border border-slate-800 p-4">
+          <p className="text-xs font-semibold uppercase text-slate-400">Debilidades (datos, no motivación)</p>
+          <ul className="mt-2 space-y-1 text-sm">
+            {weaknesses.slice(0, 5).map((w) => (
+              <li key={w.id} className="flex justify-between gap-2">
+                <Link href={w.href} className="text-emerald-400 hover:underline">
+                  {w.labelEs}
+                </Link>
+                <span
+                  className={
+                    w.severity === "critical" ? "text-red-400" : w.severity === "open" ? "text-amber-400" : "text-slate-400"
+                  }
+                >
+                  {w.whyEs}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-xs text-slate-500">
+            Prioriza el crítico. Completar bloques no borra un subtema en remediación.
+          </p>
+        </div>
       )}
 
       <div className="rounded-lg border border-slate-800 p-4">

@@ -10,6 +10,8 @@ import { GlossaryTable } from "@/components/GlossaryTable";
 import { ComparisonTable } from "@/components/ComparisonTable";
 import { ResourceList } from "@/components/ResourceList";
 import { DrillPractice } from "@/components/DrillPractice";
+import { WorkshopView } from "@/components/WorkshopView";
+import { TroubleshootingList } from "@/components/TroubleshootingList";
 import { useState } from "react";
 
 export default function BlockDetailPage() {
@@ -93,6 +95,12 @@ export default function BlockDetailPage() {
         </div>
       )}
 
+      {block.workshop && block.workshop.length > 0 && <WorkshopView sections={block.workshop} />}
+
+      {block.troubleshooting && block.troubleshooting.length > 0 && (
+        <TroubleshootingList items={block.troubleshooting} />
+      )}
+
       {block.comparisonTable && (
         <div>
           <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-300">Tabla comparativa</h2>
@@ -151,6 +159,9 @@ export default function BlockDetailPage() {
         >
           {completed ? "✔ Bloque marcado como completado" : "Marcar bloque como completado"}
         </button>
+        <p className="w-full text-xs text-slate-500">
+          Completar = demostraste checklist + recall, no que leíste el taller.
+        </p>
 
         {block.subtopics.length > 0 && (
           <div className="flex flex-wrap items-center gap-2">

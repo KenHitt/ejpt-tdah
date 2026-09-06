@@ -111,4 +111,72 @@ Nmap:
       },
     ],
   },
+  {
+    id: "er-http-only",
+    titleEs: "Escenario 3 — solo web",
+    setupEs: `TARGET autorizado (simulado; no escanees IPs ajenas):
+
+Nmap:
+80/tcp open http
+443/tcp closed`,
+    checks: [
+      {
+        id: "web1",
+        promptEs: "¿Hydra SSH o enum HTTP? ¿Por qué?",
+        keywordAny: [["http"], ["gobuster"], ["curl"], ["dir"], ["enum"]],
+        explanationEs: "No hay 22. Superficie = HTTP. Gobuster/curl/vhosts, no Hydra SSH.",
+        failKind: "reasoning",
+        subtopicId: "gobuster-dir",
+        domain: "enumeration",
+        critical: true,
+      },
+      {
+        id: "web2",
+        promptEs: "Gobuster da /admin 403 y /login 200. ¿Qué significa cada uno?",
+        keywordAny: [["existe"], ["403"], ["login"], ["200"]],
+        explanationEs: "403 = existe, acceso denegado. 200 /login = hay formulario: ahí sí puede entrar brute/creds si hay usuario.",
+        failKind: "reasoning",
+        subtopicId: "gobuster-dir",
+        domain: "web",
+        critical: true,
+      },
+    ],
+  },
+  {
+    id: "er-creds",
+    titleEs: "Escenario 4 — usuario vs brute",
+    setupEs: `22/tcp open ssh
+445/tcp open microsoft-ds
+
+Aún no has enumerado SMB. No hay usuario en el brief.`,
+    checks: [
+      {
+        id: "creds1",
+        promptEs: "¿Lanzas Hydra ahora contra 22? Justifica.",
+        keywordAny: [["no"], ["enum"], ["smb"], ["user"], ["usuario"]],
+        explanationEs: "Sin username, Hydra es ruido. SMB suele regalar users. Luego brute SI la política del lab/examen lo permite.",
+        failKind: "reasoning",
+        subtopicId: "hydra-bruteforce",
+        domain: "enumeration",
+        critical: true,
+      },
+    ],
+  },
+  {
+    id: "er-msf",
+    titleEs: "Escenario 5 — Metasploit",
+    setupEs: `Encontraste vsftpd 2.3.4 en TU lab (MS2). Tienes un módulo que coincide. El reverse no abre sesión.`,
+    checks: [
+      {
+        id: "msf1",
+        promptEs: "¿Qué compruebas ANTES de culpar al exploit?",
+        keywordAny: [["lhost"], ["vboxnet"], ["listener"], ["payload"], ["rhost"], ["red"]],
+        explanationEs: "LHOST en vboxnet, RHOSTS = guest, payload reverse vs bind, listener arriba. Versión coincidente no basta si la flecha TCP está mal.",
+        failKind: "reasoning",
+        subtopicId: "msf-lhost-lport",
+        domain: "exploitation",
+        critical: true,
+      },
+    ],
+  },
 ];

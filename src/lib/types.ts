@@ -46,6 +46,7 @@ export interface DrillItem {
 
 export type FailKind = "memory" | "reasoning" | "technical";
 export type SkillKind = "recall" | "reasoning" | "machine";
+export type KillPhase = "recon" | "enum" | "vuln" | "exploit" | "access" | "privesc" | "post";
 
 export type GuidedKind = "concept" | "action" | "result" | "question" | "decision" | "checkpoint" | "trouble";
 

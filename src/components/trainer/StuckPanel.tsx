@@ -16,7 +16,13 @@ const FIELDS = [
   ["notTried", "Qué todavía NO he probado"],
 ] as const;
 
-const LABELS = ["Conceptual", "Estratégica", "Herramienta", "Comando", "Solución"];
+const LABELS = [
+  "HINT 1 · pregunta conceptual",
+  "HINT 2 · recuerda lo que ya encontraste",
+  "HINT 3 · categoría de herramienta",
+  "HINT 4 · sugerir comando",
+  "HINT 5 · procedimiento",
+];
 
 export function StuckPanel({ blockId, subtopics }: { blockId: string; subtopics: string[] }) {
   const { recordHintLevel, recordStuck } = useProgress();
@@ -52,7 +58,7 @@ export function StuckPanel({ blockId, subtopics }: { blockId: string; subtopics:
         onClick={() => setOpen(true)}
         className="rounded-md border border-amber-700/60 bg-amber-500/10 px-4 py-2 text-sm text-amber-200 hover:bg-amber-500/20"
       >
-        Estoy atascado / I&apos;m stuck
+        I&apos;M STUCK
       </button>
     );
   }
@@ -104,10 +110,9 @@ export function StuckPanel({ blockId, subtopics }: { blockId: string; subtopics:
         </ol>
       )}
       {level >= 5 && (
-        <p className="mt-2 text-xs text-slate-500">
-          Nivel 5 es último recurso. Si lo usaste, el concepto queda marcado como débil: haz Flash Drill de esa herramienta después.
-        </p>
+        <p className="mt-2 font-mono text-xs text-red-300">RETRY REQUIRED · vuelve a hacerlo sin mirar las pistas.</p>
       )}
+      {level > 0 && <p className="mt-2 font-mono text-[10px] text-amber-500">HINTS USED {level}</p>}
     </div>
   );
 }

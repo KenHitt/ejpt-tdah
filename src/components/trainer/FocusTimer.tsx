@@ -29,7 +29,7 @@ export function FocusTimer({ durationMin }: { durationMin: number }) {
         onClick={() => setPaused((p) => !p)}
         className="rounded-md border border-slate-600 px-3 py-1 text-xs text-slate-300 hover:border-emerald-500"
       >
-        {paused ? "Reanudar" : "Pausar"}
+        {paused ? "RESUME" : "PAUSE"}
       </button>
     </div>
   );

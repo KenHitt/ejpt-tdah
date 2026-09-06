@@ -15,6 +15,7 @@ export function loadLocalProgress(): ProgressState {
             ...EMPTY_PROGRESS.trainer,
             ...parsed.trainer,
             reasoningRuns: parsed.trainer.reasoningRuns ?? [],
+            labHud: parsed.trainer.labHud ?? EMPTY_PROGRESS.trainer.labHud,
           }
         : EMPTY_PROGRESS.trainer,
     };
@@ -61,6 +62,7 @@ export function mergeProgress(local: ProgressState, cloud: ProgressState | null)
       hintLevelByKey: { ...(cloud.trainer?.hintLevelByKey ?? {}), ...(local.trainer?.hintLevelByKey ?? {}) },
       stuckNotes: [...(cloud.trainer?.stuckNotes ?? []), ...(local.trainer?.stuckNotes ?? [])].slice(-100),
       reasoningRuns: [...(cloud.trainer?.reasoningRuns ?? []), ...(local.trainer?.reasoningRuns ?? [])].slice(-40),
+      labHud: local.trainer?.labHud ?? cloud.trainer?.labHud ?? EMPTY_PROGRESS.trainer.labHud,
     },
     attempts: local.attempts.length >= cloud.attempts.length ? local.attempts : cloud.attempts,
     sessions: local.sessions.length >= cloud.sessions.length ? local.sessions : cloud.sessions,

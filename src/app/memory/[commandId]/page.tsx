@@ -43,6 +43,7 @@ export default function FlashDrillPage() {
   const { recordHintLevel } = useProgress();
   const [stage, setStage] = useState(0);
   const [hint, setHint] = useState(0);
+  const [bridge, setBridge] = useState(false);
 
   if (!card) {
     return (
@@ -72,6 +73,7 @@ export default function FlashDrillPage() {
         {stage >= 3 ? card.fragment : "Produce el comando. No lo mires."}
       </h1>
 
+      {!bridge && (
       <RecallCard
         key={`${card.id}:${stage}`}
         exerciseId={`${card.id}:${["tool", "param", "full", "concept"][stage]}`}
@@ -89,9 +91,32 @@ export default function FlashDrillPage() {
         subtopicId={card.subtopicId}
         revealAnswerAfter={1}
         onPassed={() => {
-          if (stage < 3) setStage((s) => s + 1);
+          if (stage === 2) setBridge(true);
+          else if (stage < 3) setStage((s) => s + 1);
         }}
       />
+      )}
+
+      {bridge && (
+        <div className="rounded-lg border border-emerald-800/50 bg-slate-950 p-4 font-mono text-sm">
+          <p className="text-[10px] text-slate-500">COMMAND</p>
+          <p className="text-emerald-300">{card.fullAnswer}</p>
+          <p className="mt-3 text-[10px] text-slate-500">WHAT</p>
+          <p className="text-slate-200">{card.conceptQuestionEs}</p>
+          <p className="mt-3 text-[10px] text-slate-500">WHY</p>
+          <p className="text-slate-300">{card.explanationEs}</p>
+          <button
+            type="button"
+            className="mt-3 rounded-md bg-emerald-600 px-3 py-1 text-xs text-white"
+            onClick={() => {
+              setBridge(false);
+              setStage(3);
+            }}
+          >
+            Recall del concepto →
+          </button>
+        </div>
+      )}
 
       <button type="button" onClick={askHint} className="text-xs text-amber-400 underline">
         Pista extra {Math.min(5, hint + 1)}/5

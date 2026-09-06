@@ -176,5 +176,42 @@ export const ATTACK_PATH_DRILL: DecisionScenario = {
   ],
 };
 
+export const HTTP_ONLY_DRILL: DecisionScenario = {
+  id: "http-only-drill",
+  titleEs: "Solo 80/tcp",
+  setupEs: SAFETY + "\n\nNmap del lab: 80/tcp open http. Nada más.",
+  checks: [
+    {
+      id: "http-first",
+      promptEs: "¿Primera familia de acciones?",
+      keywordAny: [["http"], ["gobuster"], ["curl"], ["dir"], ["enum"]],
+      explanationEs: "HTTP → enumerar sitio (curl, título, Gobuster). No enum4linux. No Hydra SSH.",
+      failKind: "reasoning",
+      subtopicId: "gobuster-dir",
+      domain: "web",
+      critical: true,
+    },
+  ],
+};
+
+export const HYDRA_TRAP_DRILL: DecisionScenario = {
+  id: "hydra-trap",
+  titleEs: "Trampa Hydra",
+  setupEs: SAFETY + "\n\n22 open, 445 open. Brief sin usuario.",
+  checks: [
+    {
+      id: "trap",
+      promptEs: "¿Siguiente movimiento metodológico?",
+      keywordAny: [["smb"], ["enum"], ["user"], ["enum4linux"], ["no hydra"]],
+      explanationEs: "SMB primero por usuarios. Hydra después, con nombre, si procede. 22 open no autoriza brute ciego.",
+      failKind: "reasoning",
+      subtopicId: "hydra-bruteforce",
+      domain: "enumeration",
+      critical: true,
+    },
+  ],
+};
+
 export const WEEK1_DECISION_DRILLS: DecisionScenario[] = [NMAP_INTERPRET_DRILL, NMAP_NEXT_STEP];
+export const EXTRA_DECISION_DRILLS: DecisionScenario[] = [HTTP_ONLY_DRILL, HYDRA_TRAP_DRILL];
 export const WEEK4_DECISION_DRILLS: DecisionScenario[] = [ATTACK_PATH_DRILL];

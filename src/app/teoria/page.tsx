@@ -8,6 +8,7 @@ import { GlossaryTable } from "@/components/GlossaryTable";
 import { ComparisonTable } from "@/components/ComparisonTable";
 import { WorkshopView } from "@/components/WorkshopView";
 import { TroubleshootingList } from "@/components/TroubleshootingList";
+import { PracticeNow } from "@/components/PracticeNow";
 
 export default function TeoriaPage() {
   const [q, setQ] = useState("");
@@ -125,6 +126,7 @@ function TheoryBody({ block }: { block: StudyBlock }) {
           </ol>
         </div>
       )}
+      <PracticeNow topicLabel={block.title} />
     </div>
   );
 }

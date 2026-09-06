@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
+/* Red-team + TDAH: contraste alto, una misión visual, cero gris muerto. */
 :root {
-  --background: #0a0e14;
-  --foreground: #e6edf3;
+  --background: #05070a;
+  --foreground: #f3f0e8;
+  --rt-red: #ff3b3b;
+  --rt-red-dim: #c41e1e;
+  --rt-amber: #ffc14d;
+  --rt-green: #3dff9a;
+  --rt-muted: #c5d0dc;
+  --rt-line: #3a4a5c;
 }
 
 @theme inline {
@@ -10,27 +17,95 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* Remapeo: el slate de Tailwind era ilegible sobre negro (TDAH = más carga visual). */
+  --color-slate-950: #05070a;
+  --color-slate-900: #0c1118;
+  --color-slate-800: #2a3544;
+  --color-slate-700: #3d4d60;
+  --color-slate-600: #8b9aab;
+  --color-slate-500: #b4c0ce;
+  --color-slate-400: #d0d8e2;
+  --color-slate-300: #e4e9f0;
+  --color-emerald-300: #7dffc4;
+  --color-emerald-400: #3dff9a;
+  --color-emerald-500: #12e07a;
+  --color-emerald-600: #0aa85c;
+  --color-amber-300: #ffd37a;
+  --color-amber-400: #ffc14d;
+  --color-red-400: #ff6b6b;
+  --color-red-500: #ff3b3b;
+  --color-red-600: #e11d1d;
+}
+
+html {
+  color-scheme: dark;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  background-image:
+    linear-gradient(180deg, #1a0808 0%, transparent 28%),
+    radial-gradient(1200px 500px at 100% -10%, #3a1010 0%, transparent 55%);
 }
 
 ::selection {
-  background: #22c55e55;
+  background: #ff3b3b66;
+  color: #fff;
 }
 
-/* Scrollbar sutil, estilo terminal */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a0e14;
+  background: #05070a;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1f2937;
+  background: #ff3b3b66;
   border-radius: 6px;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--rt-amber);
+  outline-offset: 2px;
+}
+
+.rt-scanlines::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  opacity: 0.035;
+  background: repeating-linear-gradient(
+    to bottom,
+    #000 0px,
+    #000 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rt-scanlines::before {
+    display: none;
+  }
+  * {
+    scroll-behavior: auto !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.rt-panel {
+  border: 1px solid var(--rt-line);
+  background: #0c1118;
+}
+
+.rt-hit {
+  min-height: 44px;
 }

@@ -10,7 +10,7 @@ import {
   useState,
 } from "react";
 import { SimulacroAttempt, StudySessionLog, SubtopicFailure } from "@/lib/types";
-import { ReasoningRun, StuckNote, TrainerAttempt } from "@/lib/trainer/types";
+import { LabHud, ReasoningRun, StuckNote, TrainerAttempt } from "@/lib/trainer/types";
 import { useSupabaseSession } from "@/lib/supabase/useSession";
 import { EMPTY_PROGRESS, ProgressState } from "./state";
 import { loadLocalProgress, saveLocalProgress, mergeProgress } from "./localBackend";
@@ -35,6 +35,7 @@ interface ProgressContextValue {
   recordReasoningRun: (run: Omit<ReasoningRun, "id" | "at">) => void;
   recordHintLevel: (key: string, level: number) => void;
   recordStuck: (note: Omit<StuckNote, "id" | "at">) => void;
+  updateLabHud: (patch: Partial<LabHud>) => void;
 }
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
@@ -242,6 +243,19 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const updateLabHud = useCallback((patch: Partial<LabHud>) => {
+    setState((prev) => {
+      const t = prev.trainer ?? EMPTY_PROGRESS.trainer;
+      return {
+        ...prev,
+        trainer: {
+          ...t,
+          labHud: { ...(t.labHud ?? EMPTY_PROGRESS.trainer.labHud), ...patch },
+        },
+      };
+    });
+  }, []);
+
   const value = useMemo<ProgressContextValue>(
     () => ({
       state,
@@ -262,6 +276,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       recordHintLevel,
       recordStuck,
       recordReasoningRun,
+      updateLabHud,
     }),
     [
       state,
@@ -282,6 +297,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       recordHintLevel,
       recordStuck,
       recordReasoningRun,
+      updateLabHud,
     ]
   );
 

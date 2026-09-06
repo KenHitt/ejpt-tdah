@@ -10,11 +10,13 @@ export function PromptCheckCard({
   exerciseId,
   onPassed,
   onResult,
+  onChoice,
 }: {
   check: PromptCheck;
   exerciseId: string;
   onPassed: () => void;
   onResult?: (ok: boolean) => void;
+  onChoice?: (choiceId?: string) => void;
 }) {
   const { recordTrainerAttempt, reportFailure } = useProgress();
   const [text, setText] = useState("");
@@ -37,6 +39,7 @@ export function PromptCheckCard({
     });
     onResult?.(result.ok);
     if (result.ok) {
+      onChoice?.(choice);
       setPhase("passed");
       setNote(result.noteEs);
       onPassed();

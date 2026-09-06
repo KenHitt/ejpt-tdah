@@ -1,4 +1,4 @@
-import { FailKind, SkillKind } from "@/lib/types";
+import { FailKind, KillPhase, SkillKind } from "@/lib/types";
 
 export interface TrainerAttempt {
   id: string;
@@ -28,16 +28,36 @@ export interface ReasoningRun {
   at: string;
 }
 
+export interface LabHud {
+  lhost: string;
+  rhost: string;
+  services: string;
+  phase: KillPhase;
+  discovered: string;
+  nextMove: string;
+}
+
 export interface TrainerState {
   attempts: TrainerAttempt[];
   hintLevelByKey: Record<string, number>;
   stuckNotes: StuckNote[];
   reasoningRuns: ReasoningRun[];
+  labHud: LabHud;
 }
+
+export const EMPTY_LAB_HUD: LabHud = {
+  lhost: "",
+  rhost: "",
+  services: "",
+  phase: "recon",
+  discovered: "",
+  nextMove: "",
+};
 
 export const EMPTY_TRAINER: TrainerState = {
   attempts: [],
   hintLevelByKey: {},
   stuckNotes: [],
   reasoningRuns: [],
+  labHud: EMPTY_LAB_HUD,
 };

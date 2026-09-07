@@ -11,6 +11,19 @@ export interface CourseSection {
   p: string;
 }
 
+export interface CourseExampleStep {
+  do: string;
+  why: string;
+}
+
+export interface CourseExample {
+  title: string;
+  scene: string;
+  steps: CourseExampleStep[];
+  expected: string;
+  stop: string;
+}
+
 export interface CourseLesson {
   id: string;
   week: number;
@@ -24,7 +37,21 @@ export interface CourseLesson {
   labTitle: string;
   labSteps: string[];
   pep: string;
+  /** Teoría extra (jornada amplia). Se fusiona en enrich. */
+  theoryExtra?: CourseSection[];
+  /** Ejemplos guiados: yo lo hago, luego tú. */
+  examples?: CourseExample[];
+  /** Pista de aislamiento del lab de práctica. */
+  practiceHint?: string;
 }
+
+export type EnrichedLesson = CourseLesson & {
+  examples: CourseExample[];
+  tallerIds: string[];
+  theoryExtra: CourseSection[];
+  jornadaHours: number;
+  practiceHint: string;
+};
 
 export interface CourseWeekMeta {
   week: number;

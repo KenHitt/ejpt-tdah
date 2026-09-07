@@ -5,8 +5,8 @@ export default function LearnIndexPage() {
   const tracks = Array.from(new Set(LEARN_ARTICLES.map((a) => a.track)));
   return (
     <div className="space-y-6">
-      <p className="font-mono text-xs text-emerald-400">LEARN · superficie eJPT, un tema por sesión</p>
-      <h1 className="text-2xl font-bold text-white">Learn</h1>
+      <p className="text-xs font-medium uppercase tracking-[0.2em] text-emerald-400">Biblioteca</p>
+      <h1 className="mt-2 text-2xl font-bold text-white">Fichas de repaso</h1>
       <p className="text-sm text-slate-400">
         {LEARN_ARTICLES.length} fichas (redes, Linux, recon, enum, web, explotación, post, pivot, Windows). Ampliar
         superficie sube probabilidad; no garantiza el aprobado de INE. Una ficha por sesión: recall, challenge, práctica.

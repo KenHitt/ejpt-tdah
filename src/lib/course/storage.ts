@@ -4,6 +4,10 @@ export interface LessonRecord {
   at: string;
   quizPct: number;
   labDone: boolean;
+  examplesDone?: boolean;
+  tallerDone?: boolean;
+  /** @deprecated sustituido por tallerDone */
+  githubDone?: boolean;
 }
 
 export interface CourseState {

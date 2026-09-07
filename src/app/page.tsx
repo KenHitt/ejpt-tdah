@@ -1,92 +1,82 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { getBlockById } from "@/content/curriculum";
-import { useProgress } from "@/lib/progress/context";
-import { pickNextPractice } from "@/lib/trainer/adaptive";
-import { difficultyStars, operationFromNext, operationLabel, stars } from "@/lib/trainer/operation";
-import { evaluateReadiness } from "@/lib/trainer/readiness";
-import { listWeaknesses } from "@/lib/trainer/adaptive";
+import { COURSE_LESSONS, COURSE_WEEKS, lessonsForWeek, nextIncomplete } from "@/content/course";
+import { ACADEMY_HOURS, ACADEMY_NAME, ACADEMY_STATS, ACADEMY_TAGLINE, hoursFromLessons } from "@/content/academy/program";
+import { useCourse } from "@/lib/course/context";
 
-export default function DashboardPage() {
-  const { state } = useProgress();
-  const next = useMemo(() => pickNextPractice(state), [state]);
-  const { n, block } = operationFromNext(next);
-  const opName = next.kind === "remediate" ? "REMEDIATION" : next.kind === "review" ? "FLASH DRILL" : next.kind === "exam" ? "EXAM" : operationLabel(n || 1);
-  const title = block?.title ?? next.titleEs;
-  const objective = block?.objective ?? next.reasonEs;
-  const time = block ? `${block.durationMin}:00` : next.durationHint;
-  const diff = block ? difficultyStars(block) : 2;
-  const [brief, setBrief] = useState(false);
-  const readiness = useMemo(() => evaluateReadiness(state), [state]);
-  const weaknesses = useMemo(() => listWeaknesses(state), [state]);
-  const blockObj = next.href.includes("/focus/") ? getBlockById(next.href.split("/focus/")[1] ?? "") : undefined;
+export default function CampusHomePage() {
+  const { state } = useCourse();
+  const doneCount = Object.keys(state.lessons).length;
+  const next = nextIncomplete(state.lessons);
+  const weekMeta = COURSE_WEEKS.find((w) => w.week === next.week);
+  const weekLessons = lessonsForWeek(next.week);
+  const weekDone = weekLessons.filter((l) => state.lessons[l.id]).length;
+  const hoursDone = hoursFromLessons(doneCount);
+  const pct = Math.round((doneCount / COURSE_LESSONS.length) * 100);
 
   return (
-    <div className="mx-auto max-w-lg space-y-8 py-4">
-      <p className="font-mono text-[10px] tracking-[0.2em] text-emerald-500">MISSION CONTROL · AHORA</p>
-
-      <section className="rounded-2xl border-2 border-emerald-500 bg-slate-950 p-6">
-        <p className="font-mono text-xs text-emerald-400">TODAY&apos;S OPERATION</p>
-        <p className="mt-4 font-mono text-sm text-emerald-300">{opName}</p>
-        <h1 className="mt-1 text-3xl font-bold text-white">{title}</h1>
-        <dl className="mt-6 space-y-3 font-mono text-sm">
-          <div>
-            <dt className="text-[10px] text-slate-500">OBJECTIVE</dt>
-            <dd className="text-slate-200">{objective}</dd>
-          </div>
-          <div>
-            <dt className="text-[10px] text-slate-500">TIME</dt>
-            <dd className="text-emerald-300">{time}</dd>
-          </div>
-          <div>
-            <dt className="text-[10px] text-slate-500">DIFFICULTY</dt>
-            <dd className="text-amber-300">{stars(diff)}</dd>
-          </div>
-          <div>
-            <dt className="text-[10px] text-slate-500">STATUS</dt>
-            <dd className="text-emerald-400">READY</dd>
-          </div>
-        </dl>
-        <Link
-          href={next.href}
-          className="mt-8 block w-full rounded-md bg-red-600 py-4 text-center text-lg font-bold tracking-wide text-white hover:bg-red-500"
-        >
-          START OPERATION
-        </Link>
-        {blockObj?.titleEn && <p className="mt-2 font-mono text-[10px] text-emerald-700">{blockObj.titleEn}</p>}
-      </section>
-
-      <div className="text-center">
-        <p className="font-mono text-xs text-slate-600">OR</p>
-        <div className="mt-2 flex flex-col gap-2">
-          <Link href="/hub" className="font-mono text-sm text-red-400 underline">
-            GITHUB HUB (12 min)
-          </Link>
-          <Link href="/clase" className="font-mono text-sm text-emerald-400 underline">
-            CLASE DE HOY (3 meses)
-          </Link>
-          <Link href="/train/5min" className="font-mono text-sm text-slate-400 underline">
-            5 MIN TRAINING
-          </Link>
-        </div>
+    <div className="mx-auto max-w-3xl space-y-8">
+      <div>
+        <p className="text-xs font-medium uppercase tracking-[0.2em] text-emerald-400">Bootcamp</p>
+        <h1 className="mt-2 text-4xl font-bold tracking-tight text-white">{ACADEMY_NAME}</h1>
+        <p className="mt-2 text-slate-300">{ACADEMY_TAGLINE}</p>
       </div>
 
-      <button type="button" onClick={() => setBrief((b) => !b)} className="w-full text-left font-mono text-[10px] text-slate-600">
-        {brief ? "−" : "+"} briefing (readiness / gaps) · no es la misión
-      </button>
-      {brief && (
-        <div className="space-y-2 text-xs text-slate-400">
-          <p>{readiness.ready ? "READINESS interno: READY" : `NO READY · ${readiness.blockers[0]?.labelEs ?? ""}`}</p>
-          <p className="text-[10px] text-slate-600">{readiness.disclaimer}</p>
-          {weaknesses[0] && (
-            <Link href={weaknesses[0].href} className="text-amber-400">
-              gap: {weaknesses[0].labelEs}
-            </Link>
-          )}
-        </div>
-      )}
+      <section className="rounded-2xl border border-emerald-700/60 bg-gradient-to-br from-emerald-950/80 to-slate-950 p-6">
+        <p className="text-xs font-medium uppercase tracking-wide text-emerald-400">Continuar</p>
+        <p className="mt-2 font-mono text-[11px] text-slate-400">
+          Módulo {next.week + 1}/{ACADEMY_STATS.modules}
+          {weekMeta ? ` · ${weekMeta.titleEs}` : ""} · jornada {weekDone}/{weekLessons.length}
+        </p>
+        <h2 className="mt-1 text-2xl font-bold text-white">{next.titleEs}</h2>
+        <p className="mt-3 text-sm leading-relaxed text-slate-300">
+          Teoría → examen corto → ejemplos paso a paso → tú en VirtualBox → taller de estudio escrito.
+        </p>
+        <Link
+          href={`/clase/${next.id}`}
+          className="mt-6 block rounded-xl bg-emerald-600 py-4 text-center text-lg font-bold text-white hover:bg-emerald-500"
+        >
+          Seguir jornada
+        </Link>
+      </section>
+
+      <section className="grid gap-3 sm:grid-cols-3">
+        <Stat label="Planificado" value={`${Math.round(ACADEMY_HOURS.total)} h`} hint={`${ACADEMY_HOURS.nucleo} h núcleo`} />
+        <Stat label="Hechas" value={`${hoursDone} h`} hint={`${doneCount}/${COURSE_LESSONS.length} jornadas · ${pct}%`} />
+        <Stat label="Racha" value={`${state.streak} d`} hint="Una jornada bien cerrada" />
+      </section>
+
+      <section className="grid gap-3 sm:grid-cols-2">
+        <CampusCard href="/clase" title="Academia" body="13 módulos, 78 jornadas de 10 h. La ruta principal del bootcamp." />
+        <CampusCard href="/laboratorio" title="Laboratorio" body="Kali en este PC. VirtualBox = víctimas Host-Only. DVWA en localhost." />
+        <CampusCard href="/talleres" title="Talleres" body={`${ACADEMY_STATS.talleres} estudios escritos (Nmap, SMB, web, post…). Extensión del núcleo.`} />
+        <CampusCard href="/simulacro" title="Exámenes" body="Examen semanal, skill-checks y simulacros cronometrados." />
+      </section>
+
+      <p className="text-center text-xs text-slate-600">
+        Núcleo {ACADEMY_HOURS.nucleo} h · talleres {ACADEMY_HOURS.talleres} h · biblioteca {ACADEMY_HOURS.biblioteca} h.
+        Esta academia no es INE: aquí estudias; ellos certifican.
+      </p>
     </div>
+  );
+}
+
+function Stat({ label, value, hint }: { label: string; value: string; hint: string }) {
+  return (
+    <div className="rounded-xl border border-slate-800 bg-slate-900/40 px-4 py-3">
+      <p className="text-[11px] uppercase tracking-wide text-slate-500">{label}</p>
+      <p className="mt-1 text-2xl font-bold text-white">{value}</p>
+      <p className="mt-0.5 text-xs text-slate-500">{hint}</p>
+    </div>
+  );
+}
+
+function CampusCard({ href, title, body }: { href: string; title: string; body: string }) {
+  return (
+    <Link href={href} className="rounded-xl border border-slate-800 bg-slate-900/30 p-4 hover:border-emerald-700">
+      <p className="font-semibold text-white">{title}</p>
+      <p className="mt-1 text-sm text-slate-400">{body}</p>
+    </Link>
   );
 }

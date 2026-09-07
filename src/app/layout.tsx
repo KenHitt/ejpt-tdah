@@ -18,12 +18,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "eJPT en 3 Meses — Plan de estudio",
-  description: "Plan de estudio calibrado para aprobar el eJPT en 3 meses, diseñado para TDAH.",
-  applicationName: "eJPT en 3 meses",
+  title: "eJPT Academy — Bootcamp de laboratorio",
+  description:
+    "Academia y bootcamp eJPT: más de 800 horas de teoría, examen corto, ejemplos, práctica en VirtualBox y talleres de estudio.",
+  applicationName: "eJPT Academy",
   appleWebApp: {
     capable: true,
-    title: "eJPT",
+    title: "eJPT Academy",
     statusBarStyle: "black-translucent",
   },
   formatDetection: { telephone: false },

@@ -1,4 +1,6 @@
-import { CourseLesson, CourseWeekMeta } from "@/content/course/types";
+import { CourseLesson, CourseWeekMeta, EnrichedLesson } from "@/content/course/types";
+import { enrichAll } from "@/content/course/enrich";
+import { plannedHours } from "@/content/course/jornada";
 import { W00 } from "@/content/course/w00";
 import { W01 } from "@/content/course/w01";
 import { W02 } from "@/content/course/w02";
@@ -24,7 +26,7 @@ export const COURSE_WEEKS: CourseWeekMeta[] = [
   { week: 12, monthLabel: "Mes 3", titleEs: "Consolidación", goalEs: "Huecos, simulacro final interno, última cadena." },
 ];
 
-export const COURSE_LESSONS: CourseLesson[] = [
+const COURSE_LESSONS_RAW: CourseLesson[] = [
   ...W00,
   ...W01,
   ...W02,
@@ -39,6 +41,10 @@ export const COURSE_LESSONS: CourseLesson[] = [
   ...W11,
   ...W12,
 ];
+
+export const COURSE_LESSONS: EnrichedLesson[] = enrichAll(COURSE_LESSONS_RAW);
+
+export const COURSE_HOURS = plannedHours(COURSE_LESSONS.length, COURSE_WEEKS.length);
 
 export function lessonsForWeek(week: number) {
   return COURSE_LESSONS.filter((l) => l.week === week).sort((a, b) => a.day - b.day);

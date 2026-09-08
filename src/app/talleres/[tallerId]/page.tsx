@@ -22,8 +22,8 @@ export default function TallerPage() {
 
   if (!workshop) {
     return (
-      <Link href="/talleres" className="text-amber-400">
-        Talleres
+      <Link href="/talleres" className="text-red-400">
+        Deep Dives
       </Link>
     );
   }
@@ -33,17 +33,25 @@ export default function TallerPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <Link href="/talleres" className="text-xs text-slate-500 hover:text-amber-400">
-        ← Talleres
-      </Link>
-      <p className="text-[11px] uppercase tracking-wide text-amber-400">Extension workshop</p>
+      <p className="text-xs text-slate-600">
+        <Link href="/learn" className="hover:text-red-400">
+          Reference
+        </Link>
+        {" → "}
+        <Link href="/talleres" className="hover:text-red-400">
+          Deep Dives
+        </Link>
+        {" → "}
+        <span className="text-slate-400">{workshop.titleEs}</span>
+      </p>
+      <p className="text-[11px] uppercase tracking-wide text-red-400">Deep dive</p>
       <h1 className="text-2xl font-bold text-white">{workshop.titleEs}</h1>
       <dl className="grid gap-2 rounded-xl border border-slate-800 p-4 text-sm sm:grid-cols-2">
         <div>
           <dt className="text-[10px] uppercase text-slate-500">Related skill</dt>
           <dd>
             {meta.skill ? (
-              <Link href={`/master/${meta.skill.id}`} className="text-amber-300">
+              <Link href={`/master/${meta.skill.id}`} className="text-red-300">
                 {meta.relatedSkillTitle}
               </Link>
             ) : (
@@ -90,11 +98,11 @@ export default function TallerPage() {
           <span />
         )}
         {next ? (
-          <Link href={`/talleres/${next.id}`} className="text-amber-400">
+          <Link href={`/talleres/${next.id}`} className="text-red-400">
             {next.titleEs} →
           </Link>
         ) : (
-          <Link href="/" className="text-amber-400">
+          <Link href="/" className="text-red-400">
             Mission Control →
           </Link>
         )}

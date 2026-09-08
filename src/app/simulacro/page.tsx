@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { CURRICULUM, computeCurrentGlobalWeek, globalWeekIndex } from "@/content/curriculum";
 import { useProgress } from "@/lib/progress/context";
+import { AssessmentCard } from "@/components/cards";
 
 export default function SimulacroHubPage() {
   const { state, canTakeFullSimulacroToday } = useProgress();
@@ -33,30 +34,30 @@ export default function SimulacroHubPage() {
         </Link>
       </section>
 
-      <section className="rounded-lg border border-red-800/50 bg-red-500/5 p-5">
-        <h2 className="text-lg font-semibold text-white">Simulacro Completo #{nextFullNumber}</h2>
-        <p className="mt-1 text-sm text-slate-400">
-          15 preguntas aleatorias de TODO lo cubierto hasta tu semana global actual ({currentGlobalWeek}). 20 minutos. 70% =
-          Learning Pass (no dominio).
-        </p>
-        {!canFull && (
+      {canFull ? (
+        <AssessmentCard
+          titleEs={`Simulacro Completo #${nextFullNumber}`}
+          descriptionEs={`15 preguntas aleatorias de TODO lo cubierto hasta tu semana global actual (${currentGlobalWeek}). 70% = Learning Pass (no dominio).`}
+          questionCount={15}
+          durationLabel="20 min"
+          href="/simulacro/full"
+          ctaLabel="START ASSESSMENT"
+        />
+      ) : (
+        <section className="rounded-lg border border-red-800/50 bg-red-500/5 p-5">
+          <h2 className="text-lg font-semibold text-white">Simulacro Completo #{nextFullNumber}</h2>
+          <p className="mt-1 text-sm text-slate-400">
+            15 preguntas aleatorias de TODO lo cubierto hasta tu semana global actual ({currentGlobalWeek}). 20 minutos. 70% =
+            Learning Pass (no dominio).
+          </p>
           <p className="mt-2 text-sm text-amber-300">
             Reprobaste un simulacro completo hoy. Regla fija: el siguiente simulacro completo va hasta tu próxima sesión de estudio.
           </p>
-        )}
-        <Link
-          href="/simulacro/full"
-          className={`mt-3 inline-block rounded-md px-4 py-2 text-sm font-semibold ${
-            canFull ? "bg-red-600 text-white hover:bg-red-500" : "bg-slate-800 text-slate-500"
-          }`}
-          aria-disabled={!canFull}
-          onClick={(e) => {
-            if (!canFull) e.preventDefault();
-          }}
-        >
-          {canFull ? "Empezar Simulacro Completo →" : "Bloqueado hasta la próxima sesión"}
-        </Link>
-      </section>
+          <span className="mt-3 inline-block rounded-md bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-500">
+            Bloqueado hasta la próxima sesión
+          </span>
+        </section>
+      )}
 
       <section>
         <h2 className="mb-3 text-lg font-semibold text-white">Skill-checks por semana</h2>

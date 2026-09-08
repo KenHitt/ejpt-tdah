@@ -6,11 +6,12 @@ import { getSkill, skillsRequiring, V6_SKILLS } from "@/content/v6/skills";
 import { getPhase } from "@/content/v6/phases";
 import { auditSkill } from "@/content/v6/audit";
 import { PrereqBanner } from "@/components/v6/PrereqBanner";
-import { skillStatus } from "@/lib/v6/mastery";
+import { skillBreakdown, skillStatus } from "@/lib/v6/mastery";
 import { statusClass, statusLabel } from "@/lib/v6/status-ui";
 import { useCourse } from "@/lib/course/context";
 import { useProgress } from "@/lib/progress/context";
 import { CycleFlags } from "@/content/v6/types";
+import { PRIMARY_BUTTON, progressBarClass } from "@/lib/design/tokens";
 
 const CYCLE: { key: keyof CycleFlags; label: string }[] = [
   { key: "theory", label: "Theory" },
@@ -37,7 +38,7 @@ export default function MasterSkillPage() {
         <ul className="space-y-1">
           {V6_SKILLS.map((s) => (
             <li key={s.id}>
-              <Link href={`/master/${s.id}`} className="text-amber-400">
+              <Link href={`/master/${s.id}`} className="text-red-400">
                 {s.titleEs}
               </Link>
             </li>
@@ -52,13 +53,14 @@ export default function MasterSkillPage() {
   const audit = auditSkill(skill.id);
   const nextSkills = skillsRequiring(skill.id);
   const firstLesson = skill.lessonIds[0];
+  const breakdown = skillBreakdown(skill.id, course, progress);
 
   return (
     <div className="mx-auto max-w-xl space-y-6">
-      <Link href="/clase" className="text-xs text-slate-500 hover:text-amber-400">
+      <Link href="/clase" className="text-xs text-slate-500 hover:text-red-400">
         ← Academy
       </Link>
-      <p className="text-[11px] uppercase tracking-wide text-amber-400">Master this skill</p>
+      <p className="text-[11px] uppercase tracking-wide text-red-400">Master this skill</p>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="text-3xl font-bold text-white">{skill.titleEs}</h1>
         <span className={`rounded-full px-2 py-0.5 text-[11px] ${statusClass(status)}`}>{statusLabel(status)}</span>
@@ -76,13 +78,48 @@ export default function MasterSkillPage() {
           {skill.prereqIds.map((id, i) => (
             <span key={id}>
               {i > 0 ? ", " : ""}
-              <Link href={`/master/${id}`} className="text-amber-400">
+              <Link href={`/master/${id}`} className="text-red-400">
                 {getSkill(id)?.titleEs ?? id}
               </Link>
             </span>
           ))}
         </p>
       )}
+
+      <section className="rounded-xl border border-slate-800 p-4">
+        <div className="flex items-baseline justify-between">
+          <p className="text-[11px] uppercase text-slate-500">Overall</p>
+          <p className="text-lg font-bold text-white">{breakdown.overall}%</p>
+        </div>
+        {!breakdown.hasData ? (
+          <p className="mt-2 text-sm text-slate-500">Not enough data yet — complete a lesson or drill on this skill.</p>
+        ) : (
+          <>
+            <dl className="mt-2 space-y-2 text-sm">
+              {(
+                [
+                  ["Knowledge", breakdown.knowledge],
+                  ["Command memory", breakdown.commandMemory],
+                  ["Reasoning", breakdown.reasoning],
+                  ["Practical", breakdown.practical],
+                  ["Independence", breakdown.independence],
+                ] as [string, number | undefined][]
+              ).map(([label, pct]) => (
+                <div key={label}>
+                  <div className="flex justify-between text-[11px] text-slate-400">
+                    <dt>{label}</dt>
+                    <dd>{pct === undefined ? "—" : `${pct}%`}</dd>
+                  </div>
+                  <div className="mt-0.5 h-1.5 overflow-hidden rounded bg-slate-800">
+                    <div className={`h-full ${progressBarClass(pct ?? 0)}`} style={{ width: `${pct ?? 0}%` }} />
+                  </div>
+                </div>
+              ))}
+            </dl>
+            {breakdown.mainWeaknessEs && <p className="mt-3 text-sm text-red-300">{breakdown.mainWeaknessEs}</p>}
+          </>
+        )}
+      </section>
 
       <section className="rounded-xl border border-slate-800 p-4">
         <p className="text-[11px] uppercase text-slate-500">Learning cycle</p>
@@ -116,7 +153,7 @@ export default function MasterSkillPage() {
       </ol>
 
       {firstLesson && status !== "LOCKED" && (
-        <Link href={`/clase/${firstLesson}`} className="block rounded-xl bg-amber-500 py-3 text-center font-bold text-black">
+        <Link href={`/clase/${firstLesson}`} className={PRIMARY_BUTTON}>
           Continue this skill
         </Link>
       )}
@@ -127,7 +164,7 @@ export default function MasterSkillPage() {
           {nextSkills.map((s, i) => (
             <span key={s.id}>
               {i > 0 ? " · " : ""}
-              <Link href={`/master/${s.id}`} className="text-slate-300 hover:text-amber-400">
+              <Link href={`/master/${s.id}`} className="text-slate-300 hover:text-red-400">
                 {s.titleEs}
               </Link>
             </span>
@@ -141,7 +178,7 @@ export default function MasterSkillPage() {
 function Li({ href, label }: { href: string; label: string }) {
   return (
     <li>
-      <Link href={href} className="text-slate-300 hover:text-amber-400">
+      <Link href={href} className="text-slate-300 hover:text-red-400">
         → {label}
       </Link>
     </li>

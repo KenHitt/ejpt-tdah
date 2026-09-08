@@ -8,19 +8,36 @@ import { diagnosePace } from "@/lib/regime";
 import { getSubtopic } from "@/content/subtopics";
 import { RegimeDayType } from "@/lib/types";
 import { ProgressState } from "@/lib/progress/state";
+import { COURSE_LESSONS, nextIncomplete } from "@/content/course";
 import { HONEST_HOURS, completedLessonHours } from "@/content/v6/hours";
-import { ejptReadiness, profileBars, redTeamFoundation } from "@/lib/v6/mastery";
+import { profileBars, skillBreakdown, skillStatus } from "@/lib/v6/mastery";
+import { phaseForWeek } from "@/content/v6/phases";
+import { skillWeaknesses, dominantFailureLabel } from "@/lib/v6/weakness";
+import { trainRecommendation } from "@/lib/v6/operation";
+import { ProgressCard, WeaknessCard, RecommendationCard, SkillCard } from "@/components/cards";
+import { progressBarClass } from "@/lib/design/tokens";
+import { V6_SKILLS } from "@/content/v6/skills";
 
+function formatHours(h: number) {
+  const hh = Math.floor(h);
+  const mm = Math.round((h - hh) * 60);
+  return `${hh}h ${mm.toString().padStart(2, "0")}m`;
+}
+
+/**
+ * Dashboard = "¿cómo voy?" (V7 sección 14-17, 41). Separado de Mission
+ * (que es "¿qué hago ahora?"). Todo derivado de actividad real; sección 54:
+ * si no hay datos suficientes, se dice explícitamente.
+ */
 export default function ProgresoPage() {
   const { state, addSession, ensurePlanStarted, importState, syncMode } = useProgress();
-  const { state: course } = useCourse();
+  const { state: course, dayNumber } = useCourse();
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [regimeDayType, setRegimeDayType] = useState<RegimeDayType>("trabajo");
   const [hoursPlanned, setHoursPlanned] = useState(2);
   const [hoursActual, setHoursActual] = useState(2);
 
   const diagnosis = diagnosePace(state.sessions, state.planStartedAt);
-
   const failuresList = Object.values(state.failures).filter((f) => f.status !== "resolved");
 
   const handleLogSession = (e: React.FormEvent) => {
@@ -36,33 +53,45 @@ export default function ProgresoPage() {
     });
   };
 
-  const doneH = completedLessonHours(Object.keys(course.lessons));
-  const remain = Math.max(0, Math.round((HONEST_HOURS.jornadaEstimated - doneH) * 10) / 10);
+  const doneIds = Object.keys(course.lessons);
+  const doneH = completedLessonHours(doneIds);
+  const curriculumPct = Math.round((doneIds.length / COURSE_LESSONS.length) * 100);
+  const next = nextIncomplete(course.lessons);
+  const currentPhase = phaseForWeek(next.week);
   const bars = profileBars(course, state);
-  const ejpt = ejptReadiness(course, state);
-  const rtf = redTeamFoundation(course, state);
+  const weaknesses = skillWeaknesses(course, state);
+  const dominant = dominantFailureLabel(state);
+  const rec = trainRecommendation(state);
+  const order: Record<string, number> = { WEAK: 0, PRACTICING: 1, READY: 2, IN_PROGRESS: 3 };
+  const focusSkills = V6_SKILLS.filter((s) => order[skillStatus(s.id, course, state)] !== undefined)
+    .sort((a, b) => order[skillStatus(a.id, course, state)] - order[skillStatus(b.id, course, state)])
+    .slice(0, 6);
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-white">Progreso honesto</h1>
+        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-red-400">Dashboard</p>
+        <h1 className="text-2xl font-bold text-white">eJPT training status</h1>
         <p className="mt-1 text-sm text-slate-400">
-          Las barras salen de actividad (jornadas, quizzes, labs, fallos), no de abrir páginas. eJPT readiness es criterio
-          interno de la academia, no de INE.
+          Derived from real activity (lessons, quizzes, labs, exam results) — not from opening pages. eJPT readiness is
+          an internal academy criterion, not an INE score.
         </p>
       </div>
 
-      <section className="grid gap-4 sm:grid-cols-2">
-        <StatCard label="eJPT readiness (interno)" value={`${ejpt}%`} />
-        <StatCard label="Red team foundation" value={`${rtf}%`} />
-        <StatCard label="Jornadas completadas (estimado)" value={`${doneH} h`} />
-        <StatCard label="Restantes de ruta (estimado)" value={`~${remain} h`} />
-        <StatCard label="Capacidad de catálogo (estimado)" value={`${HONEST_HOURS.allCatalogEstimated} h`} />
-        <StatCard label="Promedio / jornada" value={`~${HONEST_HOURS.avgJornadaMin} min`} />
+      <section className="grid gap-3 sm:grid-cols-3">
+        <ProgressCard label="Current phase" value={currentPhase.titleEs} hint={currentPhase.subtitleEs} />
+        <ProgressCard label="Day" value={`${Math.min(dayNumber, COURSE_LESSONS.length)} / ${COURSE_LESSONS.length}`} />
+        <ProgressCard label="Curriculum" value={`${curriculumPct}%`} pct={curriculumPct} />
+        <ProgressCard label="Study time (completed)" value={formatHours(doneH)} hint="Estimated from real content" />
+        <ProgressCard label="Current streak" value={`${course.streak} day${course.streak === 1 ? "" : "s"}`} />
+        <ProgressCard label="Remaining (est.)" value={`~${Math.max(0, HONEST_HOURS.jornadaEstimated - doneH).toFixed(1)} h`} />
       </section>
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Profile</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Skill profile</h2>
+        <p className="text-[11px] text-slate-500">
+          {bars.every((b) => b.pct === 0) ? "Not enough data yet — complete a lesson or drill to populate this." : ""}
+        </p>
         {bars.map((b) => (
           <div key={b.label}>
             <div className="flex justify-between text-[11px] text-slate-400">
@@ -70,16 +99,69 @@ export default function ProgresoPage() {
               <span>{b.pct}%</span>
             </div>
             <div className="mt-0.5 h-1.5 overflow-hidden rounded bg-slate-800">
-              <div className="h-full bg-amber-500" style={{ width: `${b.pct}%` }} />
+              <div className={`h-full ${progressBarClass(b.pct)}`} style={{ width: `${b.pct}%` }} />
             </div>
           </div>
         ))}
       </section>
 
+      {focusSkills.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Skill cards</h2>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {focusSkills.map((s) => {
+              const b = skillBreakdown(s.id, course, state);
+              return (
+                <SkillCard
+                  key={s.id}
+                  titleEs={s.titleEs}
+                  pct={b.overall}
+                  status={skillStatus(s.id, course, state)}
+                  knowledge={b.knowledge}
+                  reasoning={b.reasoning}
+                  practical={b.practical}
+                  weaknessEs={weaknesses.find((w) => w.skillId === s.id)?.mainIssueEs}
+                  href={`/master/${s.id}`}
+                />
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Areas to improve</h2>
+        {dominant && <p className="text-sm text-slate-300">Recent dominant failure type: {dominant}.</p>}
+        {weaknesses.length === 0 ? (
+          <p className="text-sm text-slate-500">No critical weaknesses detected.</p>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2">
+            {weaknesses.map((w) => (
+              <WeaknessCard
+                key={w.skillId}
+                titleEs={w.titleEs}
+                priority={w.priority}
+                signals={w.signals}
+                mainIssueEs={w.mainIssueEs}
+                href={w.href}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+
+      <RecommendationCard
+        titleEs={rec.title}
+        whyEs={rec.why}
+        estimatedLabel="Recommended review"
+        href={rec.href}
+        ctaLabel="START REVIEW"
+      />
+
       <div>
-        <h2 className="text-lg font-semibold text-white">Régimen 20×10 (sesiones que registras)</h2>
+        <h2 className="text-lg font-semibold text-white">20×10 regime (sessions you log)</h2>
         <p className="mt-1 text-sm text-slate-400">
-          Esto compara horas que tú anotas contra un plan personal de 90 días. No infla el temario a 800 h.
+          Compares hours you log against a personal 90-day plan. It does not inflate the curriculum to 800h.
         </p>
       </div>
 

@@ -6,8 +6,8 @@ import { ACADEMY_WORKSHOPS } from "@/content/academy/workshops";
 export default function FuentesPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <p className="text-xs font-medium uppercase tracking-[0.2em] text-amber-400">Material sources</p>
-      <h1 className="text-3xl font-bold text-white">Fuentes</h1>
+      <p className="text-xs font-medium uppercase tracking-[0.2em] text-red-400">Sources &amp; Provenance</p>
+      <h1 className="text-3xl font-bold text-white">Sources &amp; Provenance</h1>
       <p className="text-sm text-slate-400">
         Cada recurso externo alimenta un taller escrito. El estudio ocurre en Talleres / jornadas, no en 40 pestañas.
         Respeta la licencia del autor. No copies dumps de examen.
@@ -33,7 +33,7 @@ export default function FuentesPage() {
                   {s.relatedSkills.map((id, i) => (
                     <span key={id}>
                       {i > 0 ? ", " : ""}
-                      <Link href={`/master/${id}`} className="text-amber-400">
+                      <Link href={`/master/${id}`} className="text-red-400">
                         {getSkill(id)?.titleEs ?? id}
                       </Link>
                     </span>
@@ -42,8 +42,8 @@ export default function FuentesPage() {
               )}
               <div className="mt-2 flex flex-wrap gap-3 text-sm">
                 {ws && (
-                  <Link href={`/talleres/${ws.id}`} className="text-amber-400">
-                    Estudiar en el taller
+                  <Link href={`/talleres/${ws.id}`} className="text-red-400">
+                    Estudiar en el Deep Dive
                   </Link>
                 )}
                 <a href={s.url} target="_blank" rel="noreferrer" className="text-slate-500 hover:text-slate-300">

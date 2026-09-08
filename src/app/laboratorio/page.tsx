@@ -9,6 +9,8 @@ import { TroubleshootingList } from "@/components/TroubleshootingList";
 import { LAB_TROUBLESHOOTING, LAB_WORKSHOP, LAB_HOST_DIAGRAM } from "@/content/workshops/lab-virtualbox";
 import { useCourse } from "@/lib/course/context";
 import { labCheckpointDone } from "@/lib/v6/mastery";
+import { nextIncomplete } from "@/content/course";
+import { LabCard } from "@/components/cards";
 
 const CHECKPOINT = [
   { id: "c00-d1", label: "Kali / alcance" },
@@ -21,11 +23,21 @@ export default function LaboratorioPage() {
   const b1 = labWeek.blocks[0];
   const { state } = useCourse();
   const labOk = labCheckpointDone(state);
+  const next = nextIncomplete(state.lessons);
 
   return (
     <div className="space-y-8">
+      {labOk && (
+        <LabCard
+          titleEs="Metasploitable 2 · lab activo"
+          relatedLessonEs={next.titleEs}
+          objectiveEs={next.labTitle || "Continúa la jornada actual en tu lab local."}
+          href={`/clase/${next.id}`}
+          status="available"
+        />
+      )}
       <div>
-        <p className="font-mono text-xs text-amber-400">FASE 0 · Lab checkpoint</p>
+        <p className="font-mono text-xs text-red-400">FASE 0 · Lab checkpoint</p>
         <h1 className="mt-1 text-2xl font-bold text-white">Construcción del laboratorio de pentesting</h1>
         <p className="mt-2 text-sm text-slate-400">
           Solo máquinas propias / VMs educativas. Kali es el SO de este PC. Focus = laboratorio guiado (una pantalla). Esta
@@ -40,7 +52,7 @@ export default function LaboratorioPage() {
       </div>
 
       <section className={`rounded-xl border p-4 ${labOk ? "border-emerald-800" : "border-amber-700"}`}>
-        <p className="text-[11px] uppercase text-amber-400">Lab checkpoint</p>
+        <p className="text-[11px] uppercase text-slate-400">Lab checkpoint</p>
         <p className="mt-1 text-sm text-slate-300">
           {labOk
             ? "Checkpoint cubierto en las jornadas c00-d1…d4. Sigue visible para consulta."
@@ -49,7 +61,7 @@ export default function LaboratorioPage() {
         <ul className="mt-3 space-y-1 text-sm">
           {CHECKPOINT.map((c) => (
             <li key={c.id} className="flex justify-between">
-              <Link href={`/clase/${c.id}`} className="text-amber-400">
+              <Link href={`/clase/${c.id}`} className="text-red-400">
                 {c.label}
               </Link>
               <span className={state.lessons[c.id] ? "text-emerald-400" : "text-slate-600"}>

@@ -93,6 +93,75 @@ export function profileBars(course: CourseState, progress: ProgressState) {
   return bars;
 }
 
+export interface SkillBreakdown {
+  knowledge?: number;
+  commandMemory?: number;
+  reasoning?: number;
+  practical?: number;
+  independence?: number;
+  overall: number;
+  mainWeaknessEs: string | null;
+  hasData: boolean;
+}
+
+/**
+ * Sección 17/55 — performance profile por skill, derivado de actividad real.
+ * Cualquier métrica sin datos suficientes queda undefined (la UI debe decir
+ * "Not enough data yet", nunca inventar un número).
+ */
+export function skillBreakdown(skillId: string, course: CourseState, progress: ProgressState): SkillBreakdown {
+  const skill = getSkill(skillId);
+  const overall = { LOCKED: 0, AVAILABLE: 5, IN_PROGRESS: 30, PRACTICING: 50, WEAK: 35, READY: 80, MASTERED: 95 }[
+    skillStatus(skillId, course, progress)
+  ];
+  if (!skill) return { overall, mainWeaknessEs: null, hasData: false };
+
+  const doneLessons = skill.lessonIds.filter((id) => course.lessons[id]);
+  const knowledge = doneLessons.length
+    ? Math.round(doneLessons.reduce((n, id) => n + (course.lessons[id]?.quizPct ?? 0), 0) / doneLessons.length)
+    : undefined;
+
+  const attempts = (progress.trainer?.attempts ?? []).filter((a) =>
+    skill.subtopicIds.some((s) => a.domain === s || a.exerciseId.includes(s))
+  );
+  const byKind = (k: "memory" | "reasoning" | "technical") => {
+    const mine = attempts.filter((a) => a.failKind === k || (a.correct && a.skillKind === (k === "reasoning" ? "reasoning" : undefined)));
+    if (!mine.length) return undefined;
+    return Math.round((mine.filter((a) => a.correct).length / mine.length) * 100);
+  };
+  const commandMemory = byKind("memory");
+  const reasoning = byKind("reasoning");
+  const practical = doneLessons.length
+    ? Math.round((doneLessons.filter((id) => course.lessons[id]?.labDone).length / doneLessons.length) * 100)
+    : undefined;
+
+  const withHints = attempts.filter((a) => a.correct);
+  const independence = withHints.length
+    ? Math.round((withHints.filter((a) => a.hintsUsed === 0).length / withHints.length) * 100)
+    : undefined;
+
+  const metrics: [string, number | undefined][] = [
+    ["Knowledge", knowledge],
+    ["Command memory", commandMemory],
+    ["Reasoning", reasoning],
+    ["Practical", practical],
+    ["Independence", independence],
+  ];
+  const withValue = metrics.filter((m): m is [string, number] => m[1] !== undefined);
+  const weakest = withValue.length ? withValue.sort((a, b) => a[1] - b[1])[0] : null;
+
+  return {
+    knowledge,
+    commandMemory,
+    reasoning,
+    practical,
+    independence,
+    overall,
+    mainWeaknessEs: weakest ? `Your main weakness is ${weakest[0].toLowerCase()}.` : null,
+    hasData: withValue.length > 0,
+  };
+}
+
 export function ejptReadiness(course: CourseState, progress: ProgressState) {
   const core = ["lab", "networking", "linux", "nmap", "enumeration", "metasploit", "web", "sqli", "chains", "reporting"];
   const avg = Math.round(core.reduce((n, id) => n + (phaseProgress([id], course, progress) as number), 0) / core.length);

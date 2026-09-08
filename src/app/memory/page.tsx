@@ -25,12 +25,15 @@ export default function MemoryPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="font-mono text-xs text-amber-400">REVIEW · SRS, no lista aleatoria</p>
+        <p className="font-mono text-xs text-red-400">REVIEW · SRS, no lista aleatoria</p>
         <h1 className="text-2xl font-bold text-white">Recall</h1>
         <p className="mt-1 text-sm text-slate-400">
           Prioridad: errores recientes → conceptos débiles → comandos vencidos. No leas la lista como cheat sheet.
         </p>
         {advice && <p className="mt-2 text-sm text-amber-200">{advice}</p>}
+        <Link href="/train" className="mt-3 inline-block rounded-full border border-red-700 px-3 py-1.5 text-xs font-medium text-red-300 hover:bg-red-500/10">
+          Open Training Gym →
+        </Link>
       </div>
 
       {due.length > 0 && (

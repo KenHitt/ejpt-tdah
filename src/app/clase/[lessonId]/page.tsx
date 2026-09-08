@@ -13,6 +13,7 @@ import { useCourse } from "@/lib/course/context";
 import { estimateLessonBreakdown } from "@/content/v6/hours";
 import { lessonLinkedSkill, workshopWhen } from "@/content/v6/relations";
 import { getPhase } from "@/content/v6/phases";
+import { PRIMARY_BUTTON } from "@/lib/design/tokens";
 
 export default function LessonPage() {
   const params = useParams<{ lessonId: string }>();
@@ -57,17 +58,29 @@ export default function LessonPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
-        <Link href="/clase" className="text-xs text-slate-500 hover:text-amber-400">
-          ← Academia
-        </Link>
-        <p className="mt-2 text-xs font-medium text-amber-400">
+        <p className="text-xs text-slate-600">
+          <Link href="/clase" className="hover:text-red-400">
+            Academy
+          </Link>
+          {phase && (
+            <>
+              {" → "}
+              <span className="text-slate-500">
+                Phase {phase.n} · {phase.titleEs}
+              </span>
+            </>
+          )}
+          {" → "}
+          <span className="text-slate-400">{lesson.titleEs}</span>
+        </p>
+        <p className="mt-2 text-xs font-medium text-red-400">
           {phase ? `Fase ${phase.n} · ${phase.titleEs}` : `Módulo ${(lesson.week + 1).toString().padStart(2, "0")}`} ·{" "}
           {moduleMeta?.titleEs} · jornada {lesson.day} · ~{breakdown.total} min (estimado)
         </p>
         <h1 className="mt-1 text-3xl font-bold text-white">{lesson.titleEs}</h1>
         {skill && <p className="mt-2 text-sm text-slate-300">{skill.whyEs}</p>}
         {skill && (
-          <Link href={`/master/${skill.id}`} className="mt-2 inline-block text-xs text-amber-400 hover:underline">
+          <Link href={`/master/${skill.id}`} className="mt-2 inline-block text-xs text-red-400 hover:underline">
             Master this skill · {skill.titleEs}
           </Link>
         )}
@@ -79,7 +92,7 @@ export default function LessonPage() {
         {phases.map((p) => (
           <li key={p.id} className="rounded-lg border border-slate-800 px-2 py-2 text-center">
             <p className="text-[10px] font-medium text-slate-400">{p.label}</p>
-            <p className="text-[11px] text-amber-300">{p.detail}</p>
+            <p className="text-[11px] text-red-300">{p.detail}</p>
           </li>
         ))}
       </ol>
@@ -170,7 +183,7 @@ export default function LessonPage() {
             tallerDone: true,
           })
         }
-        className="w-full rounded-xl bg-amber-500 py-3 font-bold text-black hover:bg-amber-400 disabled:opacity-40"
+        className={PRIMARY_BUTTON}
       >
         {rec ? "Actualizar jornada" : "Marcar jornada completa"}
       </button>
@@ -189,11 +202,11 @@ export default function LessonPage() {
           <span />
         )}
         {next ? (
-          <Link href={`/clase/${next.id}`} className="text-amber-400">
+          <Link href={`/clase/${next.id}`} className="text-red-400">
             {next.titleEs} →
           </Link>
         ) : (
-          <Link href={`/clase/examen/w${lesson.week}`} className="text-amber-300">
+          <Link href={`/clase/examen/w${lesson.week}`} className="text-red-300">
             Examen del módulo →
           </Link>
         )}
@@ -205,7 +218,7 @@ export default function LessonPage() {
 function Phase({ n, title, time }: { n: number; title: string; time: string }) {
   return (
     <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-      <span className="text-amber-400">{n}</span> · {title} · {time}
+      <span className="text-red-400">{n}</span> · {title} · {time}
     </p>
   );
 }

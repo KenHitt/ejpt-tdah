@@ -23,7 +23,7 @@ export function EnergyToggle({
           type="button"
           onClick={() => onChange(m.id)}
           className={`rounded-full px-3 py-1.5 text-[11px] ${
-            value === m.id ? "bg-amber-500 text-black font-semibold" : "border border-slate-700 text-slate-400"
+            value === m.id ? "bg-red-600 text-white font-semibold" : "border border-slate-700 text-slate-400"
           }`}
         >
           {m.label}

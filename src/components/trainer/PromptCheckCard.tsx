@@ -26,6 +26,9 @@ export function PromptCheckCard({
   const [note, setNote] = useState("");
   const [fails, setFails] = useState(0);
 
+  const lastAnswerEs =
+    check.choices?.length ? check.choices.find((c) => c.id === choice)?.textEs ?? "—" : text.trim() || "—";
+
   const submit = () => {
     const result = gradePrompt(check, text, choice, justify);
     recordTrainerAttempt({
@@ -51,30 +54,55 @@ export function PromptCheckCard({
     setPhase("explain");
   };
 
+  const retry = () => {
+    setChoice(undefined);
+    setText("");
+    setJustify("");
+    setPhase("ask");
+  };
+
+  const FAIL_KIND_LABEL: Record<string, string> = {
+    memory: "COMMAND MEMORY",
+    reasoning: "REASONING",
+    technical: "PRACTICAL",
+  };
+
   return (
     <div className="space-y-3">
       <p className="text-sm text-slate-200">{check.promptEs}</p>
       {check.promptEn && <p className="font-mono text-xs text-emerald-400">{check.promptEn}</p>}
 
       {phase === "explain" && (
-        <div className="rounded-md border border-red-800/60 bg-red-500/10 p-3 text-sm text-red-100">
-          <p className="font-semibold">
-            {check.failKind === "memory"
-              ? "FAIL DE MEMORIA"
-              : check.failKind === "technical"
-                ? "FAIL TÉCNICO"
-                : "FAIL DE RAZONAMIENTO"}
+        <div className="rounded-md border border-red-800/60 bg-red-500/10 p-4 text-sm text-red-100">
+          <p className="font-bold uppercase tracking-wide text-red-300">Not quite</p>
+          <p className="mt-2 text-[11px] uppercase text-slate-400">Your answer</p>
+          <p className="text-slate-200">{lastAnswerEs}</p>
+          <p className="mt-2 text-[11px] uppercase text-slate-400">Why</p>
+          <p className="whitespace-pre-wrap text-red-100">{note}</p>
+          <p className="mt-2 font-mono text-[11px] uppercase text-amber-300">
+            Failure type · {FAIL_KIND_LABEL[check.failKind] ?? "REASONING"}
           </p>
-          <p className="mt-1 whitespace-pre-wrap">{note}</p>
-          <p className="mt-2 font-mono text-xs text-amber-300">EXPLICAR → REPETIR → VOLVER A COMPROBAR</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={retry}
+              className="rounded-md bg-red-700 px-3 py-2 text-xs font-semibold text-white hover:bg-red-600"
+            >
+              RETRY
+            </button>
+          </div>
         </div>
       )}
 
       {phase === "passed" && (
-        <p className="rounded-md border border-emerald-800/50 bg-emerald-500/10 p-3 text-sm text-emerald-200">{note}</p>
+        <div className="rounded-md border border-emerald-800/50 bg-emerald-500/10 p-4 text-sm text-emerald-200">
+          <p className="font-bold uppercase tracking-wide text-emerald-300">Correct · good decision</p>
+          <p className="mt-2 text-[11px] uppercase text-emerald-400/80">Why</p>
+          <p className="whitespace-pre-wrap">{note}</p>
+        </div>
       )}
 
-      {phase !== "passed" && (
+      {phase === "ask" && (
         <>
           {check.choices?.length ? (
             <ul className="space-y-1">

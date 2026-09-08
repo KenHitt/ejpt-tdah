@@ -11,19 +11,19 @@ import { W07, W08 } from "@/content/course/w07";
 import { W09, W10, W11, W12 } from "@/content/course/w09";
 
 export const COURSE_WEEKS: CourseWeekMeta[] = [
-  { week: 0, monthLabel: "Mes 0", titleEs: "Laboratorio", goalEs: "Kali, vboxnet, MS2 viva, alcance escrito." },
-  { week: 1, monthLabel: "Mes 1", titleEs: "Nmap y recon", goalEs: "Discovery, puertos, versiones, interpretar." },
-  { week: 2, monthLabel: "Mes 1", titleEs: "Enumeración y tools", goalEs: "SMB, Gobuster, Hydra: no mezclarlos." },
-  { week: 3, monthLabel: "Mes 1", titleEs: "Metasploit", goalEs: "search → set → LHOST → session → sysinfo." },
-  { week: 4, monthLabel: "Mes 1", titleEs: "Explotación y cierre", goalEs: "Match de versión, reverse/bind, una cadena." },
-  { week: 5, monthLabel: "Mes 2", titleEs: "Web SQLi/XSS", goalEs: "Params, SQLi manual/sqlmap, XSS, cookies." },
-  { week: 6, monthLabel: "Mes 2", titleEs: "LFI y simulacro", goalEs: "LFI/RFI concepto, bypass, primer gym de reloj." },
-  { week: 7, monthLabel: "Mes 2", titleEs: "Red y pivot", goalEs: "Rutas, ARP concepto, forward/SOCKS, UDP." },
-  { week: 8, monthLabel: "Mes 2", titleEs: "Privesc y loot", goalEs: "Mapa Linux/Windows, notas, cuándo parar." },
-  { week: 9, monthLabel: "Mes 3", titleEs: "Cadenas", goalEs: "Boxes bajo reloj, 80+445, reasoning." },
-  { week: 10, monthLabel: "Mes 3", titleEs: "Reporting", goalEs: "Valores exactos, plantilla, inglés de examen." },
-  { week: 11, monthLabel: "Mes 3", titleEs: "Logística INE", goalEs: "VPN, triage, integridad, T-48." },
-  { week: 12, monthLabel: "Mes 3", titleEs: "Consolidación", goalEs: "Huecos, simulacro final interno, última cadena." },
+  { week: 0, monthLabel: "Mes 0", titleEs: "Fundamentos y laboratorio", goalEs: "Kali, vboxnet, MS2 viva, alcance escrito." },
+  { week: 1, monthLabel: "Mes 1", titleEs: "Reconocimiento y descubrimiento", goalEs: "Discovery, puertos, versiones, interpretar." },
+  { week: 2, monthLabel: "Mes 1", titleEs: "Enumeración de servicios", goalEs: "SMB, Gobuster, Hydra: no mezclarlos." },
+  { week: 3, monthLabel: "Mes 1", titleEs: "Explotación con Metasploit", goalEs: "search → set → LHOST → session → sysinfo." },
+  { week: 4, monthLabel: "Mes 1", titleEs: "Explotación y acceso inicial", goalEs: "Match de versión, reverse/bind, una cadena." },
+  { week: 5, monthLabel: "Mes 2", titleEs: "Seguridad web: inyección y XSS", goalEs: "Params, SQLi manual/sqlmap, XSS, cookies." },
+  { week: 6, monthLabel: "Mes 2", titleEs: "Inclusión de archivos y repaso", goalEs: "LFI/RFI concepto, bypass, primer gym de reloj." },
+  { week: 7, monthLabel: "Mes 2", titleEs: "Redes internas y pivoting", goalEs: "Rutas, ARP concepto, forward/SOCKS, UDP." },
+  { week: 8, monthLabel: "Mes 2", titleEs: "Escalada de privilegios", goalEs: "Mapa Linux/Windows, notas, cuándo parar." },
+  { week: 9, monthLabel: "Mes 3", titleEs: "Cadenas de ataque", goalEs: "Boxes bajo reloj, 80+445, reasoning." },
+  { week: 10, monthLabel: "Mes 3", titleEs: "Documentación de hallazgos", goalEs: "Valores exactos, plantilla, inglés de examen." },
+  { week: 11, monthLabel: "Mes 3", titleEs: "Preparación logística del examen", goalEs: "VPN, triage, integridad, T-48." },
+  { week: 12, monthLabel: "Mes 3", titleEs: "Consolidación final", goalEs: "Huecos, simulacro final interno, última cadena." },
 ];
 
 const COURSE_LESSONS_RAW: CourseLesson[] = [

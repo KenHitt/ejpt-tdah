@@ -34,6 +34,8 @@ export interface V6Phase {
   id: string;
   n: number;
   titleEs: string;
+  /** Subtítulo pedagógico corto, ej. "Reconocimiento y descubrimiento" (V7 sección 3). */
+  subtitleEs: string;
   goalEs: string;
   thinkEs: string;
   weekIds: number[];

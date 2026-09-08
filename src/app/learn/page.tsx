@@ -24,11 +24,11 @@ export default function LearnIndexPage() {
 
   return (
     <div className="space-y-6">
-      <p className="text-xs font-medium uppercase tracking-[0.2em] text-amber-400">Quick review</p>
-      <h1 className="mt-2 text-2xl font-bold text-white">Biblioteca</h1>
+      <p className="text-xs font-medium uppercase tracking-[0.2em] text-red-400">Reference</p>
+      <h1 className="mt-2 text-2xl font-bold text-white">Reference</h1>
       <p className="text-sm text-slate-400">
-        {LEARN_ARTICLES.length} fichas · ~{HONEST_HOURS.fichasEstimated} h estimadas. Repaso 2–12 min. No es la ruta
-        principal. Ampliar superficie no garantiza el aprobado de INE.
+        Quick lookup, not the main path. {LEARN_ARTICLES.length} fichas · ~{HONEST_HOURS.fichasEstimated} h estimadas.
+        Repaso 2–12 min. Ampliar superficie no garantiza el aprobado de INE.
       </p>
 
       <div className="flex flex-wrap gap-2">
@@ -45,7 +45,7 @@ export default function LearnIndexPage() {
             type="button"
             onClick={() => setDepth(id)}
             className={`rounded-full px-3 py-1 text-[11px] ${
-              depth === id ? "bg-amber-500 text-black" : "border border-slate-700 text-slate-300"
+              depth === id ? "bg-red-600 text-white" : "border border-slate-700 text-slate-300"
             }`}
           >
             {label}
@@ -57,7 +57,7 @@ export default function LearnIndexPage() {
         <ul className="grid gap-2 sm:grid-cols-2">
           {V6_SKILLS.map((s) => (
             <li key={s.id}>
-              <Link href={`/master/${s.id}`} className="block rounded-md border border-slate-800 p-3 hover:border-amber-600">
+              <Link href={`/master/${s.id}`} className="block rounded-md border border-slate-800 p-3 hover:border-red-600">
                 <p className="text-[10px] uppercase text-slate-500">{s.track}</p>
                 <p className="text-white">{s.titleEs}</p>
                 <p className="text-xs text-slate-500">60–120 min si haces el ciclo completo (estimado)</p>
@@ -69,18 +69,18 @@ export default function LearnIndexPage() {
         <>
           {depth === "DEEP" && (
             <section>
-              <h2 className="mb-2 font-mono text-xs text-amber-500">Deep dive · talleres (~40 min)</h2>
+              <h2 className="mb-2 font-mono text-xs text-red-500">Deep Dives (~40 min)</h2>
               <ul className="grid gap-2 sm:grid-cols-2">
                 {ACADEMY_WORKSHOPS.slice(0, 12).map((w) => (
                   <li key={w.id}>
-                    <Link href={`/talleres/${w.id}`} className="block rounded-md border border-slate-800 p-3 hover:border-amber-600">
+                    <Link href={`/talleres/${w.id}`} className="block rounded-md border border-slate-800 p-3 hover:border-red-600">
                       <p className="text-white">{w.titleEs}</p>
                     </Link>
                   </li>
                 ))}
               </ul>
-              <Link href="/talleres" className="mt-2 inline-block text-sm text-amber-400">
-                Ver los {ACADEMY_WORKSHOPS.length} talleres →
+              <Link href="/talleres" className="mt-2 inline-block text-sm text-red-400">
+                Ver los {ACADEMY_WORKSHOPS.length} Deep Dives →
               </Link>
             </section>
           )}
@@ -89,13 +89,13 @@ export default function LearnIndexPage() {
             if (!items.length) return null;
             return (
               <section key={t}>
-                <h2 className="mb-2 font-mono text-xs text-amber-500">{t}</h2>
+                <h2 className="mb-2 font-mono text-xs text-red-500">{t}</h2>
                 <ul className="grid gap-2 sm:grid-cols-2">
                   {items.map((a) => {
                     const meta = learnMeta(a.id);
                     return (
                       <li key={a.id}>
-                        <Link href={`/learn/${a.id}`} className="block rounded-md border border-slate-800 p-3 hover:border-amber-600">
+                        <Link href={`/learn/${a.id}`} className="block rounded-md border border-slate-800 p-3 hover:border-red-600">
                           <p className="text-white">{a.titleEs}</p>
                           <p className="text-[11px] text-slate-500">
                             {meta.depth} · ~{meta.minutes} min
@@ -111,7 +111,7 @@ export default function LearnIndexPage() {
           })}
         </>
       )}
-      <Link href="/teoria" className="text-sm text-amber-400 underline">
+      <Link href="/teoria" className="text-sm text-red-400 underline">
         Teoría por bloque (offline) →
       </Link>
     </div>

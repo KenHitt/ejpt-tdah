@@ -11,8 +11,39 @@ interface QuizResultProps {
   cooldownBlocked?: boolean;
 }
 
+const CATEGORY_LABEL: Record<string, string> = {
+  recon: "Reconnaissance",
+  scanning: "Scanning",
+  enumeration: "Enumeration",
+  web: "Web",
+  "brute-force": "Brute force",
+  metasploit: "Metasploit",
+  exploitation: "Exploitation",
+  "post-exploitation": "Post-exploitation",
+  networking: "Networking",
+  linux: "Linux",
+  reporting: "Reporting",
+  "exam-mechanics": "Exam mechanics",
+};
+
+/** Sección 26 — After Action Review. Weak areas por categoría real (no inventada). */
+function weakAreas(graded: GradedAttempt) {
+  const byCategory: Record<string, { correct: number; total: number }> = {};
+  for (const r of graded.results) {
+    const cat = getSubtopic(r.subtopicId)?.category ?? "exam-mechanics";
+    byCategory[cat] ??= { correct: 0, total: 0 };
+    byCategory[cat].total += 1;
+    if (r.correct) byCategory[cat].correct += 1;
+  }
+  return Object.entries(byCategory)
+    .map(([cat, v]) => ({ cat, pct: Math.round((v.correct / v.total) * 100), ...v }))
+    .sort((a, b) => a.pct - b.pct);
+}
+
 export function QuizResult({ graded, questions, isFullSimulacro, cooldownBlocked }: QuizResultProps) {
   const byId = new Map(questions.map((q) => [q.id, q]));
+  const areas = weakAreas(graded);
+  const weakest = areas.find((a) => a.pct < 70);
 
   return (
     <div className="space-y-5">
@@ -43,6 +74,39 @@ export function QuizResult({ graded, questions, isFullSimulacro, cooldownBlocked
           </p>
         )}
       </div>
+
+      <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+        <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">Weak areas</h3>
+        <ul className="space-y-1.5 text-sm">
+          {areas.map((a) => (
+            <li key={a.cat} className="flex items-center justify-between gap-2">
+              <span className="text-slate-200">{CATEGORY_LABEL[a.cat] ?? a.cat}</span>
+              <span className="font-mono text-xs">
+                <span className={a.pct >= 70 ? "text-emerald-400" : "text-red-400"}>{a.pct >= 70 ? "🟢" : "🔴"}</span>{" "}
+                <span className="text-slate-400">
+                  {a.correct}/{a.total}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {weakest && (
+        <div className="rounded-xl border-2 border-red-700 bg-slate-950 p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-red-400">Recommended next step</p>
+          <p className="mt-1 font-bold text-white">{CATEGORY_LABEL[weakest.cat] ?? weakest.cat} Review</p>
+          <p className="mt-1 text-sm text-slate-400">
+            {weakest.correct}/{weakest.total} correct in this area during this assessment.
+          </p>
+          <Link
+            href={graded.failedSubtopics[0] ? `/remediation/${graded.failedSubtopics[0]}` : "/memory"}
+            className="mt-3 inline-block rounded-lg bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-500"
+          >
+            REVIEW WEAK AREAS
+          </Link>
+        </div>
+      )}
 
       <div>
         <h3 className="mb-2 text-sm font-semibold text-slate-300">Detalle por pregunta</h3>

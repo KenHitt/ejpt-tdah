@@ -23,11 +23,11 @@ export default function TalleresPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
-        <p className="text-xs font-medium uppercase tracking-[0.2em] text-amber-400">Extension workshops</p>
-        <h1 className="mt-2 text-3xl font-bold text-white">Talleres de estudio</h1>
+        <p className="text-xs font-medium uppercase tracking-[0.2em] text-red-400">Deep Dives</p>
+        <h1 className="mt-2 text-3xl font-bold text-white">Deep Dives</h1>
         <p className="mt-2 text-sm leading-relaxed text-slate-300">
-          {ACADEMY_STATS.talleres} talleres · ~{HONEST_HOURS.talleresEstimated} h estimadas (~40 min cada uno, no 2.5 h).
-          Profundizan un skill de la ruta. No son una segunda academia.
+          {ACADEMY_STATS.talleres} deep dives · ~{HONEST_HOURS.talleresEstimated} h estimadas (~40 min cada uno, no 2.5
+          h). Profundizan un skill de la ruta. No son una segunda academia ni un requisito para avanzar.
         </p>
       </div>
 
@@ -52,7 +52,7 @@ export default function TalleresPage() {
             <li key={w.id}>
               <Link
                 href={`/talleres/${w.id}`}
-                className="block rounded-xl border border-slate-800 bg-slate-900/40 px-4 py-3 hover:border-amber-700"
+                className="block rounded-xl border border-slate-800 bg-slate-900/40 px-4 py-3 hover:border-red-700"
               >
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <p className="font-medium text-white">{w.titleEs}</p>
@@ -83,7 +83,7 @@ function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; chi
       type="button"
       onClick={onClick}
       className={`rounded-full px-3 py-1 text-[11px] font-medium ${
-        on ? "bg-amber-500 text-black" : "border border-slate-700 text-slate-300"
+        on ? "bg-red-600 text-white" : "border border-slate-700 text-slate-300"
       }`}
     >
       {children}

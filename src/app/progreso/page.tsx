@@ -3,13 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useProgress } from "@/lib/progress/context";
+import { useCourse } from "@/lib/course/context";
 import { diagnosePace } from "@/lib/regime";
 import { getSubtopic } from "@/content/subtopics";
 import { RegimeDayType } from "@/lib/types";
 import { ProgressState } from "@/lib/progress/state";
+import { HONEST_HOURS, completedLessonHours } from "@/content/v6/hours";
+import { ejptReadiness, profileBars, redTeamFoundation } from "@/lib/v6/mastery";
 
 export default function ProgresoPage() {
   const { state, addSession, ensurePlanStarted, importState, syncMode } = useProgress();
+  const { state: course } = useCourse();
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [regimeDayType, setRegimeDayType] = useState<RegimeDayType>("trabajo");
   const [hoursPlanned, setHoursPlanned] = useState(2);
@@ -32,13 +36,50 @@ export default function ProgresoPage() {
     });
   };
 
+  const doneH = completedLessonHours(Object.keys(course.lessons));
+  const remain = Math.max(0, Math.round((HONEST_HOURS.jornadaEstimated - doneH) * 10) / 10);
+  const bars = profileBars(course, state);
+  const ejpt = ejptReadiness(course, state);
+  const rtf = redTeamFoundation(course, state);
+
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-white">Progreso honesto</h1>
         <p className="mt-1 text-sm text-slate-400">
-          Regla fija #8: sin motivación vacía. Estos números comparan tus horas reales contra las horas que el plan necesita para
-          los 3 meses, según tu régimen 20x10.
+          Las barras salen de actividad (jornadas, quizzes, labs, fallos), no de abrir páginas. eJPT readiness es criterio
+          interno de la academia, no de INE.
+        </p>
+      </div>
+
+      <section className="grid gap-4 sm:grid-cols-2">
+        <StatCard label="eJPT readiness (interno)" value={`${ejpt}%`} />
+        <StatCard label="Red team foundation" value={`${rtf}%`} />
+        <StatCard label="Jornadas completadas (estimado)" value={`${doneH} h`} />
+        <StatCard label="Restantes de ruta (estimado)" value={`~${remain} h`} />
+        <StatCard label="Capacidad de catálogo (estimado)" value={`${HONEST_HOURS.allCatalogEstimated} h`} />
+        <StatCard label="Promedio / jornada" value={`~${HONEST_HOURS.avgJornadaMin} min`} />
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Profile</h2>
+        {bars.map((b) => (
+          <div key={b.label}>
+            <div className="flex justify-between text-[11px] text-slate-400">
+              <span>{b.label}</span>
+              <span>{b.pct}%</span>
+            </div>
+            <div className="mt-0.5 h-1.5 overflow-hidden rounded bg-slate-800">
+              <div className="h-full bg-amber-500" style={{ width: `${b.pct}%` }} />
+            </div>
+          </div>
+        ))}
+      </section>
+
+      <div>
+        <h2 className="text-lg font-semibold text-white">Régimen 20×10 (sesiones que registras)</h2>
+        <p className="mt-1 text-sm text-slate-400">
+          Esto compara horas que tú anotas contra un plan personal de 90 días. No infla el temario a 800 h.
         </p>
       </div>
 

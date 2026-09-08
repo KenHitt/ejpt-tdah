@@ -6,22 +6,23 @@ import { useProgress } from "@/lib/progress/context";
 import { ACADEMY_NAME } from "@/content/academy/program";
 
 const PRIMARY = [
-  { href: "/", label: "Hoy" },
-  { href: "/clase", label: "Academia" },
+  { href: "/", label: "Mission" },
+  { href: "/clase", label: "Academy" },
   { href: "/laboratorio", label: "Lab" },
-  { href: "/talleres", label: "Talleres" },
-  { href: "/train", label: "Práctica" },
-  { href: "/simulacro", label: "Exámenes" },
-  { href: "/progreso", label: "Progreso" },
+  { href: "/train", label: "Train" },
+  { href: "/memory", label: "Review" },
+  { href: "/simulacro", label: "Exam" },
 ];
 
 const SECONDARY = [
-  { href: "/learn", label: "Biblioteca" },
-  { href: "/teoria", label: "Repaso móvil" },
-  { href: "/glosario", label: "EN/ES" },
+  { href: "/learn", label: "Library" },
+  { href: "/talleres", label: "Workshops" },
+  { href: "/fuentes", label: "Sources" },
+  { href: "/progreso", label: "Progress" },
+  { href: "/plan", label: "Plan" },
+  { href: "/auditoria", label: "Audit" },
   { href: "/como-usar", label: "Cómo usar" },
   { href: "/login", label: "Cuenta" },
-  { href: "/plan", label: "Plan detallado" },
 ];
 
 export function Navbar() {
@@ -31,10 +32,10 @@ export function Navbar() {
 
   if (inFocus) {
     return (
-      <header className="border-b border-emerald-900/80 bg-black px-4 py-2">
+      <header className="border-b border-amber-900/60 bg-black px-4 py-2">
         <div className="mx-auto flex max-w-xl items-center justify-between">
-          <span className="font-mono text-xs text-emerald-400">FOCUS · una pantalla</span>
-          <Link href="/" className="text-xs text-amber-300 hover:text-white">
+          <span className="font-mono text-xs text-amber-400">FOCUS · una pantalla</span>
+          <Link href="/" className="text-xs text-slate-400 hover:text-white">
             Salir
           </Link>
         </div>
@@ -49,7 +50,7 @@ export function Navbar() {
           <Link href="/" className="text-sm font-semibold tracking-tight text-white">
             {ACADEMY_NAME}
           </Link>
-          <nav className="flex flex-wrap items-center gap-1 text-sm">
+          <nav className="flex flex-wrap items-center gap-1">
             {PRIMARY.map((link) => {
               const active =
                 link.href === "/"
@@ -60,7 +61,7 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   className={`rounded-full px-3 py-1.5 text-xs font-medium ${
-                    active ? "bg-emerald-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                    active ? "bg-amber-500 text-black" : "text-slate-300 hover:bg-slate-800 hover:text-white"
                   }`}
                 >
                   {link.label}
@@ -72,7 +73,7 @@ export function Navbar() {
         </div>
         <nav className="mt-1 flex flex-wrap gap-3 text-[11px] text-slate-500">
           {SECONDARY.map((l) => (
-            <Link key={l.href} href={l.href} className="hover:text-emerald-400">
+            <Link key={l.href} href={l.href} className="hover:text-amber-400">
               {l.label}
             </Link>
           ))}

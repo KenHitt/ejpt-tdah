@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "eJPT Academy — Bootcamp de laboratorio",
   description:
-    "Academia y bootcamp eJPT: más de 800 horas de teoría, examen corto, ejemplos, práctica en VirtualBox y talleres de estudio.",
+    "Academia eJPT: una ruta (think → enumerate → decide → act → verify → document). Teoría, práctica en VirtualBox y talleres. No es INE.",
   applicationName: "eJPT Academy",
   appleWebApp: {
     capable: true,

@@ -17,8 +17,9 @@ export default function SimulacroHubPage() {
       <div>
         <h1 className="text-2xl font-bold text-white">Simulacros y Skill-checks</h1>
         <p className="mt-1 text-sm text-slate-400">
-          Skill-checks y simulacros: 70% es Learning Pass (seguir con lagunas), no dominio. Mastered interno = 85%.
-          Exam Reasoning = metodología sin comandos.
+          Simulacros internos de la academia. 70% es Learning Pass (seguir con lagunas), no dominio. Mastered interno = 85%.
+          Exam Reasoning = metodología sin comandos. <strong className="text-slate-200">No representan una garantía de
+          aprobar el examen oficial de INE</strong> ni copian sus criterios.
         </p>
       </div>
 

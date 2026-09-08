@@ -8,6 +8,10 @@ export default function ArcadePage() {
       </Link>
       <p className="font-mono text-xs text-amber-400">ARCADE · práctica ligera, no el examen</p>
       <h1 className="text-2xl font-bold text-white">RED TEAM ARCADE</h1>
+      <p className="text-sm text-slate-400">
+        Ligero y opcional. What&apos;s Next y Decision Drills evalúan razonamiento (qué investigas primero y por qué). El
+        arcade no sustituye el lab ni la ruta.
+      </p>
       <div className="grid grid-cols-2 gap-2">
         {[
           ["/train/arcade/port-hunt", "PORT HUNT"],

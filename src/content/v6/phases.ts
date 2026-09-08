@@ -1,0 +1,214 @@
+import { V6Phase } from "@/content/v6/types";
+
+/** Jerarquía visible. Las 78 jornadas siguen existiendo; aquí se agrupan. */
+export const V6_PHASES: V6Phase[] = [
+  {
+    id: "p0",
+    n: 0,
+    titleEs: "Lab setup",
+    goalEs: "Laboratorio reproducible: Kali host, víctimas Host-Only, alcance escrito, snapshot.",
+    thinkEs: "Sin ping al guest no hay Nmap. Mide LHOST; no copies un blog.",
+    weekIds: [0],
+    skillIds: ["lab"],
+    checkpoint: {
+      titleEs: "Lab checkpoint",
+      lessonIds: ["c00-d1", "c00-d2", "c00-d3", "c00-d4"],
+      href: "/laboratorio",
+    },
+    boss: {
+      titleEs: "Lab checkpoint",
+      href: "/laboratorio",
+      whyEs: "Demuestra: vboxnet, IP víctima, ping, scope, snapshot. No avances a recon sin esto.",
+    },
+  },
+  {
+    id: "p1",
+    n: 1,
+    titleEs: "Networking",
+    goalEs: "IPv4, CIDR, TCP/UDP, puertos, ARP, DNS, routing — siempre ligados a pentest.",
+    thinkEs: "Un puerto open es una pregunta, no un exploit.",
+    weekIds: [0, 1],
+    skillIds: ["networking"],
+    boss: {
+      titleEs: "Networking boss",
+      href: "/learn/cidr",
+      whyEs: "Interpreta una red desconocida (CIDR, misma subnet, qué NIC es LHOST).",
+    },
+  },
+  {
+    id: "p2",
+    n: 2,
+    titleEs: "Linux",
+    goalEs: "Filesystem, users, sudo, pipes, SUID, SSH mínimo del pentester.",
+    thinkEs: "Permission denied es hallazgo, no un 404.",
+    weekIds: [0],
+    skillIds: ["linux"],
+    boss: {
+      titleEs: "Linux enumeration boss",
+      href: "/clase/c00-d5",
+      whyEs: "Encuentra información útil en el FS sin un procedimiento completo.",
+    },
+  },
+  {
+    id: "p3",
+    n: 3,
+    titleEs: "Reconnaissance",
+    goalEs: "Discovery → puertos → versión → NSE → superficie → priorizar. Nmap responde preguntas.",
+    thinkEs: "¿Qué pregunta intentas responder? Luego eliges el scan.",
+    weekIds: [1],
+    skillIds: ["recon", "nmap"],
+    boss: {
+      titleEs: "Recon boss",
+      href: "/clase/examen/w1",
+      whyEs: "Construye attack surface a partir de un output y decide next step.",
+    },
+  },
+  {
+    id: "p4",
+    n: 4,
+    titleEs: "Enumeration",
+    goalEs: "Por servicio: SMB, HTTP, SSH, FTP, DNS, SNMP, SMTP. El puerto elige la tool.",
+    thinkEs: "Given this output, what do you investigate next?",
+    weekIds: [2],
+    skillIds: ["enumeration", "smb", "http-enum", "ssh-ftp"],
+    boss: {
+      titleEs: "Enumeration boss",
+      href: "/train/decisions",
+      whyEs: "Varios servicios open: prioriza e interpreta, no lances 5 tools a la vez.",
+    },
+  },
+  {
+    id: "p5",
+    n: 5,
+    titleEs: "Vulnerability analysis",
+    goalEs: "Versión → hipótesis → searchsploit/NSE → validar. Vuln ≠ exploit.",
+    thinkEs: "Match de versión. False positive existe.",
+    weekIds: [4],
+    skillIds: ["vuln"],
+    boss: {
+      titleEs: "Vuln boss",
+      href: "/clase/c04-d1",
+      whyEs: "De un banner, elige un candidato y explica por qué no es garantía.",
+    },
+  },
+  {
+    id: "p6",
+    n: 6,
+    titleEs: "Exploitation",
+    goalEs: "Find → validate → configure (LHOST) → execute → verify access.",
+    thinkEs: "Options son el examen. El exploit es teatro si LHOST está mal.",
+    weekIds: [3, 4],
+    skillIds: ["metasploit", "exploitation"],
+    boss: {
+      titleEs: "Exploitation boss",
+      href: "/clase/examen/w3",
+      whyEs: "Una cadena search→set→session→sysinfo en TU lab, o negativa honesta.",
+    },
+  },
+  {
+    id: "p7",
+    n: 7,
+    titleEs: "Web application",
+    goalEs: "HTTP → params → SQLi/XSS/LFI → authz. Manual antes que la tool.",
+    thinkEs: "Si no ves el parámetro, no hay inyección obvia.",
+    weekIds: [5, 6],
+    skillIds: ["web", "sqli", "xss", "lfi"],
+    boss: {
+      titleEs: "Web boss",
+      href: "/clase/examen/w5",
+      whyEs: "Una vuln en DVWA: concepto, test manual, tool, verificar.",
+    },
+  },
+  {
+    id: "p8",
+    n: 8,
+    titleEs: "Privilege escalation",
+    goalEs: "Mapa Linux/Windows: sudo, SUID, cron, PATH. Tool → resultado → hipótesis.",
+    thinkEs: "LinPEAS no razona el examen. Tú eliges el vector.",
+    weekIds: [8],
+    skillIds: ["privesc-linux", "privesc-windows"],
+    boss: {
+      titleEs: "Privesc boss",
+      href: "/clase/examen/w8",
+      whyEs: "Una señal (sudo/SUID/cron) verificada a mano.",
+    },
+  },
+  {
+    id: "p9",
+    n: 9,
+    titleEs: "Post-exploitation",
+    goalEs: "Quién soy, SO, red, users, loot. Qué dato cambia la siguiente decisión.",
+    thinkEs: "El cuestionario pide valores, no un PDF de consultora.",
+    weekIds: [8, 10],
+    skillIds: ["post"],
+    boss: {
+      titleEs: "Loot boss",
+      href: "/clase/c08-d4",
+      whyEs: "Reescribe hallazgos como pregunta → respuesta corta.",
+    },
+  },
+  {
+    id: "p10",
+    n: 10,
+    titleEs: "Pivoting",
+    goalEs: "Otra NIC / otra red. Forward y SOCKS. No inventar pivot con una NIC.",
+    thinkEs: "¿Kali ve el target? Si sí, no es pivot.",
+    weekIds: [7],
+    skillIds: ["pivoting"],
+    boss: {
+      titleEs: "Pivot boss",
+      href: "/clase/examen/w7",
+      whyEs: "Dibuja dual-homed y nombra cuándo NO pivotar.",
+    },
+  },
+  {
+    id: "p11",
+    n: 11,
+    titleEs: "Attack chains",
+    goalEs: "Recon→enum→vuln→exploit→access→privesc→loot→report bajo reloj.",
+    thinkEs: "Dejas de estudiar tools aisladas. El método tiene que sobrevivir.",
+    weekIds: [9],
+    skillIds: ["chains"],
+    boss: {
+      titleEs: "Final boss (cadena)",
+      href: "/clase/c09-d1",
+      whyEs: "Una máquina: guiada → pocas pistas → independiente → timed.",
+    },
+  },
+  {
+    id: "p12",
+    n: 12,
+    titleEs: "Reporting",
+    goalEs: "Finding, evidencia, valores exactos. Estilo pregunta corta eJPT.",
+    thinkEs: "Casi no puntúa. El string exacto sí.",
+    weekIds: [10],
+    skillIds: ["reporting"],
+    boss: {
+      titleEs: "Reporting boss",
+      href: "/clase/examen/w10",
+      whyEs: "Te dan output; extraes el valor como en cuestionario.",
+    },
+  },
+  {
+    id: "p13",
+    n: 13,
+    titleEs: "eJPT final prep",
+    goalEs: "Simulacros internos, logística, integridad. No es garantía INE.",
+    thinkEs: "Academia ≠ certificado. INE decide el PDF.",
+    weekIds: [11, 12],
+    skillIds: ["exam-prep"],
+    boss: {
+      titleEs: "Simulacro interno final",
+      href: "/simulacro/full",
+      whyEs: "Mock interno de la academia. No representa los criterios oficiales de INE.",
+    },
+  },
+];
+
+export function getPhase(id: string) {
+  return V6_PHASES.find((p) => p.id === id);
+}
+
+export function phaseForWeek(week: number) {
+  return V6_PHASES.find((p) => p.weekIds.includes(week)) ?? V6_PHASES[0];
+}

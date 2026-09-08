@@ -5,17 +5,20 @@ import { useParams } from "next/navigation";
 import { LEARN_ARTICLES } from "@/content/learn-articles";
 import { PracticeNow } from "@/components/PracticeNow";
 import { PromptCheckCard } from "@/components/trainer/PromptCheckCard";
+import { PrereqBanner } from "@/components/v6/PrereqBanner";
+import { learnMeta } from "@/content/v6/relations";
 
 export default function LearnArticlePage() {
   const params = useParams<{ topicId: string }>();
   const a = LEARN_ARTICLES.find((x) => x.id === params.topicId);
   if (!a) {
     return (
-      <Link href="/learn" className="text-emerald-400 underline">
+      <Link href="/learn" className="text-amber-400 underline">
         LEARN
       </Link>
     );
   }
+  const meta = learnMeta(a.id);
   const sections = [
     ["WHAT", a.what],
     ["WHY", a.why],
@@ -31,8 +34,17 @@ export default function LearnArticlePage() {
       <Link href="/learn" className="text-xs text-slate-500">
         ← LEARN
       </Link>
-      <p className="font-mono text-xs text-emerald-400">{a.track}</p>
+      <p className="font-mono text-xs text-amber-400">
+        {a.track} · {meta.depth} · ~{meta.minutes} min
+      </p>
       <h1 className="text-2xl font-bold text-white">{a.titleEs}</h1>
+      <p className="text-sm text-slate-400">{meta.whenEs}</p>
+      {meta.skill && (
+        <Link href={`/master/${meta.skill.id}`} className="text-sm text-amber-400">
+          Related skill · {meta.skill.titleEs}
+        </Link>
+      )}
+      <PrereqBanner skillId={meta.skill?.id} />
       {sections.map(([k, v]) => (
         <section key={k} className="rounded-md border border-slate-800 p-3">
           <p className="font-mono text-[10px] text-sky-400">{k}</p>
@@ -48,7 +60,7 @@ export default function LearnArticlePage() {
             keywordAny: a.recallKeywords.map((k) => [k]),
             explanationEs: a.what,
             failKind: "memory",
-            subtopicId: "net-basic",
+            subtopicId: meta.skill?.subtopicIds[0] ?? "net-basic",
           }}
           exerciseId={`learn:${a.id}:recall`}
           onPassed={() => undefined}
@@ -63,7 +75,7 @@ export default function LearnArticlePage() {
             keywordAny: a.challengeKeywords.map((k) => [k]),
             explanationEs: a.redTeam,
             failKind: "reasoning",
-            subtopicId: "net-basic",
+            subtopicId: meta.skill?.subtopicIds[0] ?? "net-basic",
           }}
           exerciseId={`learn:${a.id}:chal`}
           onPassed={() => undefined}

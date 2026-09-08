@@ -7,14 +7,25 @@ import { Checklist } from "@/components/Checklist";
 import { WorkshopView } from "@/components/WorkshopView";
 import { TroubleshootingList } from "@/components/TroubleshootingList";
 import { LAB_TROUBLESHOOTING, LAB_WORKSHOP, LAB_HOST_DIAGRAM } from "@/content/workshops/lab-virtualbox";
+import { useCourse } from "@/lib/course/context";
+import { labCheckpointDone } from "@/lib/v6/mastery";
+
+const CHECKPOINT = [
+  { id: "c00-d1", label: "Kali / alcance" },
+  { id: "c00-d2", label: "vboxnet / IP" },
+  { id: "c00-d3", label: "víctima + ping" },
+  { id: "c00-d4", label: "snapshot + scope" },
+];
 
 export default function LaboratorioPage() {
   const b1 = labWeek.blocks[0];
+  const { state } = useCourse();
+  const labOk = labCheckpointDone(state);
 
   return (
     <div className="space-y-8">
       <div>
-        <p className="font-mono text-xs text-emerald-400">WORKSHOP · Kali = host OS · VirtualBox = victims only</p>
+        <p className="font-mono text-xs text-amber-400">FASE 0 · Lab checkpoint</p>
         <h1 className="mt-1 text-2xl font-bold text-white">Construcción del laboratorio de pentesting</h1>
         <p className="mt-2 text-sm text-slate-400">
           Solo máquinas propias / VMs educativas. Kali es el SO de este PC. Focus = laboratorio guiado (una pantalla). Esta
@@ -27,6 +38,27 @@ export default function LaboratorioPage() {
           Laboratorio guiado ahora (Focus) →
         </Link>
       </div>
+
+      <section className={`rounded-xl border p-4 ${labOk ? "border-emerald-800" : "border-amber-700"}`}>
+        <p className="text-[11px] uppercase text-amber-400">Lab checkpoint</p>
+        <p className="mt-1 text-sm text-slate-300">
+          {labOk
+            ? "Checkpoint cubierto en las jornadas c00-d1…d4. Sigue visible para consulta."
+            : "Demuestra conectividad, IP de víctima, ping, alcance y snapshot antes de recon. El contenido posterior se puede consultar; no es lo recomendado ahora."}
+        </p>
+        <ul className="mt-3 space-y-1 text-sm">
+          {CHECKPOINT.map((c) => (
+            <li key={c.id} className="flex justify-between">
+              <Link href={`/clase/${c.id}`} className="text-amber-400">
+                {c.label}
+              </Link>
+              <span className={state.lessons[c.id] ? "text-emerald-400" : "text-slate-600"}>
+                {state.lessons[c.id] ? "✓" : "pendiente"}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <div className="rounded-lg border border-emerald-800/50 bg-emerald-500/5 p-4 text-sm">
         <p className="font-semibold text-emerald-400">Tu setup (no el de un tutorial con Kali-VM)</p>

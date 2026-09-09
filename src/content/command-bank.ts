@@ -1,4 +1,5 @@
 import { SRS_V8 } from "@/content/v8/srs-extra";
+import { SRS_V91 } from "@/content/v91/srs";
 
 export interface CommandCard {
   id: string;
@@ -620,7 +621,7 @@ export const COMMAND_BANK_CORE: CommandCard[] = [
   },
 ];
 
-export const COMMAND_BANK: CommandCard[] = [...COMMAND_BANK_CORE, ...SRS_V8];
+export const COMMAND_BANK: CommandCard[] = [...COMMAND_BANK_CORE, ...SRS_V8, ...SRS_V91];
 
 export function commandsByCategory() {
   const map = new Map<CommandCard["category"], CommandCard[]>();

@@ -14,6 +14,7 @@ import { estimateLessonBreakdown } from "@/content/v6/hours";
 import { lessonLinkedSkill, workshopWhen } from "@/content/v6/relations";
 import { getPhase } from "@/content/v6/phases";
 import { PRIMARY_BUTTON } from "@/lib/design/tokens";
+import { LabBeforeBlock, LessonGuideBlock } from "@/components/v92/LessonGuideBlock";
 
 export default function LessonPage() {
   const params = useParams<{ lessonId: string }>();
@@ -88,6 +89,8 @@ export default function LessonPage() {
 
       <PrereqBanner skillId={skill?.id} />
 
+      {lesson.guide && <LessonGuideBlock guide={lesson.guide} />}
+
       <ol className="grid grid-cols-2 gap-2 sm:grid-cols-5">
         {phases.map((p) => (
           <li key={p.id} className="rounded-lg border border-slate-800 px-2 py-2 text-center">
@@ -100,14 +103,14 @@ export default function LessonPage() {
 
       <section className="space-y-3">
         <Phase n={1} title="Teoría" time={`~${breakdown.theory} min`} />
-        {lesson.read.map((s) => (
-          <article key={s.h} className="rounded-xl border border-slate-700 p-4">
+        {lesson.read.map((s, i) => (
+          <article key={`read-${i}-${s.h}`} className="rounded-xl border border-slate-700 p-4">
             <p className="text-xs font-semibold text-red-400">{s.h}</p>
             <p className="mt-1 text-sm leading-relaxed text-slate-100">{s.p}</p>
           </article>
         ))}
-        {lesson.theoryExtra.map((s) => (
-          <article key={s.h} className="rounded-xl border border-sky-900/50 bg-sky-500/5 p-4">
+        {lesson.theoryExtra.map((s, i) => (
+          <article key={`extra-${i}-${s.h}`} className="rounded-xl border border-sky-900/50 bg-sky-500/5 p-4">
             <p className="text-xs font-semibold text-sky-400">Ampliación · {s.h}</p>
             <p className="mt-1 text-sm leading-relaxed text-slate-100">{s.p}</p>
           </article>
@@ -134,6 +137,7 @@ export default function LessonPage() {
 
       <section className="rounded-xl border-2 border-amber-800 p-4">
         <Phase n={4} title={`Tú practicas · ${lesson.labTitle}`} time={`~${breakdown.lab} min (estimado)`} />
+        {lesson.guide && <LabBeforeBlock guide={lesson.guide} />}
         <p className="mt-2 text-sm text-slate-300">{lesson.practiceHint}</p>
         <p className="mt-2 text-xs text-amber-200">
           Tapa los ejemplos. Host-Only, DVWA localhost, o VPN INE. Nunca Wi‑Fi de casa. El lab puede alargarse.

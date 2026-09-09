@@ -51,6 +51,8 @@ export type EnrichedLesson = CourseLesson & {
   theoryExtra: CourseSection[];
   jornadaHours: number;
   practiceHint: string;
+  /** Capa V9.2: guía autoexplicativa. Nunca sustituye read/quiz/lab. */
+  guide?: import("@/content/v92/types").LessonGuide;
 };
 
 export interface CourseWeekMeta {

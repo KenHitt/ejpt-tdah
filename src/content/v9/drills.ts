@@ -23,6 +23,9 @@ function mc(
     whatMissedEs: extra.whatMissedEs,
     betterApproachEs: extra.betterApproachEs,
     evidenceEs: extra.evidenceEs,
+    hints: extra.hints,
+    walkthroughEs: extra.walkthroughEs,
+    pedagogy: extra.pedagogy,
   };
 }
 

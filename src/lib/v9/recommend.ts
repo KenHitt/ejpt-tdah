@@ -10,6 +10,7 @@ import { skillWeaknesses } from "@/lib/v6/weakness";
 import { drillsForSkill } from "@/content/v8/drills";
 import { V8_MACHINES, V8_BOSSES } from "@/content/v8/operations";
 import { EJPT_OBJECTIVE_MATRIX } from "@/content/v8/ejpt-matrix";
+import { EJPT_OBJECTIVE_DETAIL } from "@/content/v91/objectives";
 import { phaseProgress } from "@/lib/v6/mastery";
 import { academicState, blockedByPrereq, calculateCompetency, independenceStats, weakestCriticalSkill } from "@/lib/v9/competency";
 import { diagnoseFailure, diagnoseRecent } from "@/lib/v9/diagnose";
@@ -71,6 +72,18 @@ function durationFits(min: number, budget: TimeBudget) {
   if (budget <= 30) return min <= 40;
   if (budget <= 45) return min <= 55;
   return true;
+}
+
+function annotateEjpt(rec: ScoredRec): ScoredRec {
+  if (!rec.skillId) return rec;
+  const row = EJPT_OBJECTIVE_MATRIX.find((r) => r.skillIds.includes(rec.skillId!));
+  const det = EJPT_OBJECTIVE_DETAIL.find((d) => d.skillIds.includes(rec.skillId!));
+  const extra: string[] = [];
+  if (row) extra.push(`Pertenece al dominio eJPT ${row.domain}.`);
+  if (det) extra.push(`Objetivo: ${det.objective}.`);
+  if (HIGH_RELEVANCE.has(rec.skillId)) extra.push("Alta relevancia eJPT (núcleo, no un side quest).");
+  if (!extra.length) return rec;
+  return { ...rec, whyBullets: [...rec.whyBullets, ...extra] };
 }
 
 function candidates(course: CourseState, progress: ProgressState): ScoredRec[] {
@@ -357,16 +370,17 @@ export function calculateRecommendation(
   });
 
   const after = weakness && weakness.href !== primary.href ? weakness.titleEs : progression?.titleEs ?? "Review queue";
+  const primaryA = annotateEjpt({ ...primary, kind: "primary" });
 
   return {
-    primary: { ...primary, kind: "primary" },
-    quick: quick?.href === primary.href ? undefined : quick,
-    weakness: weakness?.href === primary.href ? undefined : weakness,
-    progression: progression?.href === primary.href ? undefined : progression,
-    stretch,
+    primary: primaryA,
+    quick: quick && quick.href !== primary.href ? annotateEjpt(quick) : undefined,
+    weakness: weakness && weakness.href !== primary.href ? annotateEjpt(weakness) : undefined,
+    progression: progression && progression.href !== primary.href ? annotateEjpt(progression) : undefined,
+    stretch: stretch ? annotateEjpt(stretch) : undefined,
     advisor: {
-      priorityEs: primary.titleEs,
-      whyEs: primary.whyBullets[0] ?? "Evidence-driven next activity.",
+      priorityEs: primaryA.titleEs,
+      whyEs: primaryA.whyBullets[0] ?? "Evidence-driven next activity.",
       afterEs: `Después: ${after}.`,
     },
     highlights: {
@@ -378,7 +392,7 @@ export function calculateRecommendation(
     domainReadiness,
     timeSlots: ([5, 15, 60] as TimeBudget[]).map((b) => ({
       budget: b,
-      rec: pickBest(all, b, new Set()),
+      rec: annotateEjpt(pickBest(all, b, new Set())),
     })),
   };
 }

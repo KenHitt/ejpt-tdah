@@ -2,7 +2,8 @@ import { CourseState } from "@/lib/course/storage";
 import { ProgressState } from "@/lib/progress/state";
 import { calculateCompetency } from "@/lib/v9/competency";
 import { EJPT_OBJECTIVE_MATRIX } from "@/content/v8/ejpt-matrix";
-import { phaseProgress, skillStatus } from "@/lib/v6/mastery";
+import { labCheckpointDone, skillStatus, phaseProgress, ejptReadiness } from "@/lib/v6/mastery";
+import { independenceFromHints } from "@/lib/v8/readiness";
 
 export type EvidenceBand = "NOT ENOUGH DATA" | "DEVELOPING" | "PRACTICING" | "STRONG";
 
@@ -47,7 +48,28 @@ export function calculateReadiness(course: CourseState, progress: ProgressState)
     overallBand,
     domains,
     disclaimer: "Training readiness based on observed evidence. Not a probability of passing INE.",
+    academyReady: academyReadyLabel(course, progress, known.length),
   };
+}
+
+export type AcademyReadyLabel = "NOT READY" | "DEVELOPING" | "NEAR READY" | "READY" | "MAINTAIN";
+
+export function academyReadyLabel(
+  course: CourseState,
+  progress: ProgressState,
+  evidenceCount?: number
+): AcademyReadyLabel {
+  if (!labCheckpointDone(course)) return "NOT READY";
+  const score = ejptReadiness(course, progress);
+  const mocks = progress.attempts.filter((a) => a.id.startsWith("mock:") || a.id.startsWith("full:"));
+  const passedMock = mocks.some((a) => (a.score ?? 0) >= 70);
+  const indep = independenceFromHints(progress);
+  if (evidenceCount !== undefined && evidenceCount < 2 && score < 25) return "DEVELOPING";
+  if (score < 45) return "DEVELOPING";
+  if (score < 70 || !passedMock) return "NEAR READY";
+  if ((indep ?? 0) >= 70 && score >= 80) return "MAINTAIN";
+  if (passedMock && score >= 70) return "READY";
+  return "NEAR READY";
 }
 
 function avgDim(course: CourseState, progress: ProgressState, dim: "knowledge" | "execution" | "decision" | "transfer" | "retention") {

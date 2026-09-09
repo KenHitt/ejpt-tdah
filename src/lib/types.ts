@@ -79,6 +79,19 @@ export interface PromptCheck {
   whatMissedEs?: string;
   betterApproachEs?: string;
   evidenceEs?: string;
+  /** V9.1 — hints progresivos (1..5). No pisa checks antiguos. */
+  hints?: [string, string, string, string, string];
+  walkthroughEs?: string;
+  pedagogy?:
+    | "KNOWLEDGE_FAILURE"
+    | "COMMAND_RECALL_FAILURE"
+    | "INTERPRETATION_FAILURE"
+    | "REASONING_FAILURE"
+    | "DECISION_FAILURE"
+    | "EXECUTION_FAILURE"
+    | "METHODOLOGY_FAILURE"
+    | "TIME_MANAGEMENT_FAILURE"
+    | "RETENTION_FAILURE";
 }
 
 export interface GuidedStep {

@@ -140,3 +140,28 @@ export function diagnoseRecent(course: CourseState, progress: ProgressState): Di
   }
   return null;
 }
+
+export function classifyPromptFailure(
+  failKind: "memory" | "reasoning" | "technical" | undefined,
+  hasChoices: boolean,
+  pedagogy?: Diagnosis["failure"]
+): Diagnosis["failure"] {
+  if (pedagogy) return pedagogy;
+  if (failKind === "memory") return "COMMAND_RECALL_FAILURE";
+  if (failKind === "technical") return "EXECUTION_FAILURE";
+  if (hasChoices) return "DECISION_FAILURE";
+  return "REASONING_FAILURE";
+}
+
+export const FAILURE_LABEL_ES: Record<Diagnosis["failure"], string> = {
+  KNOWLEDGE_FAILURE: "Conocimiento",
+  COMMAND_RECALL_FAILURE: "Recall de comando",
+  INTERPRETATION_FAILURE: "Interpretación",
+  REASONING_FAILURE: "Razonamiento",
+  DECISION_FAILURE: "Decisión",
+  EXECUTION_FAILURE: "Ejecución",
+  METHODOLOGY_FAILURE: "Metodología",
+  TIME_MANAGEMENT_FAILURE: "Gestión del tiempo",
+  RETENTION_FAILURE: "Retención",
+};
+

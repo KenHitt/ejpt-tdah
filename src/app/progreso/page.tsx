@@ -120,7 +120,8 @@ export default function ProgresoPage() {
       <section>
         <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Readiness evidence</h2>
         <p className="mt-1 text-xs text-slate-500">{evid.disclaimer}</p>
-        <p className="mt-2 text-sm text-white">Current assessment readiness: {evid.overallBand}</p>
+        <p className="mt-2 text-sm text-white">Current assessment readiness: {evid.academyReady}</p>
+        <p className="text-xs text-slate-500">Dimension bands: {evid.overallBand} (not a pass probability).</p>
         <ul className="mt-2 grid gap-1 text-sm text-slate-300 sm:grid-cols-2">
           <li>Knowledge · {evid.dims.knowledge}</li>
           <li>Execution · {evid.dims.execution}</li>

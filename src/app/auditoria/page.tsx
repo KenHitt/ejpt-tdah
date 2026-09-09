@@ -17,6 +17,12 @@ import { academyHealth } from "@/lib/v9/health";
 import { V9_ALL_DRILLS } from "@/content/v9/drills";
 import { LEARN_CATALOG_V9 } from "@/content/v9/learn-v9";
 import { SKILL_OUTCOMES } from "@/content/v9/outcomes";
+import { V91_ALL_DRILLS } from "@/content/v91/drills";
+import { SRS_V91 } from "@/content/v91/srs";
+import { LEARN_CATALOG_V91 } from "@/content/v91/learn";
+import { EJPT_OBJECTIVE_DETAIL } from "@/content/v91/objectives";
+import { auditAllLessons, depthCounts } from "@/lib/v92/lesson-audit";
+import { ACADEMY_TERMS } from "@/content/v92/terms";
 
 const FLAG_LABEL: { key: keyof CycleFlags; label: string }[] = [
   { key: "theory", label: "Teoría" },
@@ -36,6 +42,14 @@ export default function AuditoriaPage() {
   const incomplete = rows.filter((r) => r.missing.length > 0);
   const withDecision = rows.filter((r) => r.flags.decision).length;
   const withSrs = rows.filter((r) => r.flags.srs).length;
+  const depthRows = auditAllLessons();
+  const depth = depthCounts(depthRows);
+  const GRADE_LABEL: Record<string, string> = {
+    ready: "Ready",
+    "needs-example": "Needs Guided Example",
+    "needs-explanation": "Needs Explanation",
+    "insufficient-context": "Insufficient Context",
+  };
 
   return (
     <div className="mx-auto max-w-3xl space-y-8">
@@ -65,6 +79,9 @@ export default function AuditoriaPage() {
         <Stat label="Skills con SRS" value={`${withSrs}/${rows.length}`} />
         <Stat label="Decision drills pack (V8+V9)" value={String(V8_ALL_DRILLS.length)} />
         <Stat label="Transfer/decision V9 added" value={String(V9_ALL_DRILLS.length)} />
+        <Stat label="Decision drills V9.1 added" value={String(V91_ALL_DRILLS.length)} />
+        <Stat label="SRS V9.1 added" value={String(SRS_V91.length)} />
+        <Stat label="Fichas V9.1 added" value={String(LEARN_CATALOG_V91.length)} />
         <Stat label="Fichas V9 Windows added" value={String(LEARN_CATALOG_V9.length)} />
         <Stat label="Skills with outcomes" value={String(SKILL_OUTCOMES.length)} />
         <Stat label="SRS cards (total)" value={String(COMMAND_BANK.length)} />
@@ -72,8 +89,54 @@ export default function AuditoriaPage() {
         <Stat label="Internal machines" value={String(V8_MACHINES.length)} />
         <Stat label="Bosses" value={String(V8_BOSSES.length)} />
         <Stat label="Internal mocks" value={String(V8_MOCKS.length)} />
+        <Stat label="Academy terms (V9.2)" value={String(ACADEMY_TERMS.length)} />
+        <Stat label="Lessons Ready (V9.2)" value={String(depth.ready)} />
+        <Stat label="Needs Explanation" value={String(depth["needs-explanation"])} />
+        <Stat label="Needs Guided Example" value={String(depth["needs-example"])} />
+        <Stat label="Insufficient Context" value={String(depth["insufficient-context"])} />
         <Stat label="Ruta principal (est.)" value={`${HONEST_HOURS.primaryEstimated} h`} />
         <Stat label="Catálogo (est.)" value={`${HONEST_HOURS.allCatalogEstimated} h`} />
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-lg font-semibold text-white">Lesson depth (V9.2)</h2>
+        <p className="mb-2 text-xs text-slate-500">
+          Original = huecos en el texto fuente. Grade = después de la guía añadida (términos, prep, comandos). No
+          borra teoría ni labs.
+        </p>
+        <div className="mb-3 flex flex-wrap gap-2 text-[11px] text-slate-400">
+          <span>🟢 {depth.ready} Ready</span>
+          <span>🟡 {depth["needs-example"]} Needs Guided Example</span>
+          <span>🟠 {depth["needs-explanation"]} Needs Explanation</span>
+          <span>🔴 {depth["insufficient-context"]} Insufficient Context</span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[640px] text-left text-xs">
+            <thead>
+              <tr className="text-slate-500">
+                <th className="pb-2 pr-2">Jornada</th>
+                <th className="pb-2 pr-2">V9.2</th>
+                <th className="pb-2 pr-2">Fuente</th>
+                <th className="pb-2">Notas</th>
+              </tr>
+            </thead>
+            <tbody>
+              {depthRows.map((r) => (
+                <tr key={r.lessonId} className="border-t border-slate-800">
+                  <td className="py-2 pr-2">
+                    <Link href={`/clase/${r.lessonId}`} className="text-red-400">
+                      {r.lessonId}
+                    </Link>
+                    <span className="ml-1 text-slate-500">{r.titleEs}</span>
+                  </td>
+                  <td className="pr-2 text-slate-200">{GRADE_LABEL[r.grade]}</td>
+                  <td className="pr-2 text-slate-500">{GRADE_LABEL[r.originalGrade]}</td>
+                  <td className="text-amber-200/90">{r.issues[0] ?? (r.hasCustomGuide ? "guía custom" : "guía auto")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section>
@@ -130,6 +193,13 @@ export default function AuditoriaPage() {
               </p>
               <p className="text-[11px] text-slate-500">Evidence: {row.evidence.join(" · ")}</p>
               <p className={row.gap ? "text-red-400" : "text-emerald-400"}>{row.gap ? "GAP" : "COVERED (academy)"}</p>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-[11px] text-slate-400">
+                {EJPT_OBJECTIVE_DETAIL.filter((d) => d.domain === row.domain).map((d) => (
+                  <li key={d.objective}>
+                    {d.objective} → {d.skillIds.join(", ")} · {d.hrefs.join(" ")}
+                  </li>
+                ))}
+              </ul>
             </li>
           ))}
         </ul>

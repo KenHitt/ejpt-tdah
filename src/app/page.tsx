@@ -11,12 +11,12 @@ import { EnergyMode } from "@/content/v6/types";
 import { EnergyToggle } from "@/components/v6/EnergyToggle";
 import { MissionCard } from "@/components/cards";
 import { OnboardingIntro } from "@/components/v6/OnboardingIntro";
-import { ACADEMY_NAME } from "@/content/academy/program";
 import { calculateRecommendation } from "@/lib/v9/recommend";
+import { AcademyOverview } from "@/components/v91/AcademyOverview";
 
 /**
- * Mission Control = "¿qué hago ahora?". Nada de analíticas aquí (V7 sección 41,
- * 6): eso vive en Dashboard (/progreso). Una sola acción principal.
+ * Home = academia + "qué hago ahora". El overview es estático (catálogo real).
+ * La operación no bloquea toda la página si el progreso aún hidrata.
  */
 export default function MissionControlPage() {
   const { state: course, dayNumber, ready: courseReady } = useCourse();
@@ -36,20 +36,11 @@ export default function MissionControlPage() {
   const whyEs = useAdvisor ? board.primary.whyBullets.join(" ") : op.whyEs;
   const objectiveEs = useAdvisor ? board.primary.goalEs : op.objectiveEs;
   const estimatedLabel = useAdvisor ? `~${board.primary.durationMin} min (estimado)` : op.estimatedLabel;
-
-  if (!courseReady) {
-    return <p className="font-mono text-sm text-slate-500">Loading operation…</p>;
-  }
-
-  const isNew = Object.keys(course.lessons).length === 0;
+  const isNew = courseReady && Object.keys(course.lessons).length === 0;
 
   return (
     <div className="mx-auto max-w-xl space-y-8">
-      <div>
-        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-red-400">Mission control</p>
-        <h1 className="mt-1 text-3xl font-bold text-white">{ACADEMY_NAME}</h1>
-        <p className="mt-1 text-sm text-slate-400">What should I do now? Why? How long? One operation. Completed ≠ mastered.</p>
-      </div>
+      <AcademyOverview />
 
       {isNew && <OnboardingIntro firstLessonHref={href} />}
 
@@ -60,27 +51,35 @@ export default function MissionControlPage() {
         }}
       />
 
-      <MissionCard
-        phaseLabel={op.phaseLabel}
-        dayLabel={op.dayLabel}
-        titleEs={titleEs}
-        objectiveEs={objectiveEs}
-        whyEs={whyEs}
-        stepsDone={op.stepsDone}
-        stepsTotal={op.stepsTotal}
-        estimatedLabel={estimatedLabel}
-        difficulty={op.difficulty}
-        href={href}
-        extra={
-          !labOk ? (
-            <p className="mt-3 text-xs text-amber-200">Lab checkpoint pending: ping, vboxnet, snapshot, scope.</p>
-          ) : useAdvisor ? (
-            <p className="mt-3 text-xs text-slate-500">
-              Afterward: {board.advisor.afterEs} {board.primary.skillId ? `Improves ${board.primary.skillId}.` : ""}
-            </p>
-          ) : undefined
-        }
-      />
+      <p className="text-[11px] uppercase tracking-wide text-red-400">What should I do now?</p>
+
+      {courseReady ? (
+        <MissionCard
+          phaseLabel={op.phaseLabel}
+          dayLabel={op.dayLabel}
+          titleEs={titleEs}
+          objectiveEs={objectiveEs}
+          whyEs={whyEs}
+          stepsDone={op.stepsDone}
+          stepsTotal={op.stepsTotal}
+          estimatedLabel={estimatedLabel}
+          difficulty={op.difficulty}
+          href={href}
+          extra={
+            !labOk ? (
+              <p className="mt-3 text-xs text-amber-200">Lab checkpoint pending: ping, vboxnet, snapshot, scope.</p>
+            ) : useAdvisor ? (
+              <p className="mt-3 text-xs text-slate-500">
+                Afterward: {board.advisor.afterEs} {board.primary.skillId ? `Improves ${board.primary.skillId}.` : ""}
+              </p>
+            ) : undefined
+          }
+        />
+      ) : (
+        <p className="rounded-xl border border-slate-800 p-4 text-sm text-slate-500">
+          Cargando tu operación guardada… El programa de arriba ya es usable.
+        </p>
+      )}
 
       {advice && <p className="rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-300">{advice}</p>}
 

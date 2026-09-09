@@ -12,8 +12,8 @@ export default function DecisionsPage() {
       </Link>
       <h1 className="text-xl font-bold text-white">DECISION DRILLS</h1>
       <p className="text-sm text-slate-400">
-        Prioridad + porqué. Incluye el pack V8 (Linux, web chains, privesc, pivot, reporting…). TRY AGAIN si la letra
-        es posible pero mala metodología.
+        Prioridad + porqué. Pack V8+V9+V9.1 (SSH/FTP, networking, exploitation, HTTP transfer, reporting). TRY AGAIN si la letra
+        es posible pero mala metodología. Hints 1–5 cuentan para independencia.
       </p>
       <DecisionDrillRunner
         scenarios={[...WEEK1_DECISION_DRILLS, ...EXTRA_DECISION_DRILLS, ...V8_ALL_DRILLS]}

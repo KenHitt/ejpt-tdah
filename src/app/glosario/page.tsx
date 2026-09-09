@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { getAllBlocks } from "@/content/curriculum";
+import { ACADEMY_TERMS } from "@/content/v92/terms";
 
 export default function GlosarioPage() {
   const [query, setQuery] = useState("");
@@ -34,6 +36,32 @@ export default function GlosarioPage() {
         placeholder="Buscar término (inglés o español)..."
         className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:border-emerald-500 focus:outline-none"
       />
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold text-white">Términos de laboratorio (Academy)</h2>
+        <p className="text-sm text-slate-400">
+          Definición y para qué se usan en esta Academy. No sustituyen las fichas LEARN.
+        </p>
+        <ul className="space-y-2">
+          {ACADEMY_TERMS.filter(
+            (t) =>
+              t.term.toLowerCase().includes(query.toLowerCase()) ||
+              t.def.toLowerCase().includes(query.toLowerCase()) ||
+              t.purpose.toLowerCase().includes(query.toLowerCase())
+          ).map((t) => (
+            <li key={t.term} className="rounded-lg border border-slate-800 p-3">
+              <p className="font-mono text-sm text-emerald-400">{t.term}</p>
+              <p className="text-sm text-slate-200">{t.def}</p>
+              <p className="mt-1 text-xs text-slate-400">Para qué: {t.purpose}</p>
+              {t.href && (
+                <Link href={t.href} className="text-xs text-red-400 hover:underline">
+                  Ficha o recurso
+                </Link>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <div className="overflow-x-auto rounded-lg border border-slate-800">
         <table className="w-full text-left text-sm">

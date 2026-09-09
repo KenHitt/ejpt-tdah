@@ -1,9 +1,23 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { PromptCheck } from "@/lib/types";
 import { gradePrompt } from "@/lib/trainer/grade";
 import { useProgress } from "@/lib/progress/context";
+import { classifyPromptFailure, FAILURE_LABEL_ES } from "@/lib/v9/diagnose";
+import { remediationPath } from "@/lib/v9/remediation";
+import { V6_SKILLS } from "@/content/v6/skills";
+
+function defaultHints(check: PromptCheck): [string, string, string, string, string] {
+  return [
+    "Relee el escenario: ¿qué evidencia hay ya?",
+    "Piensa en metodología, no en un comando famoso.",
+    "¿Qué familia de herramienta encaja con el puerto o el síntoma?",
+    check.betterApproachEs?.slice(0, 90) || "Acota el next step a una sola superficie.",
+    check.betterApproachEs || check.explanationEs || "Elige la opción que usa evidencia, no una receta.",
+  ];
+}
 
 export function PromptCheckCard({
   check,
@@ -26,6 +40,14 @@ export function PromptCheckCard({
   const [phase, setPhase] = useState<"ask" | "explain" | "passed">("ask");
   const [note, setNote] = useState("");
   const [fails, setFails] = useState(0);
+  const [hintLevel, setHintLevel] = useState(0);
+
+  const hints = check.hints ?? defaultHints(check);
+  const pedagogy = classifyPromptFailure(check.failKind, Boolean(check.choices?.length), check.pedagogy);
+  const skillId =
+    V6_SKILLS.find((s) => s.id === check.domain)?.id ??
+    V6_SKILLS.find((s) => s.subtopicIds.includes(check.subtopicId))?.id;
+  const rem = skillId ? remediationPath(skillId, pedagogy)[0] : undefined;
 
   const lastAnswerEs =
     check.choices?.length ? check.choices.find((c) => c.id === choice)?.textEs ?? "—" : text.trim() || "—";
@@ -35,7 +57,7 @@ export function PromptCheckCard({
     recordTrainerAttempt({
       exerciseId,
       correct: result.ok,
-      hintsUsed: 0,
+      hintsUsed: hintLevel,
       failKind: result.ok ? undefined : check.failKind,
       skillKind: check.failKind === "memory" ? "recall" : "reasoning",
       retries: fails,
@@ -100,8 +122,19 @@ export function PromptCheckCard({
             </>
           )}
           <p className="mt-2 font-mono text-[11px] uppercase text-amber-300">
-            Failure type · {FAIL_KIND_LABEL[check.failKind] ?? "REASONING"}
+            Failure type · {FAILURE_LABEL_ES[pedagogy]} ({FAIL_KIND_LABEL[check.failKind] ?? "REASONING"})
           </p>
+          <p className="mt-1 text-xs text-slate-400">
+            El problema no es necesariamente recordar un comando. Tipo pedagógico: {FAILURE_LABEL_ES[pedagogy]}.
+          </p>
+          {rem && (
+            <p className="mt-2 text-sm">
+              Remediation:{" "}
+              <Link href={rem.href} className="text-red-300 underline">
+                {rem.min} min · {rem.titleEs}
+              </Link>
+            </p>
+          )}
           <div className="mt-3 flex flex-wrap gap-2">
             <button
               type="button"
@@ -119,6 +152,9 @@ export function PromptCheckCard({
           <p className="font-bold uppercase tracking-wide text-emerald-300">Correct · good decision</p>
           <p className="mt-2 text-[11px] uppercase text-emerald-400/80">Why</p>
           <p className="whitespace-pre-wrap">{note}</p>
+          {hintLevel > 0 && (
+            <p className="mt-2 text-xs text-slate-400">Hints used: {hintLevel}/5 — counts toward independence, not a penalty for learning.</p>
+          )}
         </div>
       )}
 
@@ -153,9 +189,27 @@ export function PromptCheckCard({
               placeholder={check.justifyPromptEs}
             />
           )}
-          <button type="button" onClick={submit} className="rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-500">
-            Verificar
-          </button>
+          {hintLevel > 0 && (
+            <div className="rounded-md border border-slate-800 p-3 text-xs text-slate-300">
+              <p className="uppercase text-slate-500">Hint {hintLevel}</p>
+              <p className="mt-1">{hints[hintLevel - 1]}</p>
+              {hintLevel >= 5 && check.walkthroughEs && (
+                <p className="mt-2 text-amber-200">Walkthrough: {check.walkthroughEs}</p>
+              )}
+            </div>
+          )}
+          <div className="flex flex-wrap gap-2">
+            <button type="button" onClick={submit} className="rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-500">
+              Verificar
+            </button>
+            <button
+              type="button"
+              onClick={() => setHintLevel((n) => Math.min(5, n + 1))}
+              className="rounded-md border border-slate-700 px-3 py-2 text-xs text-slate-400 hover:border-amber-600"
+            >
+              {hintLevel >= 5 ? "Hints maxed (walkthrough)" : `Hint ${hintLevel + 1}/5`}
+            </button>
+          </div>
         </>
       )}
     </div>

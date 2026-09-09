@@ -36,6 +36,12 @@ export default function LaboratorioPage() {
           status="available"
         />
       )}
+      <p className="text-sm">
+        <Link href="/operaciones" className="text-red-400 hover:underline">
+          Internal machines (Operations) →
+        </Link>
+        {" · reasoning tabletop, does not replace this lab."}
+      </p>
       <div>
         <p className="font-mono text-xs text-red-400">FASE 0 · Lab checkpoint</p>
         <h1 className="mt-1 text-2xl font-bold text-white">Construcción del laboratorio de pentesting</h1>

@@ -8,3 +8,4 @@ export { AssessmentCard } from "./AssessmentCard";
 export { WeaknessCard } from "./WeaknessCard";
 export { ProgressCard } from "./ProgressCard";
 export { RecommendationCard } from "./RecommendationCard";
+export { BossCard, LessonCard } from "./BossCard";

@@ -20,6 +20,7 @@ export function PromptCheckCard({
 }) {
   const { recordTrainerAttempt, reportFailure } = useProgress();
   const [text, setText] = useState("");
+  const [startedAt] = useState(() => Date.now());
   const [choice, setChoice] = useState<string | undefined>();
   const [justify, setJustify] = useState("");
   const [phase, setPhase] = useState<"ask" | "explain" | "passed">("ask");
@@ -39,6 +40,7 @@ export function PromptCheckCard({
       skillKind: check.failKind === "memory" ? "recall" : "reasoning",
       retries: fails,
       domain: check.domain ?? check.subtopicId,
+      durationMs: Date.now() - startedAt,
     });
     onResult?.(result.ok);
     if (result.ok) {
@@ -77,8 +79,26 @@ export function PromptCheckCard({
           <p className="font-bold uppercase tracking-wide text-red-300">Not quite</p>
           <p className="mt-2 text-[11px] uppercase text-slate-400">Your answer</p>
           <p className="text-slate-200">{lastAnswerEs}</p>
-          <p className="mt-2 text-[11px] uppercase text-slate-400">Why</p>
+          <p className="mt-2 text-[11px] uppercase text-slate-400">Why it is not the best choice</p>
           <p className="whitespace-pre-wrap text-red-100">{note}</p>
+          {check.whatMissedEs && (
+            <>
+              <p className="mt-2 text-[11px] uppercase text-slate-400">What you missed</p>
+              <p className="text-slate-200">{check.whatMissedEs}</p>
+            </>
+          )}
+          {check.evidenceEs && (
+            <>
+              <p className="mt-2 text-[11px] uppercase text-slate-400">Evidence from the scenario</p>
+              <p className="text-slate-200">{check.evidenceEs}</p>
+            </>
+          )}
+          {check.betterApproachEs && (
+            <>
+              <p className="mt-2 text-[11px] uppercase text-slate-400">Better approach</p>
+              <p className="text-slate-200">{check.betterApproachEs}</p>
+            </>
+          )}
           <p className="mt-2 font-mono text-[11px] uppercase text-amber-300">
             Failure type · {FAIL_KIND_LABEL[check.failKind] ?? "REASONING"}
           </p>

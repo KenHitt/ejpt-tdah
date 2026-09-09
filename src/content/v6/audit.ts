@@ -3,6 +3,8 @@ import { COURSE_LESSONS } from "@/content/course";
 import { LEARN_ARTICLES } from "@/content/learn-articles";
 import { ACADEMY_WORKSHOPS } from "@/content/academy/workshops";
 import { CycleFlags } from "@/content/v6/types";
+import { drillsForSkill } from "@/content/v8/drills";
+import { COMMAND_BANK } from "@/content/command-bank";
 
 function existsLesson(id: string) {
   return COURSE_LESSONS.some((l) => l.id === id);
@@ -21,6 +23,7 @@ export interface SkillAudit {
   missing: string[];
   lessonOk: number;
   lessonTotal: number;
+  coverage: number;
 }
 
 export function auditSkill(skillId: string): SkillAudit | null {
@@ -33,10 +36,14 @@ export function auditSkill(skillId: string): SkillAudit | null {
   const hasQuiz = lessonObjs.some((l) => l.quiz.length >= 4);
   const hasExample = lessonObjs.some((l) => l.examples.length > 0);
   const hasLab = lessonObjs.some((l) => l.labSteps.length > 0);
-  const hasDecision = s.trainHrefs.some((h) => h.includes("decision") || h.includes("whats-next") || h.includes("train"));
-  const hasChallenge = s.trainHrefs.some((h) => h.includes("15min") || h.includes("arcade") || h.includes("examen"));
+  const hasDecision =
+    drillsForSkill(s.id).length > 0 ||
+    s.trainHrefs.some((h) => h.includes("decision") || h.includes("whats-next"));
+  const hasChallenge = s.trainHrefs.some((h) => h.includes("15min") || h.includes("arcade") || h.includes("examen") || h.includes("operaciones"));
   const hasAssess = Boolean(s.boss.href);
-  const hasSrs = s.recallCategories.length > 0;
+  const hasSrs =
+    s.recallCategories.length > 0 &&
+    COMMAND_BANK.some((c) => s.recallCategories.includes(c.category));
 
   const flags: CycleFlags = {
     theory: hasLesson || learns.length > 0,
@@ -68,7 +75,14 @@ export function auditSkill(skillId: string): SkillAudit | null {
     missing,
     lessonOk: lessons.length,
     lessonTotal: s.lessonIds.length,
+    coverage: coveragePct(flags),
   };
+}
+
+function coveragePct(flags: CycleFlags) {
+  const keys = Object.keys(flags) as (keyof CycleFlags)[];
+  const ok = keys.filter((k) => flags[k]).length;
+  return Math.round((ok / keys.length) * 100);
 }
 
 export function auditAll() {

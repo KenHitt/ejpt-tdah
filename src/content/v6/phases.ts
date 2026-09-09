@@ -60,7 +60,7 @@ export const V6_PHASES: V6Phase[] = [
     goalEs: "Discovery → puertos → versión → NSE → superficie → priorizar. Nmap responde preguntas.",
     thinkEs: "¿Qué pregunta intentas responder? Luego eliges el scan.",
     weekIds: [1],
-    skillIds: ["recon", "nmap"],
+    skillIds: ["recon", "nmap", "osint"],
     boss: {
       titleEs: "Recon boss",
       href: "/clase/examen/w1",
@@ -105,7 +105,7 @@ export const V6_PHASES: V6Phase[] = [
     goalEs: "Find → validate → configure (LHOST) → execute → verify access.",
     thinkEs: "Options son el examen. El exploit es teatro si LHOST está mal.",
     weekIds: [3, 4],
-    skillIds: ["metasploit", "exploitation"],
+    skillIds: ["metasploit", "exploitation", "exploit-mod"],
     boss: {
       titleEs: "Exploitation boss",
       href: "/clase/examen/w3",

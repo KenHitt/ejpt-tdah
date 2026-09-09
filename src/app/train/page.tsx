@@ -15,6 +15,8 @@ const MODES = [
   ["/train/decisions", "DECISION DRILLS", "Variable", "Prioridad + porqué."],
   ["/train/whats-next", "ATTACK PATH", "Variable", "What's next? Árbol de ataque."],
   ["/train/arcade", "FREE PLAY", "Ligero", "Escenario aleatorio. No sustituye el lab."],
+  ["/train/random", "RANDOM OPERATION", "Variable", "Escenario sesgado a tus weaknesses reales."],
+  ["/operaciones", "MACHINES", "30–60 min", "Operaciones internas (mesa). No reemplazan VirtualBox."],
 ] as const;
 
 export default function TrainHubPage() {

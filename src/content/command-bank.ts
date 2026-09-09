@@ -1,6 +1,24 @@
+import { SRS_V8 } from "@/content/v8/srs-extra";
+
 export interface CommandCard {
   id: string;
-  category: "Nmap" | "SMB" | "Web" | "Hydra" | "Metasploit" | "Meterpreter" | "Lab";
+  category:
+    | "Nmap"
+    | "SMB"
+    | "Web"
+    | "Hydra"
+    | "Metasploit"
+    | "Meterpreter"
+    | "Lab"
+    | "Linux"
+    | "Windows"
+    | "Pivot"
+    | "PrivEsc"
+    | "Reporting"
+    | "Exam"
+    | "OSINT"
+    | "ExploitMod"
+    | "Chains";
   subtopicId: string;
   /** Short command fragment, e.g. nmap -sn */
   fragment: string;
@@ -20,7 +38,7 @@ export interface CommandCard {
   hints: [string, string, string, string, string];
 }
 
-export const COMMAND_BANK: CommandCard[] = [
+export const COMMAND_BANK_CORE: CommandCard[] = [
   {
     id: "nmap-sn",
     category: "Nmap",
@@ -601,6 +619,8 @@ export const COMMAND_BANK: CommandCard[] = [
     ],
   },
 ];
+
+export const COMMAND_BANK: CommandCard[] = [...COMMAND_BANK_CORE, ...SRS_V8];
 
 export function commandsByCategory() {
   const map = new Map<CommandCard["category"], CommandCard[]>();

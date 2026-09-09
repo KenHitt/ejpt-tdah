@@ -19,6 +19,13 @@ const PRIMARY = [
  * Analytics = cómo voy. System = cuenta / ayuda. Train vive dentro de Review. */
 const SECONDARY_GROUPS: { label: string; links: { href: string; label: string }[] }[] = [
   {
+    label: "Practice",
+    links: [
+      { href: "/operaciones", label: "Operations" },
+      { href: "/train", label: "Training Gym" },
+    ],
+  },
+  {
     label: "Reference",
     links: [
       { href: "/learn", label: "Reference" },
@@ -32,6 +39,7 @@ const SECONDARY_GROUPS: { label: string; links: { href: string; label: string }[
       { href: "/progreso", label: "Dashboard" },
       { href: "/plan", label: "Plan" },
       { href: "/auditoria", label: "Audit" },
+      { href: "/mapa", label: "Skill Map" },
     ],
   },
   {

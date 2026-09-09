@@ -12,6 +12,7 @@ import { useCourse } from "@/lib/course/context";
 import { useProgress } from "@/lib/progress/context";
 import { CycleFlags } from "@/content/v6/types";
 import { PRIMARY_BUTTON, progressBarClass } from "@/lib/design/tokens";
+import { drillsForSkill } from "@/content/v8/drills";
 
 const CYCLE: { key: keyof CycleFlags; label: string }[] = [
   { key: "theory", label: "Theory" },
@@ -150,6 +151,11 @@ export default function MasterSkillPage() {
           />
         ))}
         <Li href={skill.boss.href} label={`Boss · ${skill.boss.titleEs}`} />
+        {drillsForSkill(skill.id).length > 0 && (
+          <Li href="/train/decisions" label={`Decision pack (${drillsForSkill(skill.id).length})`} />
+        )}
+        <Li href="/operaciones" label="Internal machines / bosses" />
+        <Li href="/mapa" label="Where this leads (skill map)" />
       </ol>
 
       {firstLesson && status !== "LOCKED" && (

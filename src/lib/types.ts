@@ -75,6 +75,10 @@ export interface PromptCheck {
   subtopicId: string;
   domain?: string;
   critical?: boolean;
+  /** V8 feedback extra (opcional, no rompe checks antiguos). */
+  whatMissedEs?: string;
+  betterApproachEs?: string;
+  evidenceEs?: string;
 }
 
 export interface GuidedStep {

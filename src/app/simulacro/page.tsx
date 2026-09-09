@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CURRICULUM, computeCurrentGlobalWeek, globalWeekIndex } from "@/content/curriculum";
 import { useProgress } from "@/lib/progress/context";
 import { AssessmentCard } from "@/components/cards";
+import { V8_MOCKS } from "@/content/v8/mocks";
 
 export default function SimulacroHubPage() {
   const { state, canTakeFullSimulacroToday } = useProgress();
@@ -58,6 +59,24 @@ export default function SimulacroHubPage() {
           </span>
         </section>
       )}
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold text-white">Internal readiness mocks</h2>
+        <p className="text-sm text-slate-400">Five academy mocks. Not official INE exams.</p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {V8_MOCKS.map((m) => (
+            <AssessmentCard
+              key={m.id}
+              titleEs={m.titleEs}
+              descriptionEs={m.descriptionEs}
+              questionCount={m.count}
+              durationLabel={`${Math.round(m.durationSec / 60)} min`}
+              href={`/simulacro/mock/${m.id}`}
+              ctaLabel="START ASSESSMENT"
+            />
+          ))}
+        </div>
+      </section>
 
       <section>
         <h2 className="mb-3 text-lg font-semibold text-white">Skill-checks por semana</h2>

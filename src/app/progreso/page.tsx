@@ -13,10 +13,11 @@ import { HONEST_HOURS, completedLessonHours } from "@/content/v6/hours";
 import { profileBars, skillBreakdown, skillStatus } from "@/lib/v6/mastery";
 import { phaseForWeek } from "@/content/v6/phases";
 import { skillWeaknesses, dominantFailureLabel } from "@/lib/v6/weakness";
-import { trainRecommendation } from "@/lib/v6/operation";
 import { ProgressCard, WeaknessCard, RecommendationCard, SkillCard } from "@/components/cards";
 import { progressBarClass } from "@/lib/design/tokens";
 import { V6_SKILLS } from "@/content/v6/skills";
+import { readinessBreakdown } from "@/lib/v8/readiness";
+import { recommendAfterActivity } from "@/lib/v8/recommend";
 
 function formatHours(h: number) {
   const hh = Math.floor(h);
@@ -61,7 +62,8 @@ export default function ProgresoPage() {
   const bars = profileBars(course, state);
   const weaknesses = skillWeaknesses(course, state);
   const dominant = dominantFailureLabel(state);
-  const rec = trainRecommendation(state);
+  const v8rec = recommendAfterActivity(course, state);
+  const ready = readinessBreakdown(course, state);
   const order: Record<string, number> = { WEAK: 0, PRACTICING: 1, READY: 2, IN_PROGRESS: 3 };
   const focusSkills = V6_SKILLS.filter((s) => order[skillStatus(s.id, course, state)] !== undefined)
     .sort((a, b) => order[skillStatus(a.id, course, state)] - order[skillStatus(b.id, course, state)])
@@ -84,7 +86,19 @@ export default function ProgresoPage() {
         <ProgressCard label="Curriculum" value={`${curriculumPct}%`} pct={curriculumPct} />
         <ProgressCard label="Study time (completed)" value={formatHours(doneH)} hint="Estimated from real content" />
         <ProgressCard label="Current streak" value={`${course.streak} day${course.streak === 1 ? "" : "s"}`} />
+        <ProgressCard label="Readiness band" value={ready.band} hint="Internal. Not P(pass INE)." />
         <ProgressCard label="Remaining (est.)" value={`~${Math.max(0, HONEST_HOURS.jornadaEstimated - doneH).toFixed(1)} h`} />
+      </section>
+
+      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <ProgressCard label="Knowledge (proxy)" value={ready.knowledge === undefined ? "Not enough data yet" : `${ready.knowledge}%`} />
+        <ProgressCard label="Reasoning" value={ready.reasoning === undefined || ready.reasoning === 0 ? "Not enough data yet" : `${ready.reasoning}%`} />
+        <ProgressCard label="Command memory" value={!ready.commandMemory ? "Not enough data yet" : `${ready.commandMemory}%`} />
+        <ProgressCard
+          label="Independence"
+          value={ready.independence === undefined ? "Not enough data yet" : `${ready.independence}%`}
+        />
+        <ProgressCard label="Speed" value={ready.speed === undefined ? "Not enough data yet" : `${ready.speed}%`} />
       </section>
 
       <section className="space-y-2">
@@ -151,11 +165,11 @@ export default function ProgresoPage() {
       </section>
 
       <RecommendationCard
-        titleEs={rec.title}
-        whyEs={rec.why}
-        estimatedLabel="Recommended review"
-        href={rec.href}
-        ctaLabel="START REVIEW"
+        titleEs={v8rec.titleEs}
+        whyEs={v8rec.whyEs}
+        estimatedLabel={v8rec.estimatedLabel}
+        href={v8rec.href}
+        ctaLabel="FIX MAIN WEAKNESS"
       />
 
       <div>

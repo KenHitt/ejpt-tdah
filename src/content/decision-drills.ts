@@ -215,3 +215,5 @@ export const HYDRA_TRAP_DRILL: DecisionScenario = {
 export const WEEK1_DECISION_DRILLS: DecisionScenario[] = [NMAP_INTERPRET_DRILL, NMAP_NEXT_STEP];
 export const EXTRA_DECISION_DRILLS: DecisionScenario[] = [HTTP_ONLY_DRILL, HYDRA_TRAP_DRILL];
 export const WEEK4_DECISION_DRILLS: DecisionScenario[] = [ATTACK_PATH_DRILL];
+
+export { V8_ALL_DRILLS, drillsForSkill } from "@/content/v8/drills";

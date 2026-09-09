@@ -2,6 +2,7 @@ import { LearnArticle } from "@/content/learn-types";
 import { LEARN_CATALOG_A } from "@/content/learn-catalog-a";
 import { LEARN_CATALOG_B } from "@/content/learn-catalog-b";
 import { LEARN_CATALOG_C } from "@/content/learn-catalog-c";
+import { LEARN_CATALOG_V8 } from "@/content/v8/learn-v8";
 
 export type { LearnArticle };
 
@@ -206,6 +207,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
   ...LEARN_CATALOG_A,
   ...LEARN_CATALOG_B,
   ...LEARN_CATALOG_C,
+  ...LEARN_CATALOG_V8,
 ];
 
 export const LEARN_PLANNED: { track: string; titles: string[] }[] = [];

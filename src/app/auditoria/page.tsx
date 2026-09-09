@@ -13,6 +13,10 @@ import { COMMAND_BANK } from "@/content/command-bank";
 import { V8_MACHINES, V8_BOSSES } from "@/content/v8/operations";
 import { V8_MOCKS } from "@/content/v8/mocks";
 import { V6_SKILLS } from "@/content/v6/skills";
+import { academyHealth } from "@/lib/v9/health";
+import { V9_ALL_DRILLS } from "@/content/v9/drills";
+import { LEARN_CATALOG_V9 } from "@/content/v9/learn-v9";
+import { SKILL_OUTCOMES } from "@/content/v9/outcomes";
 
 const FLAG_LABEL: { key: keyof CycleFlags; label: string }[] = [
   { key: "theory", label: "Teoría" },
@@ -28,6 +32,7 @@ const FLAG_LABEL: { key: keyof CycleFlags; label: string }[] = [
 
 export default function AuditoriaPage() {
   const rows = auditAll();
+  const health = academyHealth();
   const incomplete = rows.filter((r) => r.missing.length > 0);
   const withDecision = rows.filter((r) => r.flags.decision).length;
   const withSrs = rows.filter((r) => r.flags.srs).length;
@@ -44,6 +49,12 @@ export default function AuditoriaPage() {
       </div>
 
       <section className="grid gap-3 text-sm sm:grid-cols-2">
+        <Stat label="Content coverage" value={`${health.contentCoverage}%`} />
+        <Stat label="Assessment coverage" value={`${health.assessmentCoverage}%`} />
+        <Stat label="Practical coverage" value={`${health.practicalCoverage}%`} />
+        <Stat label="Decision coverage" value={`${health.decisionCoverage}%`} />
+        <Stat label="Transfer coverage" value={`${health.transferCoverage}%`} />
+        <Stat label="Retention coverage" value={`${health.retentionCoverage}%`} />
         <Stat label="Fases" value={String(V6_PHASES.length)} />
         <Stat label="Skills" value={String(rows.length)} />
         <Stat label="Jornadas" value={String(COURSE_LESSONS.length)} />
@@ -52,7 +63,10 @@ export default function AuditoriaPage() {
         <Stat label="Skills con huecos" value={String(incomplete.length)} />
         <Stat label="Skills con Decision Drill" value={`${withDecision}/${rows.length}`} />
         <Stat label="Skills con SRS" value={`${withSrs}/${rows.length}`} />
-        <Stat label="Decision drills V8 pack" value={String(V8_ALL_DRILLS.length)} />
+        <Stat label="Decision drills pack (V8+V9)" value={String(V8_ALL_DRILLS.length)} />
+        <Stat label="Transfer/decision V9 added" value={String(V9_ALL_DRILLS.length)} />
+        <Stat label="Fichas V9 Windows added" value={String(LEARN_CATALOG_V9.length)} />
+        <Stat label="Skills with outcomes" value={String(SKILL_OUTCOMES.length)} />
         <Stat label="SRS cards (total)" value={String(COMMAND_BANK.length)} />
         <Stat label="SRS V8 added" value={String(SRS_V8.length)} />
         <Stat label="Internal machines" value={String(V8_MACHINES.length)} />

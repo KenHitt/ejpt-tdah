@@ -12,11 +12,14 @@ const MODES = [
   ["/train/5min", "QUICK FIRE", "~5 min", "Recall / interpretación. Celular."],
   ["/train/10min", "MICRO OP", "~10 min", "Mini escenario, sin VM."],
   ["/train/15min", "DECISION LAB", "~15 min", "Varias decisiones seguidas."],
+  ["/train/emergency", "EMERGENCY 10", "~10 min", "Recall + interpretación + decisión. No random."],
+  ["/train/transfer", "TRANSFER", "Variable", "Misma skill, otro escenario."],
   ["/train/decisions", "DECISION DRILLS", "Variable", "Prioridad + porqué."],
   ["/train/whats-next", "ATTACK PATH", "Variable", "What's next? Árbol de ataque."],
   ["/train/arcade", "FREE PLAY", "Ligero", "Escenario aleatorio. No sustituye el lab."],
   ["/train/random", "RANDOM OPERATION", "Variable", "Escenario sesgado a tus weaknesses reales."],
   ["/operaciones", "MACHINES", "30–60 min", "Operaciones internas (mesa). No reemplazan VirtualBox."],
+  ["/operaciones/full", "FULL OPERATION", "~50 min", "Scope + objetivo. Sin camino ni comandos."],
 ] as const;
 
 export default function TrainHubPage() {

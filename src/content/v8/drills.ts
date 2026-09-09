@@ -1,4 +1,5 @@
 import { DecisionScenario } from "@/lib/types";
+import { V9_ALL_DRILLS, V9_DRILLS_BY_SKILL } from "@/content/v9/drills";
 
 const LAB = "Solo contra tu lab autorizado (Host-Only / DVWA local / alcance escrito).";
 
@@ -729,7 +730,7 @@ const BY_SKILL: Record<string, DecisionScenario[]> = {
 };
 
 export function drillsForSkill(skillId: string): DecisionScenario[] {
-  return BY_SKILL[skillId] ?? [];
+  return [...(BY_SKILL[skillId] ?? []), ...(V9_DRILLS_BY_SKILL[skillId] ?? [])];
 }
 
 export const V8_ALL_DRILLS: DecisionScenario[] = [
@@ -751,4 +752,5 @@ export const V8_ALL_DRILLS: DecisionScenario[] = [
   EXPLOIT_MOD_DRILL,
   OSINT_STRATEGY_DRILL,
   ATTACK_CHAIN_SRS,
+  ...V9_ALL_DRILLS,
 ];

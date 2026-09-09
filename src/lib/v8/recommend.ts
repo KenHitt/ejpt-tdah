@@ -3,6 +3,7 @@ import { CourseState } from "@/lib/course/storage";
 import { listWeaknesses } from "@/lib/trainer/adaptive";
 import { skillWeaknesses } from "@/lib/v6/weakness";
 import { drillsForSkill } from "@/content/v8/drills";
+import { calculateRecommendation } from "@/lib/v9/recommend";
 
 export interface NextRec {
   titleEs: string;
@@ -16,6 +17,15 @@ export interface NextRec {
  * No inventa skills débiles sin evidencia.
  */
 export function recommendAfterActivity(course: CourseState, progress: ProgressState): NextRec {
+  const board = calculateRecommendation(course, progress, "normal");
+  if (board.primary.score >= 40) {
+    return {
+      titleEs: board.primary.titleEs,
+      whyEs: board.primary.whyBullets.join(" "),
+      href: board.primary.href,
+      estimatedLabel: `~${board.primary.durationMin} min`,
+    };
+  }
   const weak = skillWeaknesses(course, progress)[0];
   const list = listWeaknesses(progress);
   const critical = list.find((w) => w.severity === "critical") ?? list[0];

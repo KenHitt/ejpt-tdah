@@ -3,12 +3,16 @@
 import Link from "next/link";
 import { COMMAND_BANK, commandsByCategory } from "@/content/command-bank";
 import { useProgress } from "@/lib/progress/context";
-import { dueCommands, isCommandDue, listWeaknesses } from "@/lib/trainer/adaptive";
+import { dueCommands, isCommandDue } from "@/lib/trainer/adaptive";
 import { failKindAdvice } from "@/lib/v6/operation";
+import { calculateReviewPriority, reviewWhyToday } from "@/lib/v9/review";
+import { ReviewCard } from "@/components/cards";
+import { useCourse } from "@/lib/course/context";
 
 export default function MemoryPage() {
   const grouped = commandsByCategory();
   const { state } = useProgress();
+  const { state: course } = useCourse();
   const attempts = state.trainer?.attempts ?? [];
   const dueIds = new Set(COMMAND_BANK.filter((c) => isCommandDue(state, c.id)).map((c) => c.id));
   const due = dueCommands(state);
@@ -17,7 +21,8 @@ export default function MemoryPage() {
     return mine.length > 0;
   }).slice(0, 8);
   const advice = failKindAdvice(state);
-  const weak = listWeaknesses(state).filter((w) => w.severity !== "review").slice(0, 3);
+  const queue = calculateReviewPriority(course, state);
+  const whyToday = reviewWhyToday(state);
 
   const errors = (id: string) => attempts.filter((a) => a.exerciseId.startsWith(id) && !a.correct).length;
   const ok = (id: string) => attempts.filter((a) => a.exerciseId.startsWith(id) && a.correct).length;
@@ -28,14 +33,34 @@ export default function MemoryPage() {
         <p className="font-mono text-xs text-red-400">REVIEW · SRS, no lista aleatoria</p>
         <h1 className="text-2xl font-bold text-white">Recall</h1>
         <p className="mt-1 text-sm text-slate-400">
-          Prioridad: errores recientes → conceptos débiles → comandos vencidos. No leas la lista como cheat sheet.
+          Today&apos;s queue is selected because of errors, weak skills, forgetting risk and failed gates — not a random list.
         </p>
+        <ul className="mt-2 list-disc pl-5 text-sm text-slate-400">
+          {whyToday.map((w) => (
+            <li key={w}>{w}</li>
+          ))}
+        </ul>
         {advice && <p className="mt-2 text-sm text-amber-200">{advice}</p>}
         <Link href="/train" className="mt-3 inline-block rounded-full border border-red-700 px-3 py-1.5 text-xs font-medium text-red-300 hover:bg-red-500/10">
           Open Training Gym →
         </Link>
       </div>
 
+      {queue.length > 0 && (
+        <section className="space-y-2">
+          <h2 className="font-mono text-sm text-red-400">TODAY&apos;S REVIEW ({queue.length})</h2>
+          {queue.slice(0, 8).map((item) => (
+            <ReviewCard
+              key={item.href}
+              titleEs={item.titleEs}
+              reasonEs={item.reasonEs}
+              priority={item.priority}
+              estimatedMin={item.estimatedMin}
+              href={item.href}
+            />
+          ))}
+        </section>
+      )}
       {due.length > 0 && (
         <section>
           <h2 className="mb-2 font-mono text-sm text-amber-400">Vencidos ahora ({due.length})</h2>
@@ -68,18 +93,6 @@ export default function MemoryPage() {
             ))}
           </ul>
         </section>
-      )}
-
-      {weak.length > 0 && (
-        <ul className="text-sm text-slate-400">
-          {weak.map((w) => (
-            <li key={w.id}>
-              <Link href={w.href} className="hover:text-amber-300">
-                Hueco: {w.labelEs}
-              </Link>
-            </li>
-          ))}
-        </ul>
       )}
 
       {Array.from(grouped.entries()).map(([cat, cards]) => {

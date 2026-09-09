@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useProgress } from "@/lib/progress/context";
 import { useCourse } from "@/lib/course/context";
@@ -17,7 +17,13 @@ import { ProgressCard, WeaknessCard, RecommendationCard, SkillCard } from "@/com
 import { progressBarClass } from "@/lib/design/tokens";
 import { V6_SKILLS } from "@/content/v6/skills";
 import { readinessBreakdown } from "@/lib/v8/readiness";
-import { recommendAfterActivity } from "@/lib/v8/recommend";
+import { loadEnergy, subscribeEnergy } from "@/lib/v6/energy";
+import { EnergyMode } from "@/content/v6/types";
+import { TimeBudget } from "@/content/v9/types";
+import { calculateRecommendation } from "@/lib/v9/recommend";
+import { calculateReadiness } from "@/lib/v9/readiness";
+import { TrainingDirector } from "@/components/v9/TrainingDirector";
+import { academicState } from "@/lib/v9/competency";
 
 function formatHours(h: number) {
   const hh = Math.floor(h);
@@ -33,6 +39,8 @@ function formatHours(h: number) {
 export default function ProgresoPage() {
   const { state, addSession, ensurePlanStarted, importState, syncMode } = useProgress();
   const { state: course, dayNumber } = useCourse();
+  const energy = useSyncExternalStore(subscribeEnergy, loadEnergy, (): EnergyMode => "normal");
+  const [budget, setBudget] = useState<TimeBudget | undefined>(undefined);
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [regimeDayType, setRegimeDayType] = useState<RegimeDayType>("trabajo");
   const [hoursPlanned, setHoursPlanned] = useState(2);
@@ -62,7 +70,11 @@ export default function ProgresoPage() {
   const bars = profileBars(course, state);
   const weaknesses = skillWeaknesses(course, state);
   const dominant = dominantFailureLabel(state);
-  const v8rec = recommendAfterActivity(course, state);
+  const v9 = useMemo(
+    () => calculateRecommendation(course, state, energy, budget),
+    [course, state, energy, budget]
+  );
+  const evid = useMemo(() => calculateReadiness(course, state), [course, state]);
   const ready = readinessBreakdown(course, state);
   const order: Record<string, number> = { WEAK: 0, PRACTICING: 1, READY: 2, IN_PROGRESS: 3 };
   const focusSkills = V6_SKILLS.filter((s) => order[skillStatus(s.id, course, state)] !== undefined)
@@ -75,10 +87,56 @@ export default function ProgresoPage() {
         <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-red-400">Dashboard</p>
         <h1 className="text-2xl font-bold text-white">eJPT training status</h1>
         <p className="mt-1 text-sm text-slate-400">
-          Derived from real activity (lessons, quizzes, labs, exam results) — not from opening pages. eJPT readiness is
-          an internal academy criterion, not an INE score.
+          Academic advisor: next activity from evidence. Curriculum % is not mastery. No pass-probability. If a
+          metric is missing: Not enough data yet.
         </p>
       </div>
+
+      <TrainingDirector board={v9} budget={budget} onBudget={setBudget} />
+
+      <section className="grid gap-2 sm:grid-cols-2 text-sm">
+        {v9.highlights.weakestCritical && (
+          <p className="text-slate-300">
+            Weakest critical skill: <span className="text-white">{v9.highlights.weakestCritical}</span>
+          </p>
+        )}
+        {v9.highlights.mostUrgent && (
+          <p className="text-slate-300">
+            Most urgent: <span className="text-white">{v9.highlights.mostUrgent}</span>
+          </p>
+        )}
+        {v9.highlights.needsRetention && (
+          <p className="text-slate-300">
+            Needs retention: <span className="text-white">{v9.highlights.needsRetention}</span>
+          </p>
+        )}
+        {v9.highlights.readyToAdvance && (
+          <p className="text-slate-300">
+            Ready to advance: <span className="text-white">{v9.highlights.readyToAdvance}</span>
+          </p>
+        )}
+      </section>
+
+      <section>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Readiness evidence</h2>
+        <p className="mt-1 text-xs text-slate-500">{evid.disclaimer}</p>
+        <p className="mt-2 text-sm text-white">Current assessment readiness: {evid.overallBand}</p>
+        <ul className="mt-2 grid gap-1 text-sm text-slate-300 sm:grid-cols-2">
+          <li>Knowledge · {evid.dims.knowledge}</li>
+          <li>Execution · {evid.dims.execution}</li>
+          <li>Decision · {evid.dims.decision}</li>
+          <li>Transfer · {evid.dims.transfer}</li>
+          <li>Retention · {evid.dims.retention}</li>
+        </ul>
+        <ul className="mt-3 space-y-1 text-sm">
+          {evid.domains.map((d) => (
+            <li key={d.domain} className="flex justify-between text-slate-400">
+              <span>{d.domain}</span>
+              <span className="font-mono text-slate-300">{d.pct === null ? "Not enough data yet" : `${d.pct}%`}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <section className="grid gap-3 sm:grid-cols-3">
         <ProgressCard label="Current phase" value={currentPhase.titleEs} hint={currentPhase.subtitleEs} />
@@ -130,7 +188,7 @@ export default function ProgresoPage() {
                   key={s.id}
                   titleEs={s.titleEs}
                   pct={b.overall}
-                  status={skillStatus(s.id, course, state)}
+                  status={academicState(s.id, course, state)}
                   knowledge={b.knowledge}
                   reasoning={b.reasoning}
                   practical={b.practical}
@@ -165,11 +223,12 @@ export default function ProgresoPage() {
       </section>
 
       <RecommendationCard
-        titleEs={v8rec.titleEs}
-        whyEs={v8rec.whyEs}
-        estimatedLabel={v8rec.estimatedLabel}
-        href={v8rec.href}
-        ctaLabel="FIX MAIN WEAKNESS"
+        titleEs={v9.primary.titleEs}
+        whyEs={v9.primary.whyBullets.join(" ")}
+        whyBullets={v9.primary.whyBullets}
+        estimatedLabel={`~${v9.primary.durationMin} min`}
+        href={v9.primary.href}
+        ctaLabel="START NEXT ACTIVITY"
       />
 
       <div>

@@ -47,9 +47,19 @@ export default function OperacionPage() {
           <dd className="text-slate-400">Solo lab autorizado. Puedes decidir no explotar todavía.</dd>
         </div>
         <div>
+          <dt className="text-[10px] uppercase text-slate-500">Ladder</dt>
+          <dd>L{op.ladder} · tabletop</dd>
+        </div>
+        <div>
           <dt className="text-[10px] uppercase text-slate-500">Time (estimated)</dt>
           <dd className="font-mono text-slate-400">~{op.estimatedMin} min</dd>
         </div>
+        {op.expectedEvidenceEs && (
+          <div>
+            <dt className="text-[10px] uppercase text-slate-500">Expected evidence (you produce it)</dt>
+            <dd className="text-slate-400">{op.expectedEvidenceEs}</dd>
+          </div>
+        )}
         {!op.hideSkills && (
           <div>
             <dt className="text-[10px] uppercase text-slate-500">Skills (practice, not a spoiler list on bosses)</dt>

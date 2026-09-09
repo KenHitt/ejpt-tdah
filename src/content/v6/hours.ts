@@ -6,6 +6,7 @@ import { getAllBlocks } from "@/content/curriculum";
 import { MICRO_BANK, TEN_MIN_PACK } from "@/content/micro-training";
 import { COMMAND_BANK } from "@/content/command-bank";
 import { WEEK1_DECISION_DRILLS, WEEK4_DECISION_DRILLS, EXTRA_DECISION_DRILLS } from "@/content/decision-drills";
+import { V8_ALL_DRILLS } from "@/content/v8/drills";
 
 /** Estimación por pieza de contenido real. No "1 ficha = 2.5 h". */
 export function estimateLessonBreakdown(l: EnrichedLesson) {
@@ -36,7 +37,11 @@ const fichaMin = LEARN_ARTICLES.length * 8;
 const microMin = MICRO_BANK.length * 3 + TEN_MIN_PACK.length * 8;
 const recallMin = COMMAND_BANK.length * 6;
 const decisionMin =
-  (WEEK1_DECISION_DRILLS.length + WEEK4_DECISION_DRILLS.length + EXTRA_DECISION_DRILLS.length) * 12;
+  (WEEK1_DECISION_DRILLS.length +
+    WEEK4_DECISION_DRILLS.length +
+    EXTRA_DECISION_DRILLS.length +
+    V8_ALL_DRILLS.length) *
+  12;
 const examMin = 13 * 25 + 5 * 25;
 
 function hours(min: number) {

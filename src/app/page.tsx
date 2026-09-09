@@ -12,6 +12,7 @@ import { EnergyToggle } from "@/components/v6/EnergyToggle";
 import { MissionCard } from "@/components/cards";
 import { OnboardingIntro } from "@/components/v6/OnboardingIntro";
 import { ACADEMY_NAME } from "@/content/academy/program";
+import { calculateRecommendation } from "@/lib/v9/recommend";
 
 /**
  * Mission Control = "¿qué hago ahora?". Nada de analíticas aquí (V7 sección 41,
@@ -26,8 +27,15 @@ export default function MissionControlPage() {
     () => pickOperation(course, progress, energy, dayNumber),
     [course, progress, energy, dayNumber]
   );
+  const board = useMemo(() => calculateRecommendation(course, progress, energy), [course, progress, energy]);
   const advice = useMemo(() => failKindAdvice(progress), [progress]);
   const labOk = labCheckpointDone(course);
+  const useAdvisor = board.primary.score >= 65;
+  const href = useAdvisor ? board.primary.href : op.href;
+  const titleEs = useAdvisor ? board.primary.titleEs : op.titleEs;
+  const whyEs = useAdvisor ? board.primary.whyBullets.join(" ") : op.whyEs;
+  const objectiveEs = useAdvisor ? board.primary.goalEs : op.objectiveEs;
+  const estimatedLabel = useAdvisor ? `~${board.primary.durationMin} min (estimado)` : op.estimatedLabel;
 
   if (!courseReady) {
     return <p className="font-mono text-sm text-slate-500">Loading operation…</p>;
@@ -40,10 +48,10 @@ export default function MissionControlPage() {
       <div>
         <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-red-400">Mission control</p>
         <h1 className="mt-1 text-3xl font-bold text-white">{ACADEMY_NAME}</h1>
-        <p className="mt-1 text-sm text-slate-400">What should I do now? One operation. Everything else is optional.</p>
+        <p className="mt-1 text-sm text-slate-400">What should I do now? Why? How long? One operation. Completed ≠ mastered.</p>
       </div>
 
-      {isNew && <OnboardingIntro firstLessonHref={op.href} />}
+      {isNew && <OnboardingIntro firstLessonHref={href} />}
 
       <EnergyToggle
         value={energy}
@@ -55,17 +63,21 @@ export default function MissionControlPage() {
       <MissionCard
         phaseLabel={op.phaseLabel}
         dayLabel={op.dayLabel}
-        titleEs={op.titleEs}
-        objectiveEs={op.objectiveEs}
-        whyEs={op.whyEs}
+        titleEs={titleEs}
+        objectiveEs={objectiveEs}
+        whyEs={whyEs}
         stepsDone={op.stepsDone}
         stepsTotal={op.stepsTotal}
-        estimatedLabel={op.estimatedLabel}
+        estimatedLabel={estimatedLabel}
         difficulty={op.difficulty}
-        href={op.href}
+        href={href}
         extra={
           !labOk ? (
             <p className="mt-3 text-xs text-amber-200">Lab checkpoint pending: ping, vboxnet, snapshot, scope.</p>
+          ) : useAdvisor ? (
+            <p className="mt-3 text-xs text-slate-500">
+              Afterward: {board.advisor.afterEs} {board.primary.skillId ? `Improves ${board.primary.skillId}.` : ""}
+            </p>
           ) : undefined
         }
       />
@@ -77,8 +89,14 @@ export default function MissionControlPage() {
         <Link href={op.nextHref} className="block rounded-lg border border-slate-800 px-3 py-2 text-sm text-slate-300">
           {op.nextTitleEs}
         </Link>
-        <p className="text-[11px] uppercase tracking-wide text-slate-600">Short session</p>
+        <p className="text-[11px] uppercase tracking-wide text-slate-600">If you have 5 / 15 / 60 min</p>
         <div className="flex flex-col gap-1">
+          {board.timeSlots.map((s) => (
+            <Link key={s.budget} href={s.rec.href} className="text-sm text-slate-500 hover:text-red-400">
+              {s.budget} min → {s.rec.titleEs}
+              <span className="ml-2 text-xs text-slate-600">{s.rec.whyBullets[0]}</span>
+            </Link>
+          ))}
           {op.optional.map((o) => (
             <Link key={o.href} href={o.href} className="text-sm text-slate-500 hover:text-red-400">
               {o.label}

@@ -75,21 +75,28 @@ export function statusBadgeClass(status: UiStatus | string): string {
   switch (status.toLowerCase()) {
     case "mastered":
     case "completed":
+    case "transfer_ready":
       return "bg-emerald-950 text-emerald-300 border border-emerald-800";
     case "ready":
+    case "competent":
       return "bg-sky-950 text-sky-300 border border-sky-800";
     case "recommended":
     case "active":
       return "bg-red-950 text-red-300 border border-red-800";
     case "weak":
     case "failed":
+    case "needs_review":
       return "bg-red-950 text-red-300 border border-red-900";
     case "review_due":
       return "bg-amber-950 text-amber-300 border border-amber-800";
     case "practicing":
     case "in_progress":
+    case "learning":
+    case "exposed":
       return "bg-amber-950/60 text-amber-300 border border-amber-900";
     case "locked":
+    case "blocked":
+    case "not_started":
       return "bg-slate-800/60 text-slate-500 border border-slate-800";
     default:
       return "bg-slate-800 text-slate-300 border border-slate-700";

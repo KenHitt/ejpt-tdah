@@ -280,7 +280,7 @@ export const V6_SKILLS: V6Skill[] = [
     phaseId: "p8",
     prereqIds: ["exploitation"],
     subtopicIds: ["privesc-windows"],
-    learnIds: ["win-users", "win-ps", "win-smb-privesc", "win-privs", "win-sched-acl"],
+    learnIds: ["win-users", "win-ps", "win-smb-privesc", "win-privs", "win-sched-acl", "win-processes", "win-hash-concept", "win-when-enum"],
     lessonIds: ["c08-d3"],
     workshopIds: ["lolbas", "netexec", "bloodhound"],
     trainHrefs: ["/learn/win-users", "/train/decisions"],

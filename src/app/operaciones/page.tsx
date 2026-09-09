@@ -3,11 +3,15 @@
 import Link from "next/link";
 import { allOperations } from "@/content/v8/operations";
 import { useCourse } from "@/lib/course/context";
+import { useProgress } from "@/lib/progress/context";
 import { LabCard, BossCard } from "@/components/cards";
 import { PRIMARY_BUTTON } from "@/lib/design/tokens";
+import { recommendMachine } from "@/lib/v9/recommend";
 
 export default function OperacionesPage() {
   const { state } = useCourse();
+  const { state: progress } = useProgress();
+  const rec = recommendMachine(state, progress, 60);
   const machines = allOperations().filter((m) => m.kind === "machine");
   const bosses = allOperations().filter((m) => m.kind === "boss");
   const next = machines.find((m) => !state.exams[`op:${m.id}`]) ?? machines[0];
@@ -18,10 +22,20 @@ export default function OperacionesPage() {
         <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-red-400">Operations</p>
         <h1 className="mt-2 text-3xl font-bold text-white">Internal machines</h1>
         <p className="mt-2 text-sm text-slate-400">
-          Educational tabletop machines. They do not replace VirtualBox. You decide the next step — including not
+          Educational tabletop machines L1–L5. They do not replace VirtualBox. You decide the next step — including not
           exploiting yet. Scope: your lab only.
         </p>
       </div>
+
+      <Link href="/operaciones/full" className="text-sm text-red-400">
+        Full red team operation (brief) →
+      </Link>
+
+      {rec && (
+        <p className="text-sm text-slate-300">
+          Recommended machine: <span className="text-white">{rec.machine.titleEs}</span> (L{rec.machine.ladder}). {rec.whyEs}
+        </p>
+      )}
 
       {next && (
         <LabCard
@@ -46,7 +60,9 @@ export default function OperacionesPage() {
                 className="block rounded-xl border border-slate-800 p-4 hover:border-red-700"
               >
                 <div className="flex justify-between gap-2">
-                  <p className="font-semibold text-white">{m.titleEs}</p>
+                  <p className="font-semibold text-white">
+                    {m.titleEs} <span className="font-mono text-[11px] text-slate-500">L{m.ladder}</span>
+                  </p>
                   <span className="font-mono text-[11px] text-slate-500">
                     {done ? `${done.pct}%` : `~${m.estimatedMin} min`}
                   </span>

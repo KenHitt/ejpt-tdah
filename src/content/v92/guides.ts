@@ -31,7 +31,7 @@ export const LESSON_GUIDES: LessonGuide[] = [
     prereqLearnIds: ["ipv4"],
     terms: [
       { term: "VirtualBox", def: "Programa que ejecuta máquinas virtuales (las víctimas) en tu PC.", purpose: "Aislar Metasploitable del Wi‑Fi de casa." },
-      { term: "Kali", def: "Tu sistema atacante: ahí corren nmap y Metasploit.", href: "/learn/ipv4" },
+      { term: "Kali", def: "Tu sistema atacante: ahí corren nmap y Metasploit. En este plan es el SO del PC, no una VM.", purpose: "Desde Kali atacas el guest. Mezclar Kali-dentro-de-VirtualBox rompe LHOST." },
     ],
     extraRead: [
       S("¿Qué vas a aprender?", "Quién es el atacante (Kali en tu PC), qué es el hipervisor (VirtualBox) y por qué las víctimas no van en Bridged."),

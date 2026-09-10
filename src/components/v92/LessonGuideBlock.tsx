@@ -1,7 +1,9 @@
-import Link from "next/link";
+"use client";
+
 import { COURSE_LESSONS } from "@/content/course";
 import { LEARN_ARTICLES } from "@/content/learn-articles";
 import { LessonGuide } from "@/content/v92/types";
+import { StayLink, StayTermButton } from "@/components/v92/LessonStaySheet";
 
 export function LessonGuideBlock({ guide }: { guide: LessonGuide }) {
   const learn = (guide.prereqLearnIds ?? [])
@@ -33,16 +35,16 @@ export function LessonGuideBlock({ guide }: { guide: LessonGuide }) {
           <ul className="mt-1 list-disc space-y-1 pl-5 text-sm text-slate-200">
             {prevLessons.map((l) => (
               <li key={l.id}>
-                <Link href={`/clase/${l.id}`} className="text-red-400 hover:underline">
+                <StayLink href={`/clase/${l.id}`} className="text-red-400 hover:underline">
                   {l.titleEs}
-                </Link>
+                </StayLink>
               </li>
             ))}
             {learn.map((a) => (
               <li key={a.id}>
-                <Link href={`/learn/${a.id}`} className="text-red-400 hover:underline">
+                <StayLink href={`/learn/${a.id}`} className="text-red-400 hover:underline">
                   {a.titleEs}
-                </Link>
+                </StayLink>
               </li>
             ))}
           </ul>
@@ -55,14 +57,11 @@ export function LessonGuideBlock({ guide }: { guide: LessonGuide }) {
           <ul className="mt-2 space-y-2">
             {guide.terms.map((t) => (
               <li key={t.term} className="rounded-lg border border-slate-800 p-2">
-                <p className="text-sm font-medium text-white">{t.term}</p>
-                <p className="text-sm text-slate-200">{t.def}</p>
-                {t.purpose && <p className="mt-1 text-xs text-slate-400">Para qué: {t.purpose}</p>}
-                {t.href && (
-                  <Link href={t.href} className="text-xs text-red-400 hover:underline">
-                    Más profundidad
-                  </Link>
-                )}
+                <StayTermButton term={t} className="w-full">
+                  <p className="text-sm font-medium text-red-400 underline decoration-red-900 underline-offset-2">{t.term}</p>
+                  <p className="text-sm text-slate-200">{t.def}</p>
+                  {t.purpose && <p className="mt-1 text-xs text-slate-400">Para qué: {t.purpose}</p>}
+                </StayTermButton>
               </li>
             ))}
           </ul>
@@ -121,16 +120,16 @@ export function LessonGuideBlock({ guide }: { guide: LessonGuide }) {
 
       <div className="flex flex-wrap gap-3 text-xs">
         {guide.decisionHref && (
-          <Link href={guide.decisionHref} className="text-red-400 hover:underline">
+          <StayLink href={guide.decisionHref} className="text-red-400 hover:underline">
             Decision drill
-          </Link>
+          </StayLink>
         )}
-        <Link href="/memory" className="text-slate-400 hover:underline">
+        <StayLink href="/memory" className="text-slate-400 hover:underline">
           SRS / memoria
-        </Link>
-        <Link href="/glosario" className="text-slate-400 hover:underline">
+        </StayLink>
+        <StayLink href="/glosario" className="text-slate-400 hover:underline">
           Glosario
-        </Link>
+        </StayLink>
       </div>
     </div>
   );

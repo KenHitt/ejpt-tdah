@@ -15,6 +15,7 @@ import { lessonLinkedSkill, workshopWhen } from "@/content/v6/relations";
 import { getPhase } from "@/content/v6/phases";
 import { PRIMARY_BUTTON } from "@/lib/design/tokens";
 import { LabBeforeBlock, LessonGuideBlock } from "@/components/v92/LessonGuideBlock";
+import { LessonStayProvider, StayLink } from "@/components/v92/LessonStaySheet";
 
 export default function LessonPage() {
   const params = useParams<{ lessonId: string }>();
@@ -57,6 +58,7 @@ export default function LessonPage() {
   ];
 
   return (
+    <LessonStayProvider>
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
         <p className="text-xs text-slate-600">
@@ -81,13 +83,13 @@ export default function LessonPage() {
         <h1 className="mt-1 text-3xl font-bold text-white">{lesson.titleEs}</h1>
         {skill && <p className="mt-2 text-sm text-slate-300">{skill.whyEs}</p>}
         {skill && (
-          <Link href={`/master/${skill.id}`} className="mt-2 inline-block text-xs text-red-400 hover:underline">
+          <StayLink href={`/master/${skill.id}`} className="mt-2 inline-block text-xs text-red-400 hover:underline">
             Master this skill · {skill.titleEs}
-          </Link>
+          </StayLink>
         )}
       </div>
 
-      <PrereqBanner skillId={skill?.id} />
+      <PrereqBanner skillId={skill?.id} stayInLesson />
 
       {lesson.guide && <LessonGuideBlock guide={lesson.guide} />}
 
@@ -216,6 +218,7 @@ export default function LessonPage() {
         )}
       </div>
     </div>
+    </LessonStayProvider>
   );
 }
 

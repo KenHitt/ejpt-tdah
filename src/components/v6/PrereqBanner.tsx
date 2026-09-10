@@ -5,8 +5,9 @@ import { getSkill } from "@/content/v6/skills";
 import { skillStatus } from "@/lib/v6/mastery";
 import { useCourse } from "@/lib/course/context";
 import { useProgress } from "@/lib/progress/context";
+import { StayLink } from "@/components/v92/LessonStaySheet";
 
-export function PrereqBanner({ skillId }: { skillId?: string }) {
+export function PrereqBanner({ skillId, stayInLesson }: { skillId?: string; stayInLesson?: boolean }) {
   const { state: course } = useCourse();
   const { state: progress } = useProgress();
   const skill = skillId ? getSkill(skillId) : undefined;
@@ -25,9 +26,15 @@ export function PrereqBanner({ skillId }: { skillId?: string }) {
         {skill.titleEs} pide {missing.map((id) => getSkill(id)?.titleEs ?? id).join(", ")}. El contenido sigue visible;
         no es lo recomendado ahora.
       </p>
-      <Link href={href} className="mt-2 inline-block text-amber-400 underline">
-        Ir al fundamento → {first?.titleEs ?? missing[0]}
-      </Link>
+      {stayInLesson ? (
+        <StayLink href={href} className="mt-2 inline-block text-amber-400 underline">
+          Ver fundamento (aquí) → {first?.titleEs ?? missing[0]}
+        </StayLink>
+      ) : (
+        <Link href={href} className="mt-2 inline-block text-amber-400 underline">
+          Ir al fundamento → {first?.titleEs ?? missing[0]}
+        </Link>
+      )}
     </div>
   );
 }

@@ -4,6 +4,20 @@ import { useState } from "react";
 import { QuizQuestion } from "@/lib/types";
 import { GradedAttempt, gradeAttempt } from "@/lib/simulacro";
 import { useCountdown, TimerBadge } from "./Timer";
+import { useConceptReview } from "@/components/v93/useConceptReview";
+
+function QuizConcept({ q }: { q: QuizQuestion }) {
+  const review = useConceptReview(
+    { prompt: `${q.promptEs} ${q.promptEn}`, extra: (q.options ?? []).join(" "), subtopicId: q.subtopicId },
+    `quiz:${q.id}`
+  );
+  return (
+    <div className="mb-3">
+      {review.button}
+      {review.modal}
+    </div>
+  );
+}
 
 interface QuizRunnerProps {
   title: string;
@@ -47,6 +61,7 @@ export function QuizRunner({ title, questions, durationSec, onFinish }: QuizRunn
             <p className="mb-1 text-xs font-semibold text-slate-500">Pregunta {i + 1}</p>
             <p className="mb-1 font-mono text-sm text-emerald-300">{q.promptEn}</p>
             <p className="mb-3 text-sm text-slate-400">{q.promptEs}</p>
+            <QuizConcept q={q} />
 
             {q.type === "single" && q.options && (
               <div className="space-y-2">

@@ -96,7 +96,7 @@ export function LessonGuideBlock({ guide }: { guide: LessonGuide }) {
 
       {!!guide.lost?.length && (
         <div className="rounded-lg border border-amber-900/60 p-3">
-          <p className="text-xs font-semibold text-amber-300">¿Te perdiste?</p>
+          <p className="text-xs font-semibold text-amber-300">Punto de recuperación</p>
           <ol className="mt-1 list-decimal space-y-1 pl-5 text-sm text-slate-200">
             {guide.lost.map((x) => (
               <li key={x}>{x}</li>

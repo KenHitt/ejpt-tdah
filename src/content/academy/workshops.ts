@@ -69,6 +69,66 @@ const TITLES: Record<string, string> = {
   "recon-ng": "OSINT por módulos (contraste)",
 };
 
+const TRACK_PLAIN: Record<HubTrack, CourseSection> = {
+  NOTES: {
+    h: "En palabras simples",
+    p: "Esto no es un libro que tengas que leer entero. Es un mapa: miras UNA página relacionada con lo que ya viste hoy en tu laboratorio, copias tres ideas a tu cuaderno y cierras. Si no lo usaste hoy en tu máquina, no lo leas 'por si acaso'.",
+  },
+  NMAP: {
+    h: "En palabras simples",
+    p: "Nmap es una herramienta para preguntar a una máquina de tu laboratorio: ¿estás encendida? ¿qué puertas (puertos) tienes abiertas? ¿qué programa hay detrás? Cada opción (-sn, -sV, -p-) es una pregunta distinta. Hoy haces UNA pregunta contra TU víctima Host-Only, no contra Internet ni contra el Wi‑Fi de casa.",
+  },
+  ENUM: {
+    h: "En palabras simples",
+    p: "Enumerar es preguntar con educación técnica: usuarios, carpetas, páginas. No es 'hackear ya'. El puerto te dice qué herramienta usar: 445 es para archivos (SMB), 80 es para páginas (HTTP), 22 es SSH. Una herramienta cada vez.",
+  },
+  WEB: {
+    h: "En palabras simples",
+    p: "Una web es un diálogo: tu navegador pide algo y el servidor responde. Antes de lanzar sqlmap o Gobuster, mira la petición: método, parámetro, cookie. Practica en DVWA en tu propio Kali (localhost). Nunca apuntes estas pruebas a una web que no sea tuya.",
+  },
+  MSF: {
+    h: "En palabras simples",
+    p: "Metasploit es una caja de recetas. Cada receta (módulo) necesita datos tuyos: IP de la víctima (RHOST) e IP tuya en el laboratorio (LHOST). Si dejas esos campos vacíos o copiados de un vídeo, la receta no funciona. Primero Nmap, luego el módulo que coincida.",
+  },
+  POST: {
+    h: "En palabras simples",
+    p: "Post-explotación es lo que haces DESPUÉS de haber entrado: quién soy, qué puedo leer, si puedo ser administrador. No empieces por un exploit de kernel famoso. Empieza por comandos simples (id, sudo -l) en la máquina de laboratorio.",
+  },
+  WORDLIST: {
+    h: "En palabras simples",
+    p: "Una wordlist es una lista de palabras para probar rutas o contraseñas. No hace falta la lista más enorme del mundo. Hace falta una lista que tenga sentido para lo que estás buscando hoy.",
+  },
+  LAB: {
+    h: "En palabras simples",
+    p: "El laboratorio es un cuarto cerrado: tu Kali y una máquina hecha para practicar. Host-Only es esa red cerrada. Bridged sería poner la máquina vulnerable en el mismo Wi‑Fi que tu familia. No lo hagas. Cambiar de víctima (otra VM) no cambia el método: medir IPs, ping, luego nmap.",
+  },
+  MAP: {
+    h: "En palabras simples",
+    p: "Entras al taller con UNA pregunta (por ejemplo: 'el puerto 445, ¿qué hago?'). Sales con tres líneas en el cuaderno. No colecciones veinte herramientas. eJPT premia elegir una y usarla bien.",
+  },
+};
+
+const TRACK_SCENE: Record<HubTrack, string> = {
+  NOTES:
+    "Tienes 20 minutos y el cerebro cansado. No vas a leer un repositorio entero. Vas a sacar solo lo que ya practicaste hoy.",
+  NMAP:
+    "Tu Kali y una máquina víctima se ven por Host-Only. Aún no lanzas exploits. Quieres hacerle UNA pregunta a esa máquina con Nmap y entender la respuesta.",
+  ENUM:
+    "Nmap ya te dijo que hay puertos abiertos. Ahora eliges UNO (por ejemplo 445 o 80) y le preguntas qué hay detrás, con la herramienta de esa familia.",
+  WEB:
+    "Tienes DVWA en tu Kali o un puerto 80 en tu víctima. Vas a mirar una petición de verdad (URL, parámetro) antes de cualquier automatizador.",
+  MSF:
+    "Ya tienes servicio y versión de Nmap. Vas a abrir Metasploit, buscar un módulo que coincida, y rellenar LHOST y RHOST con IPs que TÚ mediste hoy.",
+  POST:
+    "Ya tienes una sesión o un usuario en la víctima de laboratorio. Antes de buscar 'el exploit de root', vas a preguntar quién eres y qué permisos tienes.",
+  WORDLIST:
+    "Necesitas probar nombres de carpetas o contraseñas en el laboratorio. Vas a elegir una lista razonable, no descargar 80 GB 'por si acaso'.",
+  LAB:
+    "Quieres otra máquina de práctica (o DVWA). El método no cambia: Kali en tu PC, víctima en VirtualBox, red Host-Only, IPs medidas, ping, y nada de Bridged.",
+  MAP:
+    "Tienes una duda concreta (un puerto, un fallo). El taller es un índice. Entras, copias tres ideas, vuelves al laboratorio.",
+};
+
 const TRACK_EXTRA: Record<HubTrack, CourseSection> = {
   NOTES:
     { h: "Cómo se estudia una nota", p: "Una nota de terceros es un mapa, no el brief de INE. Extrae solo lo que ya tocaste en tu VirtualBox. Donde discrepes, anota el porqué: ahí está tu modelo. No copies payloads a redes ajenas." },
@@ -116,26 +176,36 @@ function toWorkshop(repo: HubRepo): AcademyWorkshop {
     weeks: repo.weeks,
     hours: TALLER_HOURS,
     theory: [
+      TRACK_PLAIN[repo.track],
       TRACK_EXTRA[repo.track],
       { h: "Qué cubre este taller", p: repo.scan },
       { h: "El mecanismo (no el marketing)", p: repo.gifted },
-      { h: "Protocolo de estudio de hoy", p: protocol },
+      { h: "Qué vas a hacer hoy (un solo experimento)", p: protocol },
     ],
     example: {
-      title: `Ejemplo guiado — ${titleOf(repo)}`,
-      scene: "Kali en tu PC. Víctima en VirtualBox Host-Only o DVWA en localhost. Este taller se estudia aquí, no en 40 pestañas.",
+      title: `Caso guiado: ${titleOf(repo)}`,
+      scene: TRACK_SCENE[repo.track],
       steps: [
-        { do: protocol, why: "Un protocolo cerrado vale más que una tarde de pestañas." },
-        { do: "Anota 3 bullets en tu plantilla (qué, por qué, next step).", why: "El examen pide valores y criterios, no 'lo vi'." },
-        { do: "Vuelve al lab de la jornada si aún no practicaste tú.", why: "El taller alimenta la práctica; no la sustituye." },
+        {
+          do: `Di en voz alta, en una frase, de qué va este taller: ${repo.scan}`,
+          why: "Si no puedes explicarlo a alguien que acaba de empezar, aún no abras más pestañas. El taller cabe en una idea.",
+        },
+        {
+          do: protocol,
+          why: "Un experimento cerrado. Terminar una cosa bien vale más que ojeadas a diez páginas.",
+        },
+        {
+          do: "En el cuaderno escribe tres líneas: qué hice, qué vi, qué haría después. Luego vuelve a la práctica de la jornada de hoy.",
+          why: "El examen pide un valor y un criterio. 'Lo vi' no cuenta. El taller alimenta la jornada; no la sustituye.",
+        },
       ],
-      expected: "Una nota útil y un único experimento en el lab autorizado.",
+      expected: "decir de qué iba el taller, haber hecho un único experimento en tu laboratorio (o el equivalente en papel) y tener tres líneas escritas.",
       stop: repo.safety,
     },
     practice: [
-      "Tapa el ejemplo. Reescribe en una frase qué problema resuelve este taller.",
-      "Ejecuta UN experimento en tu guest Host-Only o DVWA localhost (o el equivalente de papel si hoy no aplica).",
-      "Guarda el resultado exacto (string, código, negativa). Cierra el tema.",
+      "Cubre el ejemplo. En una frase sencilla: ¿qué problema resuelve este taller?",
+      "Haz UN experimento en tu víctima Host-Only o en DVWA en localhost (si hoy no aplica, escríbelo en papel: qué harías y qué esperarías ver).",
+      "Guarda el resultado exacto (un texto, un código, o 'no pude porque…'). Cierra el tema. No abras otro taller el mismo minuto.",
     ],
     safety: repo.safety,
   };

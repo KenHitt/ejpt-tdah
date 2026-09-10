@@ -15,26 +15,44 @@ const VBOX =
 export const LESSON_EXAMPLES: Record<string, CourseExample[]> = {
   "c00-d1": [
     ex(
-      "Ejemplo 1 — Inventario de un lab correcto",
-      "Imagina que acabas de instalar Kali en el disco y VirtualBox desde los repos. Aún no hay nmap.",
+      "Ejemplo 1 — Inventario de un laboratorio correcto",
+      "Acabas de instalar Kali en tu ordenador y VirtualBox. Todavía no vas a escanear a nadie. Solo quieres tener claro quién es quién, como en un croquis.",
       [
-        st("Escribe en papel: Atacante = Kali host. Hipervisor = VirtualBox. Víctimas = (vacío por ahora).", "Si no separas estos roles, LHOST y las capturas no coincidirán con las guías."),
-        st("Abre VirtualBox → Preferencias → Red → anota si existe vboxnet0.", "Ese switch virtual es la LAN del ataque. Si no existe, se crea en /laboratorio, no con Bridged."),
-        st("Frase de alcance: 'Hoy no escaneo ninguna IP que no sea una VM que yo importe.'", "Autorización es el primer comando. Privado ≠ autorizado."),
+        st(
+          "En un papel escribe tres líneas: Atacante = Kali (tu PC). Hipervisor = VirtualBox (el programa). Víctimas = las máquinas que importarás (aún ninguna).",
+          "Si mezclas estos roles, más adelante no sabrás qué IP es tuya. Las guías hablarán de LHOST y no coincidirán con tu pantalla."
+        ),
+        st(
+          "Abre VirtualBox → Archivo / File → Herramientas de red (Host Network Manager) y mira si existe una red tipo vboxnet0.",
+          "Esa red es el 'cuarto cerrado' entre Kali y las víctimas. Si no existe, se crea en el laboratorio. No uses Bridged para 'arreglarlo'."
+        ),
+        st(
+          "Escribe una frase de alcance: Hoy solo toco máquinas virtuales que yo importé.",
+          "Una IP privada no da permiso. El router de casa y el portátil de otra persona no entran. Si no puedes nombrar al dueño, no escaneas."
+        ),
       ],
-      "Tres líneas escritas y cero paquetes a la LAN familiar.",
-      "No 'pruebes' nmap 192.168.1.0/24 de casa para ver si 'funciona'."
+      "explicar en tres líneas quién ataca, quién es el programa de las VMs, y qué tienes permiso de tocar. Cero paquetes a la red de casa.",
+      "No lances nmap contra 192.168.1.0/24 de tu Wi‑Fi 'a ver si funciona'. Eso no es práctica: es escanear tu casa."
     ),
     ex(
-      "Ejemplo 2 — Por qué Bridged rompe el plan",
-      "Un tutorial dice: 'pon Kali y MS2 en Bridged para que sea real'.",
+      "Ejemplo 2 — Por qué no usamos Bridged",
+      "En Internet verás recetas que ponen la máquina vulnerable en el mismo Wi‑Fi que tu casa, 'para que se parezca a una red real'. Vamos a ver por qué en este curso no lo hacemos, con un dibujo.",
       [
-        st("Dibuja tu Wi‑Fi: router, móvil, impresora, MS2.", "MS2 está diseñada para ser rota. Bridged la ofrece a toda esa LAN."),
-        st("Dibuja Host-Only: solo Kali host ↔ guests.", "El ataque no sale a Internet ni entra desde el vecino."),
-        st("Decide: este plan usa el segundo dibujo.", "Si mezclas ambos, cada reverse y cada captura de interfaz mienten."),
+        st(
+          "Dibuja el salón de tu casa: el router, un móvil, una impresora y, si usas Bridged, Metasploitable 2 sentada ahí como un aparato más.",
+          "Metasploitable está diseñada para romperse a propósito. Bridged la pone al alcance de todo lo que hay en tu Wi‑Fi. No es realismo: es dejar una puerta abierta en el salón."
+        ),
+        st(
+          "Ahora dibuja el otro esquema: un cuarto cerrado (Host-Only). Dentro solo están Kali (tú) y las víctimas. El ataque no sale a Internet ni entra desde el vecino.",
+          "Host-Only es un switch privado. Kali y la VM se ven entre sí. Tu familia no forma parte de esa red. Ese es el laboratorio de este plan."
+        ),
+        st(
+          "Elige el segundo dibujo y déjalo escrito: el ataque de hoy va por Host-Only.",
+          "Si mezclas Bridged 'un rato' y Host-Only 'cuando me acuerde', cada reverse shell y cada captura de red te mentirán: estarás mirando la NIC equivocada."
+        ),
       ],
-      "Puedes explicar en una frase por qué Host-Only y no Bridged.",
-      "No dejes 'ya lo cambio después'. El modo de red se fija hoy."
+      "decir en una frase, con tus palabras, por qué Host-Only y no Bridged.",
+      "No lo dejes para después. El modo de red se decide hoy. Si la VM ya está en Bridged, cámbiala a Host-Only antes de nmap."
     ),
   ],
   "c00-d2": [

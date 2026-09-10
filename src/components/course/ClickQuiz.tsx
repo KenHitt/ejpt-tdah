@@ -2,13 +2,77 @@
 
 import { useState } from "react";
 import { CourseQuizItem } from "@/content/course/types";
+import { useConceptReview } from "@/components/v93/useConceptReview";
+import { stillStuckCopy } from "@/lib/v93/review-for-question";
+
+function QuizItem({
+  it,
+  i,
+  sel,
+  done,
+  onPick,
+  subtopicId,
+  exercisePrefix,
+}: {
+  it: CourseQuizItem;
+  i: number;
+  sel: number | undefined;
+  done: boolean;
+  onPick: (j: number) => void;
+  subtopicId?: string;
+  exercisePrefix: string;
+}) {
+  const review = useConceptReview(
+    { prompt: it.q, extra: it.options.join(" "), subtopicId },
+    `${exercisePrefix}:quiz:${i}`
+  );
+  const wrong = done && sel !== undefined && sel !== it.correct;
+
+  return (
+    <div className="rounded-lg border-2 border-slate-600 p-3">
+      <p className="text-base font-medium text-white">
+        {i + 1}. {it.q}
+      </p>
+      <div className="mt-2 space-y-2">
+        {it.options.map((opt, j) => {
+          const show = done;
+          const isCorrect = j === it.correct;
+          const isSel = sel === j;
+          let cls = "border-slate-500 hover:border-red-400";
+          if (show && isCorrect) cls = "border-emerald-400 bg-emerald-950";
+          else if (show && isSel && !isCorrect) cls = "border-red-500 bg-red-950";
+          else if (!show && isSel) cls = "border-red-500 bg-red-950/50";
+          return (
+            <button
+              key={j}
+              type="button"
+              disabled={done}
+              onClick={() => onPick(j)}
+              className={`rt-hit block w-full rounded-md border-2 px-3 py-3 text-left text-sm text-white ${cls}`}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+      <div className="mt-3">{review.button}</div>
+      {wrong && <p className="mt-2 text-sm text-amber-200">{stillStuckCopy(review.lesson)}</p>}
+      {done && <p className="mt-2 text-sm text-slate-400">{it.why}</p>}
+      {review.modal}
+    </div>
+  );
+}
 
 export function ClickQuiz({
   items,
   onGraded,
+  subtopicId,
+  exercisePrefix = "lesson",
 }: {
   items: CourseQuizItem[];
   onGraded: (pct: number) => void;
+  subtopicId?: string;
+  exercisePrefix?: string;
 }) {
   const [picked, setPicked] = useState<Record<number, number>>({});
   const [done, setDone] = useState(false);
@@ -27,41 +91,18 @@ export function ClickQuiz({
 
   return (
     <div className="space-y-4">
-      {items.map((it, i) => {
-        const sel = picked[i];
-        return (
-          <div key={i} className="rounded-lg border-2 border-slate-600 p-3">
-            <p className="text-base font-medium text-white">
-              {i + 1}. {it.q}
-            </p>
-            <div className="mt-2 space-y-2">
-              {it.options.map((opt, j) => {
-                const show = done;
-                const isCorrect = j === it.correct;
-                const isSel = sel === j;
-                let cls = "border-slate-500 hover:border-red-400";
-                if (show && isCorrect) cls = "border-emerald-400 bg-emerald-950";
-                else if (show && isSel && !isCorrect) cls = "border-red-500 bg-red-950";
-                else if (!show && isSel) cls = "border-red-500 bg-red-950/50";
-                return (
-                  <button
-                    key={j}
-                    type="button"
-                    disabled={done}
-                    onClick={() => setPicked((p) => ({ ...p, [i]: j }))}
-                    className={`rt-hit block w-full rounded-md border-2 px-3 py-3 text-left text-sm text-white ${cls}`}
-                  >
-                    {opt}
-                  </button>
-                );
-              })}
-            </div>
-            {done && (
-              <p className="mt-2 text-sm text-amber-200">{it.why}</p>
-            )}
-          </div>
-        );
-      })}
+      {items.map((it, i) => (
+        <QuizItem
+          key={`${it.q}-${i}`}
+          it={it}
+          i={i}
+          sel={picked[i]}
+          done={done}
+          subtopicId={subtopicId}
+          exercisePrefix={exercisePrefix}
+          onPick={(j) => setPicked((p) => ({ ...p, [i]: j }))}
+        />
+      ))}
       {!done ? (
         <button
           type="button"

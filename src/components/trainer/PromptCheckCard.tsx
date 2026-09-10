@@ -8,6 +8,8 @@ import { useProgress } from "@/lib/progress/context";
 import { classifyPromptFailure, FAILURE_LABEL_ES } from "@/lib/v9/diagnose";
 import { remediationPath } from "@/lib/v9/remediation";
 import { V6_SKILLS } from "@/content/v6/skills";
+import { useConceptReview } from "@/components/v93/useConceptReview";
+import { stillStuckCopy } from "@/lib/v93/review-for-question";
 
 function defaultHints(check: PromptCheck): [string, string, string, string, string] {
   return [
@@ -32,7 +34,7 @@ export function PromptCheckCard({
   onResult?: (ok: boolean) => void;
   onChoice?: (choiceId?: string) => void;
 }) {
-  const { recordTrainerAttempt, reportFailure } = useProgress();
+  const { recordTrainerAttempt, reportFailure, state } = useProgress();
   const [text, setText] = useState("");
   const [startedAt] = useState(() => Date.now());
   const [choice, setChoice] = useState<string | undefined>();
@@ -48,6 +50,17 @@ export function PromptCheckCard({
     V6_SKILLS.find((s) => s.id === check.domain)?.id ??
     V6_SKILLS.find((s) => s.subtopicIds.includes(check.subtopicId))?.id;
   const rem = skillId ? remediationPath(skillId, pedagogy)[0] : undefined;
+  const review = useConceptReview(
+    {
+      prompt: check.promptEs,
+      extra: `${check.promptEn ?? ""} ${check.choices?.map((c) => c.textEs).join(" ") ?? ""}`,
+      subtopicId: check.subtopicId,
+      failKind: check.failKind,
+      pedagogy,
+    },
+    exerciseId
+  );
+  const openedReview = (state.trainer?.conceptReviews ?? []).some((r) => r.exerciseId === exerciseId);
 
   const lastAnswerEs =
     check.choices?.length ? check.choices.find((c) => c.id === choice)?.textEs ?? "—" : text.trim() || "—";
@@ -135,7 +148,9 @@ export function PromptCheckCard({
               </Link>
             </p>
           )}
+          <p className="mt-3 text-sm text-amber-100">{stillStuckCopy(review.lesson)}</p>
           <div className="mt-3 flex flex-wrap gap-2">
+            {review.button}
             <button
               type="button"
               onClick={retry}
@@ -154,6 +169,12 @@ export function PromptCheckCard({
           <p className="whitespace-pre-wrap">{note}</p>
           {hintLevel > 0 && (
             <p className="mt-2 text-xs text-slate-400">Hints used: {hintLevel}/5 — counts toward independence, not a penalty for learning.</p>
+          )}
+          {openedReview && review.lesson.transferEs && (
+            <p className="mt-3 text-sm text-slate-200">
+              <span className="text-emerald-300">Transfer. </span>
+              {review.lesson.transferEs}
+            </p>
           )}
         </div>
       )}
@@ -202,6 +223,7 @@ export function PromptCheckCard({
             <button type="button" onClick={submit} className="rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-500">
               Verificar
             </button>
+            {review.button}
             <button
               type="button"
               onClick={() => setHintLevel((n) => Math.min(5, n + 1))}
@@ -212,6 +234,7 @@ export function PromptCheckCard({
           </div>
         </>
       )}
+      {review.modal}
     </div>
   );
 }

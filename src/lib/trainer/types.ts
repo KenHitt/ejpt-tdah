@@ -1,4 +1,5 @@
 import { FailKind, KillPhase, SkillKind } from "@/lib/types";
+import { ConceptDiagnosis } from "@/content/v93/concept-reviews";
 
 export interface TrainerAttempt {
   id: string;
@@ -11,6 +12,14 @@ export interface TrainerAttempt {
   retries?: number;
   durationMs?: number;
   domain?: string;
+}
+
+export interface ConceptReviewEvent {
+  id: string;
+  at: string;
+  exerciseId: string;
+  conceptId: string;
+  diagnosis: ConceptDiagnosis;
 }
 
 export interface StuckNote {
@@ -43,6 +52,7 @@ export interface TrainerState {
   stuckNotes: StuckNote[];
   reasoningRuns: ReasoningRun[];
   labHud: LabHud;
+  conceptReviews: ConceptReviewEvent[];
 }
 
 export const EMPTY_LAB_HUD: LabHud = {
@@ -60,4 +70,5 @@ export const EMPTY_TRAINER: TrainerState = {
   stuckNotes: [],
   reasoningRuns: [],
   labHud: EMPTY_LAB_HUD,
+  conceptReviews: [],
 };

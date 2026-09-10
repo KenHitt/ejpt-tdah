@@ -4,6 +4,17 @@ import { useState } from "react";
 import { GuidedStep, TroubleItem } from "@/lib/types";
 import { PromptCheckCard } from "@/components/trainer/PromptCheckCard";
 import { SafetyNote } from "@/components/SafetyNote";
+import { useConceptReview } from "@/components/v93/useConceptReview";
+
+function LabConcept({ title, body, id }: { title: string; body: string; id: string }) {
+  const review = useConceptReview({ prompt: `${title} ${body}` }, `lab:${id}`);
+  return (
+    <div>
+      {review.button}
+      {review.modal}
+    </div>
+  );
+}
 
 const KIND_ES: Record<GuidedStep["kind"], string> = {
   concept: "CONCEPTO",
@@ -78,6 +89,9 @@ export function GuidedLabRunner({
           exerciseId={`guided:${step.id}`}
           onPassed={() => setLocked(true)}
         />
+      )}
+      {!step.check && (
+        <LabConcept title={step.titleEs} body={step.bodyEs ?? ""} id={step.id} />
       )}
 
       {step.kind === "trouble" && !step.check && (

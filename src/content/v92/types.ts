@@ -6,6 +6,12 @@ export interface AcademyTerm {
   def: string;
   purpose: string;
   href?: string;
+  /** Mini-lección del panel. No sustituye def/purpose; se AÑADE. */
+  analogy?: string;
+  how?: string;
+  compare?: string;
+  example?: string;
+  mistake?: string;
 }
 
 export interface LessonGuide {

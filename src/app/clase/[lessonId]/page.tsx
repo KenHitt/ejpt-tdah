@@ -16,6 +16,7 @@ import { getPhase } from "@/content/v6/phases";
 import { PRIMARY_BUTTON } from "@/lib/design/tokens";
 import { LabBeforeBlock, LessonGuideBlock } from "@/components/v92/LessonGuideBlock";
 import { LessonStayProvider, StayLink } from "@/components/v92/LessonStaySheet";
+import { useConceptReview } from "@/components/v93/useConceptReview";
 
 export default function LessonPage() {
   const params = useParams<{ lessonId: string }>();
@@ -122,7 +123,7 @@ export default function LessonPage() {
       <section className="space-y-2">
         <Phase n={2} title="Examen corto" time={`~${breakdown.quiz} min`} />
         <p className="text-sm text-slate-400">Después de la teoría. ≥70% para cerrar la jornada.</p>
-        <ClickQuiz key={lesson.id} items={lesson.quiz} onGraded={setQuizPct} />
+        <ClickQuiz key={lesson.id} items={lesson.quiz} onGraded={setQuizPct} subtopicId={lesson.subtopicId} exercisePrefix={lesson.id} />
       </section>
 
       <section className="space-y-3">
@@ -140,6 +141,7 @@ export default function LessonPage() {
       <section className="rounded-xl border-2 border-amber-800 p-4">
         <Phase n={4} title={`Tú practicas · ${lesson.labTitle}`} time={`~${breakdown.lab} min (estimado)`} />
         {lesson.guide && <LabBeforeBlock guide={lesson.guide} />}
+        <LessonLabReview lessonId={lesson.id} title={lesson.labTitle} steps={lesson.labSteps} subtopicId={lesson.subtopicId} />
         <p className="mt-2 text-sm text-slate-300">{lesson.practiceHint}</p>
         <p className="mt-2 text-xs text-amber-200">
           Tapa los ejemplos. Host-Only, DVWA localhost, o VPN INE. Nunca Wi‑Fi de casa. El lab puede alargarse.
@@ -227,5 +229,25 @@ function Phase({ n, title, time }: { n: number; title: string; time: string }) {
     <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
       <span className="text-red-400">{n}</span> · {title} · {time}
     </p>
+  );
+}
+
+function LessonLabReview({
+  lessonId,
+  title,
+  steps,
+  subtopicId,
+}: {
+  lessonId: string;
+  title: string;
+  steps: string[];
+  subtopicId: string;
+}) {
+  const review = useConceptReview({ prompt: `${title} ${steps.join(" ")}`, subtopicId }, `${lessonId}:lab`);
+  return (
+    <div className="mt-3">
+      {review.button}
+      {review.modal}
+    </div>
   );
 }

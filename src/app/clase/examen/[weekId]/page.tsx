@@ -39,7 +39,7 @@ export default function WeekExamPage() {
       <p className="text-sm text-slate-400">
         10 preguntas para marcar. Interno: 70% Learning Pass. No es el corte de INE.
       </p>
-      <ClickQuiz key={week} items={items} onGraded={(p) => { setPct(p); markExam(`w${week}`, p); }} />
+      <ClickQuiz key={week} items={items} onGraded={(p) => { setPct(p); markExam(`w${week}`, p); }} exercisePrefix={`exam-w${week}`} />
       {pct !== null && (
         <p className="text-center text-emerald-300">
           {pct}% {pct >= 70 ? "· pass interno. Siguiente semana o remedia lo rojo." : "· debajo de 70. Relee las clases de la semana."}

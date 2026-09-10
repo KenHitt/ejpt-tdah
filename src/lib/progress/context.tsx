@@ -10,7 +10,7 @@ import {
   useState,
 } from "react";
 import { SimulacroAttempt, StudySessionLog, SubtopicFailure } from "@/lib/types";
-import { LabHud, ReasoningRun, StuckNote, TrainerAttempt } from "@/lib/trainer/types";
+import { LabHud, ReasoningRun, StuckNote, TrainerAttempt, ConceptReviewEvent } from "@/lib/trainer/types";
 import { useSupabaseSession } from "@/lib/supabase/useSession";
 import { EMPTY_PROGRESS, ProgressState } from "./state";
 import { loadLocalProgress, saveLocalProgress, mergeProgress } from "./localBackend";
@@ -32,6 +32,7 @@ interface ProgressContextValue {
   toggleChecklistItem: (blockId: string, index: number, checked: boolean) => void;
   importState: (next: ProgressState) => void;
   recordTrainerAttempt: (attempt: Omit<TrainerAttempt, "id" | "at">) => void;
+  recordConceptReview: (event: Omit<ConceptReviewEvent, "id" | "at">) => void;
   recordReasoningRun: (run: Omit<ReasoningRun, "id" | "at">) => void;
   recordHintLevel: (key: string, level: number) => void;
   recordStuck: (note: Omit<StuckNote, "id" | "at">) => void;
@@ -200,6 +201,22 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     }));
   }, []);
 
+  const recordConceptReview = useCallback((event: Omit<ConceptReviewEvent, "id" | "at">) => {
+    setState((prev) => {
+      const t = prev.trainer ?? EMPTY_PROGRESS.trainer;
+      return {
+        ...prev,
+        trainer: {
+          ...t,
+          conceptReviews: [
+            ...(t.conceptReviews ?? []),
+            { ...event, id: `cr:${Date.now()}`, at: new Date().toISOString() },
+          ].slice(-400),
+        },
+      };
+    });
+  }, []);
+
   const recordHintLevel = useCallback((key: string, level: number) => {
     setState((prev) => {
       const t = prev.trainer ?? EMPTY_PROGRESS.trainer;
@@ -273,6 +290,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       toggleChecklistItem,
       importState,
       recordTrainerAttempt,
+      recordConceptReview,
       recordHintLevel,
       recordStuck,
       recordReasoningRun,
@@ -294,6 +312,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       toggleChecklistItem,
       importState,
       recordTrainerAttempt,
+      recordConceptReview,
       recordHintLevel,
       recordStuck,
       recordReasoningRun,

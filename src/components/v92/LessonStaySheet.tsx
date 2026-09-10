@@ -14,6 +14,7 @@ import {
 import { COURSE_LESSONS, getLesson } from "@/content/course";
 import { LEARN_ARTICLES } from "@/content/learn-articles";
 import { ACADEMY_TERMS } from "@/content/v92/terms";
+import { TERM_DEEP } from "@/content/v92/term-deep";
 import { getSkill } from "@/content/v6/skills";
 import { learnMeta } from "@/content/v6/relations";
 import { WEEK1_DECISION_DRILLS, EXTRA_DECISION_DRILLS, V8_ALL_DRILLS } from "@/content/decision-drills";
@@ -228,25 +229,59 @@ function PeekBody({ peek, onOpenHref }: { peek: Peek; onOpenHref: (href: string)
   if (peek.kind === "term") {
     const t = peek.term;
     const catalog = ACADEMY_TERMS.find((x) => x.term.toLowerCase() === t.term.toLowerCase());
-    const def = t.def || catalog?.def || "";
-    const purpose = t.purpose || catalog?.purpose;
+    const deep = TERM_DEEP[catalog?.term ?? ""] ?? TERM_DEEP[t.term];
+    const def = catalog?.def || t.def;
+    const purpose = catalog?.purpose || t.purpose;
     const href = relatedFichaFits(t.term, t.href)
       ? t.href
       : relatedFichaFits(t.term, catalog?.href)
         ? catalog?.href
         : undefined;
     return (
-      <div className="space-y-3">
-        <p className="text-sm text-slate-200">{def}</p>
+      <div className="space-y-3 text-sm">
+        <section>
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-sky-400">Qué es</p>
+          <p className="mt-1 leading-relaxed text-slate-200">{def}</p>
+        </section>
         {purpose && (
-          <p className="text-sm text-slate-300">
-            <span className="text-red-300">Para qué. </span>
-            {purpose}
-          </p>
+          <section>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-sky-400">Para qué sirve</p>
+            <p className="mt-1 leading-relaxed text-slate-200">{purpose}</p>
+          </section>
+        )}
+        {deep?.analogy && (
+          <section>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-sky-400">Con un ejemplo de casa</p>
+            <p className="mt-1 leading-relaxed text-slate-200">{deep.analogy}</p>
+          </section>
+        )}
+        {deep?.compare && (
+          <section>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-sky-400">No lo confundas con</p>
+            <p className="mt-1 leading-relaxed text-slate-200">{deep.compare}</p>
+          </section>
+        )}
+        {deep?.how && (
+          <section>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-sky-400">Cómo se usa aquí</p>
+            <p className="mt-1 leading-relaxed text-slate-200">{deep.how}</p>
+          </section>
+        )}
+        {deep?.example && (
+          <section>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-sky-400">Ejemplo en el laboratorio</p>
+            <p className="mt-1 leading-relaxed text-slate-200">{deep.example}</p>
+          </section>
+        )}
+        {deep?.mistake && (
+          <section>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-300">Error típico</p>
+            <p className="mt-1 leading-relaxed text-slate-200">{deep.mistake}</p>
+          </section>
         )}
         {href && (
-          <button type="button" className="text-sm text-red-400 hover:underline" onClick={() => onOpenHref(href)}>
-            Ficha del mismo tema
+          <button type="button" className="text-red-400 hover:underline" onClick={() => onOpenHref(href)}>
+            Ver también el laboratorio / ficha
           </button>
         )}
       </div>

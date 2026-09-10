@@ -24,6 +24,7 @@ import { calculateRecommendation } from "@/lib/v9/recommend";
 import { calculateReadiness } from "@/lib/v9/readiness";
 import { TrainingDirector } from "@/components/v9/TrainingDirector";
 import { academicState } from "@/lib/v9/competency";
+import { conceptReviewClusters } from "@/lib/v93/review-stats";
 
 function formatHours(h: number) {
   const hh = Math.floor(h);
@@ -76,6 +77,8 @@ export default function ProgresoPage() {
   );
   const evid = useMemo(() => calculateReadiness(course, state), [course, state]);
   const ready = readinessBreakdown(course, state);
+  const reviewClusters = conceptReviewClusters(state);
+  const recurrent = reviewClusters.filter((c) => c.recurrent);
   const order: Record<string, number> = { WEAK: 0, PRACTICING: 1, READY: 2, IN_PROGRESS: 3 };
   const focusSkills = V6_SKILLS.filter((s) => order[skillStatus(s.id, course, state)] !== undefined)
     .sort((a, b) => order[skillStatus(a.id, course, state)] - order[skillStatus(b.id, course, state)])
@@ -93,6 +96,25 @@ export default function ProgresoPage() {
       </div>
 
       <TrainingDirector board={v9} budget={budget} onBudget={setBudget} />
+
+      {recurrent.length > 0 && (
+        <section className="space-y-2 rounded-xl border border-amber-800/60 bg-amber-500/5 p-4">
+          <h2 className="text-sm font-semibold text-amber-200">Área a reforzar (revisiones repetidas)</h2>
+          <p className="text-xs text-slate-500">
+            Una duda puntual no aparece aquí. Esto es debilidad recurrente (3+ revisiones del mismo concepto).
+          </p>
+          <ul className="space-y-2">
+            {recurrent.map((c) => (
+              <li key={c.id} className="text-sm text-slate-200">
+                {c.titleEs} · {c.n} revisiones.{" "}
+                <Link href={c.href} className="text-red-400 hover:underline">
+                  Repaso + Decision Drill
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="grid gap-2 sm:grid-cols-2 text-sm">
         {v9.highlights.weakestCritical && (

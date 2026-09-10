@@ -23,6 +23,7 @@ import { LEARN_CATALOG_V91 } from "@/content/v91/learn";
 import { EJPT_OBJECTIVE_DETAIL } from "@/content/v91/objectives";
 import { auditAllLessons, depthCounts } from "@/lib/v92/lesson-audit";
 import { ACADEMY_TERMS } from "@/content/v92/terms";
+import { CONCEPT_LESSONS } from "@/content/v93/concept-reviews";
 
 const FLAG_LABEL: { key: keyof CycleFlags; label: string }[] = [
   { key: "theory", label: "Teoría" },
@@ -90,6 +91,7 @@ export default function AuditoriaPage() {
         <Stat label="Bosses" value={String(V8_BOSSES.length)} />
         <Stat label="Internal mocks" value={String(V8_MOCKS.length)} />
         <Stat label="Academy terms (V9.2)" value={String(ACADEMY_TERMS.length)} />
+        <Stat label="Concept reviews (V9.3)" value={String(CONCEPT_LESSONS.length)} />
         <Stat label="Lessons Ready (V9.2)" value={String(depth.ready)} />
         <Stat label="Needs Explanation" value={String(depth["needs-explanation"])} />
         <Stat label="Needs Guided Example" value={String(depth["needs-example"])} />
